@@ -1,0 +1,9 @@
+# FedHealth - runtime dependencies only.
+# The previous file was a full environment dump (~200 packages including
+# TensorFlow, PyTorch and Qiskit); none of those are used by this project.
+Flask==3.1.0
+Werkzeug==3.1.3
+numpy==2.0.2
+pandas==2.3.3
+scikit-learn==1.6.1
+python-dotenv>=1.0,<2.0

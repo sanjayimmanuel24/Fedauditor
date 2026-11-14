@@ -1,0 +1,1015 @@
+{% extends "base.html" %}
+
+{% block title %}Federated Diagnostics Dashboard - FedHealth{% endblock %}
+
+{% block head %}
+<style>
+    .tab-btn { transition: all .2s ease; }
+    .tab-btn:not(.active):hover { background: #eef4f8; color: #0f2b3d; }
+    .tab-btn.active {
+        background: #0f766e;
+        color: #fff;
+        box-shadow: 0 4px 14px 0 rgba(15,118,110,.25);
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .kpi { font-variant-numeric: tabular-nums; }
+    table.metric-table th {
+        font-size: .65rem; text-transform: uppercase; letter-spacing: .05em;
+        color: #57708a; text-align: left; padding: .55rem .75rem;
+        border-bottom: 1px solid #d6e3ec; font-weight: 600;
+    }
+    table.metric-table td {
+        padding: .55rem .75rem; font-size: .78rem; border-bottom: 1px solid rgba(214,227,236,.8);
+        font-variant-numeric: tabular-nums;
+    }
+    tr.highlight td { background: rgba(15,118,110,.06); }
+    .badge {
+        display: inline-flex; align-items: center; gap: .25rem;
+        font-size: .6rem; font-weight: 700; text-transform: uppercase;
+        letter-spacing: .04em; padding: .15rem .45rem; border-radius: .35rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+
+    <!-- Header -->
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div>
+            <div class="flex items-center gap-3 flex-wrap">
+                <h1 class="text-3xl font-extrabold text-ink tracking-tight font-heading">Federated Audit Dashboard</h1>
+                <span id="data-badge" class="badge bg-emerald-50 text-good border border-emerald-200"></span>
+                <span id="partition-badge" class="badge bg-accent/10 text-accent border border-accent/20"></span>
+                <span id="weighting-badge" class="badge bg-muted text-ink border border-line"></span>
+            </div>
+            <p class="text-xs text-subtle mt-1">
+                Run <span id="run-id" class="font-mono text-ink">{{ run_id }}</span> &middot;
+                calibration &middot; subgroup fairness &middot; federated explanations
+            </p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+            <button id="btn-simulate" onclick="runRound()" class="btn-primary text-white font-semibold px-4 py-2.5 rounded-xl text-xs flex items-center">
+                <i class="fa-solid fa-arrows-spin mr-2"></i> Trigger FedAvg Round
+            </button>
+            <button onclick="resetSimulation()" class="bg-white hover:bg-muted text-ink border border-line px-4 py-2.5 rounded-xl text-xs font-semibold">
+                <i class="fa-solid fa-rotate-left mr-2"></i> Cold Start
+            </button>
+            <a id="export-link" href="/api/run/0/rounds.csv" class="bg-white hover:bg-muted text-ink border border-line px-4 py-2.5 rounded-xl text-xs font-semibold">
+                <i class="fa-solid fa-file-csv mr-2"></i> Export CSV
+            </a>
+        </div>
+    </div>
+
+    <!-- KPI cards -->
+    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+        <div class="glass-panel p-5 rounded-2xl border border-line">
+            <div class="flex justify-between text-subtle"><span class="text-[10px] font-semibold uppercase tracking-wider">Accuracy</span><i class="fa-solid fa-bullseye text-brand"></i></div>
+            <h3 class="text-2xl font-bold text-ink mt-2 kpi" id="card-accuracy">—</h3>
+            <p class="text-[10px] text-subtle mt-1">threshold 0.5</p>
+        </div>
+        <div class="glass-panel p-5 rounded-2xl border border-line">
+            <div class="flex justify-between text-subtle"><span class="text-[10px] font-semibold uppercase tracking-wider">ROC AUC</span><i class="fa-solid fa-chart-line text-accent"></i></div>
+            <h3 class="text-2xl font-bold text-ink mt-2 kpi" id="card-auc">—</h3>
+            <p class="text-[10px] text-subtle mt-1">discrimination</p>
+        </div>
+        <div class="glass-panel p-5 rounded-2xl border border-line">
+            <div class="flex justify-between text-subtle"><span class="text-[10px] font-semibold uppercase tracking-wider">ECE</span><i class="fa-solid fa-scale-unbalanced text-warn"></i></div>
+            <h3 class="text-2xl font-bold text-warn mt-2 kpi" id="card-ece">—</h3>
+            <p class="text-[10px] text-subtle mt-1">lower is better</p>
+        </div>
+        <div class="glass-panel p-5 rounded-2xl border border-line">
+            <div class="flex justify-between text-subtle"><span class="text-[10px] font-semibold uppercase tracking-wider">Brier</span><i class="fa-solid fa-ruler text-brand"></i></div>
+            <h3 class="text-2xl font-bold text-ink mt-2 kpi" id="card-brier">—</h3>
+            <p class="text-[10px] text-subtle mt-1">proper score</p>
+        </div>
+        <div class="glass-panel p-5 rounded-2xl border border-line">
+            <div class="flex justify-between text-subtle"><span class="text-[10px] font-semibold uppercase tracking-wider">Rounds</span><i class="fa-solid fa-layer-group text-ink"></i></div>
+            <h3 class="text-2xl font-bold text-ink mt-2 kpi" id="card-rounds">0</h3>
+            <p class="text-[10px] text-subtle mt-1" id="card-samples">—</p>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex flex-wrap gap-2 glass-panel p-2 rounded-2xl border border-line">
+        <button class="tab-btn active px-4 py-2 rounded-xl text-xs font-semibold text-ink" data-tab="performance">Performance</button>
+        <button class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold text-ink" data-tab="calibration">Calibration</button>
+        <button class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold text-ink" data-tab="fairness">Subgroup Fairness</button>
+        <button class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold text-ink" data-tab="explain">Explanations</button>
+        <button class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold text-ink" data-tab="valuation">Client Value</button>
+    </div>
+
+    <!-- ================= PERFORMANCE ================= -->
+    <section class="tab-panel active space-y-6" id="panel-performance">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 glass-panel p-6 rounded-2xl border border-line">
+                <h3 class="text-lg font-bold text-ink mb-1 font-heading">Accuracy vs Calibration Over Rounds</h3>
+                <p class="text-[11px] text-subtle mb-4">Accuracy can look healthy while the probability estimates stay wrong. ECE is plotted on the same 0-100% scale.</p>
+                <div class="h-80"><canvas id="chart-performance"></canvas></div>
+            </div>
+            <div class="space-y-6">
+                <div class="glass-panel p-5 rounded-2xl border border-line">
+                    <h3 class="text-sm font-bold text-ink mb-3 font-heading">Cohort Clients</h3>
+                    <div id="client-list" class="space-y-3"></div>
+                </div>
+                <div class="glass-panel p-5 rounded-2xl border border-line">
+                    <h3 class="text-sm font-bold text-ink mb-3 font-heading">Global Evaluation</h3>
+                    <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                        <div></div><div class="text-accent font-semibold uppercase text-[10px]">Pred ND</div><div class="text-accent font-semibold uppercase text-[10px]">Pred D</div>
+                        <div class="text-accent font-semibold uppercase text-[10px] text-left py-1">Act ND</div>
+                        <div class="bg-muted p-2 rounded-lg border border-line font-mono text-ink" id="cm-00">—</div>
+                        <div class="bg-muted p-2 rounded-lg border border-line font-mono text-subtle" id="cm-01">—</div>
+                        <div class="text-accent font-semibold uppercase text-[10px] text-left py-1">Act D</div>
+                        <div class="bg-muted p-2 rounded-lg border border-line font-mono text-subtle" id="cm-10">—</div>
+                        <div class="bg-muted p-2 rounded-lg border border-line font-mono text-ink" id="cm-11">—</div>
+                    </div>
+                    <div class="mt-3 pt-3 border-t border-line flex justify-between text-[11px] text-subtle">
+                        <span>Recall (diabetic)</span><span class="text-good font-semibold" id="cm-recall">—</span>
+                    </div>
+                    <div class="flex justify-between text-[11px] text-subtle mt-1">
+                        <span>Precision (diabetic)</span><span class="text-good font-semibold" id="cm-precision">—</span>
+                    </div>
+                </div>
+                <div class="glass-panel p-5 rounded-2xl border border-line">
+                    <h3 class="text-sm font-bold text-ink mb-1 font-heading">Federated vs Centralised</h3>
+                    <p class="text-[10px] text-subtle mb-3">Same split and scaler. The pooled model is unregularised and converged, so this gap is an upper bound on what federation costs.</p>
+                    <div class="grid grid-cols-3 gap-2 text-[11px]">
+                        <div></div>
+                        <div class="text-accent font-semibold uppercase text-[9px] text-center">FedAvg</div>
+                        <div class="text-accent font-semibold uppercase text-[9px] text-center">Pooled</div>
+
+                        <div class="text-subtle py-1">Accuracy</div>
+                        <div class="text-center text-ink font-mono" id="cmp-fed-acc">—</div>
+                        <div class="text-center text-ink font-mono" id="cmp-cen-acc">—</div>
+
+                        <div class="text-subtle py-1">AUC</div>
+                        <div class="text-center text-ink font-mono" id="cmp-fed-auc">—</div>
+                        <div class="text-center text-ink font-mono" id="cmp-cen-auc">—</div>
+
+                        <div class="text-subtle py-1">ECE</div>
+                        <div class="text-center text-ink font-mono" id="cmp-fed-ece">—</div>
+                        <div class="text-center text-ink font-mono" id="cmp-cen-ece">—</div>
+                    </div>
+                    <div class="mt-3 pt-3 border-t border-line flex justify-between text-[11px] text-subtle">
+                        <span>Accuracy cost of federation</span><span class="text-warn font-semibold" id="cmp-gap">—</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="glass-panel p-6 rounded-2xl border border-line">
+            <h3 class="text-sm font-bold text-ink mb-3 font-heading">Central Server Log</h3>
+            <div class="console-panel p-4 rounded-xl font-mono text-[11px] h-40 overflow-y-auto" id="server-log"></div>
+        </div>
+    </section>
+
+    <!-- ================= CALIBRATION ================= -->
+    <section class="tab-panel space-y-6" id="panel-calibration">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="glass-panel p-5 rounded-2xl border border-line">
+                <span class="text-[10px] font-semibold uppercase tracking-wider text-subtle">Raw ECE</span>
+                <h3 class="text-2xl font-bold text-warn mt-2 kpi" id="cal-raw-ece">—</h3>
+            </div>
+            <div class="glass-panel p-5 rounded-2xl border border-line">
+                <span class="text-[10px] font-semibold uppercase tracking-wider text-subtle">Best Federated ECE</span>
+                <h3 class="text-2xl font-bold text-good mt-2 kpi" id="cal-best-ece">—</h3>
+            </div>
+            <div class="glass-panel p-5 rounded-2xl border border-line">
+                <span class="text-[10px] font-semibold uppercase tracking-wider text-subtle">ECE Reduction</span>
+                <h3 class="text-2xl font-bold text-ink mt-2 kpi" id="cal-reduction">—</h3>
+            </div>
+            <div class="glass-panel p-5 rounded-2xl border border-line">
+                <span class="text-[10px] font-semibold uppercase tracking-wider text-subtle">Exactness gap</span>
+                <h3 class="text-2xl font-bold text-ink mt-2 kpi" id="cal-exactness">—</h3>
+                <p class="text-[10px] text-subtle mt-1">federated vs centralised binning</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="glass-panel p-6 rounded-2xl border border-line">
+                <h3 class="text-lg font-bold text-ink mb-1 font-heading">Reliability Diagram</h3>
+                <p class="text-[11px] text-subtle mb-4">Points on the diagonal are perfectly calibrated.</p>
+                <div class="h-72"><canvas id="chart-reliability"></canvas></div>
+            </div>
+            <div class="glass-panel p-6 rounded-2xl border border-line">
+                <h3 class="text-lg font-bold text-ink mb-1 font-heading">Calibration Methods</h3>
+                <p class="text-[11px] text-subtle mb-3">Each method is fit on client calibration splits only, then scored on the untouched test set.</p>
+                <div class="overflow-x-auto">
+                    <table class="metric-table w-full" id="cal-table">
+                        <thead><tr><th>Method</th><th>ECE</th><th>Brier</th><th>NLL</th><th>Server sees</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <p class="text-[10px] text-subtle mt-3" id="cal-note"></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= FAIRNESS ================= -->
+    <section class="tab-panel space-y-6" id="panel-fairness">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="glass-panel p-5 rounded-2xl border border-line">
+                <span class="text-[10px] font-semibold uppercase tracking-wider text-subtle">EO gap (before)</span>
+                <h3 class="text-2xl font-bold text-risk mt-2 kpi" id="fair-eo-before">—</h3>
+            </div>
+            <div class="glass-panel p-5 rounded-2xl border border-line">
+                <span class="text-[10px] font-semibold uppercase tracking-wider text-subtle">EO gap (after)</span>
+                <h3 class="text-2xl font-bold text-good mt-2 kpi" id="fair-eo-after">—</h3>
+            </div>
+            <div class="glass-panel p-5 rounded-2xl border border-line">
+                <span class="text-[10px] font-semibold uppercase tracking-wider text-subtle">Accuracy cost</span>
+                <h3 class="text-2xl font-bold text-ink mt-2 kpi" id="fair-cost">—</h3>
+            </div>
+            <div class="glass-panel p-5 rounded-2xl border border-line">
+                <span class="text-[10px] font-semibold uppercase tracking-wider text-subtle">Demographic parity gap</span>
+                <h3 class="text-2xl font-bold text-ink mt-2 kpi" id="fair-dp">—</h3>
+            </div>
+        </div>
+
+        <div class="glass-panel px-4 py-3 rounded-xl border border-line flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px]">
+            <span class="text-subtle">Threshold selection:</span>
+            <span id="fair-tuning-source" class="badge bg-muted text-ink border border-line">—</span>
+            <span class="text-subtle">Tuning-split TPR <span id="fair-tuning-tpr" class="font-mono text-ink">—</span></span>
+            <span class="text-subtle">Test-set TPR <span id="fair-eval-tpr" class="font-mono text-ink">—</span></span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="glass-panel p-6 rounded-2xl border border-line">
+                <h3 class="text-lg font-bold text-ink mb-1 font-heading">True-positive rate by cohort</h3>
+                <p class="text-[11px] text-subtle mb-4">Before and after equalised-odds threshold repair.</p>
+                <div class="h-72"><canvas id="chart-tpr"></canvas></div>
+            </div>
+            <div class="glass-panel p-6 rounded-2xl border border-line">
+                <h3 class="text-lg font-bold text-ink mb-1 font-heading">Fairness / accuracy frontier</h3>
+                <p class="text-[11px] text-subtle mb-4">Sweeping one global threshold shows the trade-off the audit is asking you to make.</p>
+                <div class="h-72"><canvas id="chart-frontier"></canvas></div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="glass-panel p-6 rounded-2xl border border-line">
+                <h3 class="text-sm font-bold text-ink mb-3 font-heading">Baseline audit (threshold 0.5)</h3>
+                <div class="overflow-x-auto">
+                    <table class="metric-table w-full" id="fair-table">
+                        <thead><tr><th>Cohort</th><th>n</th><th>Prevalence</th><th>TPR</th><th>FPR</th><th>PPV</th><th>ECE</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="glass-panel p-6 rounded-2xl border border-line">
+                <h3 class="text-sm font-bold text-ink mb-3 font-heading">After per-cohort thresholds</h3>
+                <div class="overflow-x-auto">
+                    <table class="metric-table w-full" id="fair-repaired-table">
+                        <thead><tr><th>Cohort</th><th>Threshold</th><th>TPR</th><th>FPR</th><th>Pred. rate</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <p class="text-[10px] text-subtle mt-3">
+                    Thresholds are chosen on pooled confusion counts only. The server never sees a single record.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= EXPLANATIONS ================= -->
+    <section class="tab-panel space-y-6" id="panel-explain">
+        <div class="glass-panel p-5 rounded-2xl border border-line">
+            <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-3">
+                <div>
+                    <h3 class="text-sm font-bold text-ink font-heading">Baseline-robustness diagnostic</h3>
+                    <p class="text-[11px] text-subtle mt-1 max-w-3xl">
+                        For each patient, <span class="font-mono text-ink">R</span> is how far the
+                        global-cohort top factor stays ahead of every competitor under the local-cohort
+                        baseline. <span class="font-mono text-ink">R &gt; 0</span> means the top factor
+                        survives the baseline change; <span class="font-mono text-ink">R &lt; 0</span>
+                        means it flips. The flip rate is only the sign of this margin. The
+                        <span class="font-mono text-ink">P(R &gt; 0)</span> column propagates uncertainty in
+                        the local cohort mean, estimated from aggregate <span class="font-mono text-ink">(n, mean, covariance)</span>
+                        statistics.
+                    </p>
+                </div>
+                <span class="badge bg-muted text-ink border border-line shrink-0">audit measurement · not a diagnosis</span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="glass-panel p-5 rounded-2xl border border-line">
+                <span class="text-[10px] font-semibold uppercase tracking-wider text-subtle">Signed top-1 flip rate</span>
+                <h3 class="text-2xl font-bold text-warn mt-2 kpi" id="exp-flip">—</h3>
+                <p class="text-[10px] text-subtle mt-1" id="exp-flip-note">global vs local cohort baseline</p>
+            </div>
+            <div class="glass-panel p-5 rounded-2xl border border-line">
+                <span class="text-[10px] font-semibold uppercase tracking-wider text-subtle">Mean margin R</span>
+                <h3 class="text-2xl font-bold text-ink mt-2 kpi" id="exp-margin">—</h3>
+                <p class="text-[10px] text-subtle mt-1">log-odds lead of the global top factor</p>
+            </div>
+            <div class="glass-panel p-5 rounded-2xl border border-line">
+                <span class="text-[10px] font-semibold uppercase tracking-wider text-subtle">Mean P(R &gt; 0)</span>
+                <h3 class="text-2xl font-bold text-good mt-2 kpi" id="exp-robust">—</h3>
+                <p class="text-[10px] text-subtle mt-1">background-uncertainty probability</p>
+            </div>
+            <div class="glass-panel p-5 rounded-2xl border border-line">
+                <span class="text-[10px] font-semibold uppercase tracking-wider text-subtle">Robust at 95%</span>
+                <h3 class="text-2xl font-bold text-ink mt-2 kpi" id="exp-robust95">—</h3>
+                <p class="text-[10px] text-subtle mt-1">share of patients with P(R &gt; 0) ≥ 0.95</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="glass-panel p-6 rounded-2xl border border-line">
+                <h3 class="text-lg font-bold text-ink mb-1 font-heading">Robustness curve</h3>
+                <p class="text-[11px] text-subtle mb-4">
+                    Share of patients whose margin exceeds each threshold δ. The drop after δ = 0 is
+                    the flip rate; the shape shows how much of the population is only barely stable.
+                </p>
+                <div class="h-72"><canvas id="chart-robustness"></canvas></div>
+            </div>
+            <div class="glass-panel p-6 rounded-2xl border border-line">
+                <h3 class="text-lg font-bold text-ink mb-1 font-heading">Global mean |contribution|</h3>
+                <p class="text-[11px] text-subtle mb-4">Exact linear Shapley values against the global cohort baseline.</p>
+                <div class="h-72"><canvas id="chart-attribution"></canvas></div>
+            </div>
+        </div>
+
+        <div class="glass-panel p-6 rounded-2xl border border-line">
+            <h3 class="text-lg font-bold text-ink mb-1 font-heading">Baseline phase diagram</h3>
+            <p class="text-[11px] text-subtle mb-4 max-w-3xl">
+                The local baseline moves along
+                <span class="font-mono text-ink">b<sub>l</sub>(&alpha;) = b<sub>g</sub> + &alpha;(b<sub>l</sub> &minus; b<sub>g</sub>)</span>.
+                <span class="font-mono text-ink">&alpha; = 0</span> is the global baseline and
+                <span class="font-mono text-ink">&alpha; = 1</span> is the observed local baseline.
+                The flip curve is the share of patients whose leader has changed; the dashed line is the
+                per-patient union bound, which must sit above it because the flip set is a union of
+                half-spaces. The median critical multiplier
+                <span class="font-mono text-ink">&alpha;*</span> is shown below the chart.
+            </p>
+            <div class="h-72"><canvas id="chart-phase"></canvas></div>
+            <p class="text-[10px] text-subtle mt-3" id="exp-phase-note"></p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="glass-panel p-6 rounded-2xl border border-line">
+                <h3 class="text-sm font-bold text-ink mb-1 font-heading">Robustness by cohort</h3>
+                <p class="text-[11px] text-subtle mb-3">
+                    The same model and the same patients, split by the cohort whose baseline is used.
+                </p>
+                <div class="overflow-x-auto">
+                    <table class="metric-table w-full" id="exp-cohort-table">
+                        <thead><tr><th>Cohort</th><th>n</th><th>Flip</th><th>Mean R</th><th>P(R&gt;0)</th><th>Robust@95</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="glass-panel p-6 rounded-2xl border border-line">
+                <h3 class="text-sm font-bold text-ink mb-1 font-heading">Most fragile explanations</h3>
+                <p class="text-[11px] text-subtle mb-3">
+                    Patients whose top factor changed, or whose margin is not distinguishable from zero.
+                </p>
+                <div class="overflow-x-auto">
+                    <table class="metric-table w-full" id="exp-table">
+                        <thead><tr><th>Cohort</th><th>Top (global)</th><th>Top (local)</th><th>R</th><th>P(R&gt;0)</th><th>Status</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= VALUATION ================= -->
+    <section class="tab-panel space-y-6" id="panel-valuation">
+        <div class="glass-panel p-6 rounded-2xl border border-line">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <h3 class="text-lg font-bold text-ink font-heading">Exact Shapley client valuation</h3>
+                    <p class="text-[11px] text-subtle mt-1">
+                        Every non-empty coalition is retrained from scratch (2<sup>3</sup> &minus; 1 = 7 models). Values are
+                        improvement over the untrained model, so a higher number is always better.
+                    </p>
+                </div>
+                <button onclick="loadValuation(true)" class="btn-primary text-white font-semibold px-4 py-2.5 rounded-xl text-xs">
+                    <i class="fa-solid fa-calculator mr-2"></i> Compute valuation
+                </button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="glass-panel p-6 rounded-2xl border border-line">
+                <h3 class="text-sm font-bold text-ink mb-3 font-heading">Shapley value by metric</h3>
+                <div class="h-72"><canvas id="chart-shapley"></canvas></div>
+                <p class="text-[10px] text-subtle mt-2" id="val-rank-note"></p>
+            </div>
+            <div class="glass-panel p-6 rounded-2xl border border-line">
+                <h3 class="text-sm font-bold text-ink mb-3 font-heading">Contribution table</h3>
+                <div class="overflow-x-auto">
+                    <table class="metric-table w-full" id="val-table">
+                        <thead><tr><th>Client</th><th>Cohort</th><th>n</th><th>Accuracy</th><th>AUC</th><th>ECE</th><th>Brier</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <p class="text-[10px] text-subtle mt-3">
+                    ECE is reported for completeness. A client can raise accuracy while lowering calibration quality,
+                    which is precisely the incentive misalignment this table is meant to expose.
+                </p>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+const SUMMARY = {{ summary|tojson }};
+let STATE = null;
+const charts = {};
+
+const COLORS = {
+    brand: '#0f766e', blue: '#0369a1', emerald: '#047857',
+    amber: '#b45309', rose: '#be123c', slate: '#57708a', teal: '#0d9488'
+};
+const GRID = 'rgba(15,43,61,0.08)';
+const TICK = '#57708a';
+
+function pct(value, digits = 2) {
+    if (value === null || value === undefined || Number.isNaN(value)) return '—';
+    return (value * 100).toFixed(digits) + '%';
+}
+function num(value, digits = 3) {
+    if (value === null || value === undefined || Number.isNaN(value)) return '—';
+    return Number(value).toFixed(digits);
+}
+function makeChart(id, config) {
+    const el = document.getElementById(id);
+    if (!el) return null;
+    if (charts[id]) charts[id].destroy();
+    charts[id] = new Chart(el.getContext('2d'), config);
+    return charts[id];
+}
+function baseOptions(extra = {}) {
+    return Object.assign({
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: TICK, font: { size: 10 } } } },
+        scales: {
+            x: { grid: { color: GRID }, ticks: { color: TICK, font: { size: 10 } } },
+            y: { grid: { color: GRID }, ticks: { color: TICK, font: { size: 10 } } }
+        }
+    }, extra);
+}
+
+/* ---------------------------------------------------------------- tabs */
+document.querySelectorAll('.tab-btn').forEach(button => {
+    button.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        button.classList.add('active');
+        document.getElementById('panel-' + button.dataset.tab).classList.add('active');
+        if (button.dataset.tab === 'valuation' && !window.__valuation && STATE) {
+            loadValuation(false);
+        }
+    });
+});
+
+/* -------------------------------------------------------------- state */
+async function loadState() {
+    const response = await fetch('/api/state');
+    if (!response.ok) return;
+    STATE = await response.json();
+    render();
+}
+
+function render() {
+    const summary = STATE.summary;
+    document.getElementById('data-badge').textContent =
+        summary.data_source === 'pima' ? 'PIMA · 768 records' : 'SYNTHETIC FALLBACK';
+    document.getElementById('data-badge').className =
+        'badge ' + (summary.data_source === 'pima'
+            ? 'bg-emerald-50 text-good border border-emerald-200'
+            : 'bg-rose-50 text-risk border border-rose-200');
+    document.getElementById('partition-badge').textContent =
+        summary.partition_mode === 'age' ? 'non-IID · age cohort split' : 'IID shards';
+    const weighting = summary.aggregation_weighting || 'sample';
+    document.getElementById('weighting-badge').textContent =
+        weighting === 'sample' ? 'FedAvg · sample-weighted'
+            : weighting === 'uniform' ? 'FedAvg · uniform'
+            : 'FedAvg · prevalence-weighted';
+    document.getElementById('run-id').textContent = STATE.run_id;
+    document.getElementById('export-link').href = '/api/run/' + STATE.db_run_id + '/rounds.csv';
+    document.getElementById('card-rounds').textContent = STATE.rounds.length;
+    document.getElementById('card-samples').textContent =
+        summary.n_train + ' train / ' + summary.n_test + ' test';
+
+    renderPerformance();
+    renderCalibration();
+    renderFairness();
+    renderExplain();
+}
+
+/* -------------------------------------------------------- performance */
+function renderPerformance() {
+    const rounds = STATE.rounds;
+    const latest = rounds.length ? rounds[rounds.length - 1] : null;
+
+    document.getElementById('card-accuracy').textContent = latest ? pct(latest.metrics.accuracy) : '—';
+    document.getElementById('card-auc').textContent = latest ? num(latest.metrics.auc, 3) : '—';
+    document.getElementById('card-ece').textContent = latest ? pct(latest.metrics.ece) : '—';
+    document.getElementById('card-brier').textContent = latest ? num(latest.metrics.brier, 4) : '—';
+
+    const central = STATE.centralised ? STATE.centralised.metrics : null;
+    if (latest && central) {
+        document.getElementById('cmp-fed-acc').textContent = pct(latest.metrics.accuracy);
+        document.getElementById('cmp-cen-acc').textContent = pct(central.accuracy);
+        document.getElementById('cmp-fed-auc').textContent = num(latest.metrics.auc, 3);
+        document.getElementById('cmp-cen-auc').textContent = num(central.auc, 3);
+        document.getElementById('cmp-fed-ece').textContent = pct(latest.metrics.ece);
+        document.getElementById('cmp-cen-ece').textContent = pct(central.ece);
+        document.getElementById('cmp-gap').textContent =
+            pct(central.accuracy - latest.metrics.accuracy);
+    }
+
+    // client nodes
+    const list = document.getElementById('client-list');
+    list.innerHTML = '';
+    STATE.summary.clients.forEach((client, index) => {
+        const accuracy = latest && latest.local_accuracies ? latest.local_accuracies[index] : null;
+        list.innerHTML += `
+            <div class="p-3 bg-muted rounded-xl border border-line flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <span class="h-2 w-2 rounded-full bg-brand pulse-green"></span>
+                    <div>
+                        <p class="text-[11px] font-semibold text-ink">Client ${client.id} · ${client.cohort}</p>
+                        <p class="text-[9px] text-subtle">${client.n_samples} samples · ${pct(client.prevalence, 0)} prevalence</p>
+                    </div>
+                </div>
+                <span class="text-[11px] text-good font-semibold">${accuracy !== null ? pct(accuracy, 1) : '—'}</span>
+            </div>`;
+    });
+
+    if (latest) {
+        const cm = latest.confusion_matrix;
+        document.getElementById('cm-00').textContent = cm[0][0];
+        document.getElementById('cm-01').textContent = cm[0][1];
+        document.getElementById('cm-10').textContent = cm[1][0];
+        document.getElementById('cm-11').textContent = cm[1][1];
+        document.getElementById('cm-recall').textContent = pct(latest.metrics.recall);
+        document.getElementById('cm-precision').textContent = pct(latest.metrics.precision);
+    }
+
+    // log
+    const log = document.getElementById('server-log');
+    if (!rounds.length) {
+        log.innerHTML = '<span class="text-emerald-200/60">[System] Cold start. No rounds executed yet — press "Trigger FedAvg Round".</span>';
+    } else {
+        log.innerHTML = rounds.map(entry => {
+            const m = entry.metrics;
+            return `[Round ${entry.round}] weights sent to ${STATE.summary.clients.length} clients &middot; ` +
+                `local acc ${entry.local_accuracies.map(v => pct(v, 1)).join(' / ')}<br>` +
+                `&nbsp;&nbsp;&rarr; FedAvg complete &middot; acc ${pct(m.accuracy)} &middot; auc ${num(m.auc, 3)} &middot; ece ${pct(m.ece)}`;
+        }).join('<br>');
+        log.scrollTop = log.scrollHeight;
+    }
+
+    makeChart('chart-performance', {
+        type: 'line',
+        data: {
+            labels: rounds.map(r => r.round),
+            datasets: [
+                {
+                    label: 'Accuracy', data: rounds.map(r => r.metrics.accuracy * 100),
+                    borderColor: COLORS.emerald, backgroundColor: 'rgba(4,120,87,.10)',
+                    fill: true, tension: .35, borderWidth: 2, pointRadius: 3
+                },
+                {
+                    label: 'ROC AUC', data: rounds.map(r => r.metrics.auc * 100),
+                    borderColor: COLORS.blue, tension: .35, borderWidth: 2, pointRadius: 3, fill: false
+                },
+                {
+                    label: 'ECE (lower is better)', data: rounds.map(r => r.metrics.ece * 100),
+                    borderColor: COLORS.amber, borderDash: [5, 3], tension: .35, borderWidth: 2, pointRadius: 3, fill: false
+                }
+            ]
+        },
+        options: baseOptions({
+            scales: {
+                x: { grid: { color: GRID }, ticks: { color: TICK, font: { size: 10 } }, title: { display: true, text: 'Round', color: TICK, font: { size: 10 } } },
+                y: { min: 0, max: 100, grid: { color: GRID }, ticks: { color: TICK, font: { size: 10 }, callback: v => v + '%' } }
+            }
+        })
+    });
+}
+
+/* -------------------------------------------------------- calibration */
+function renderCalibration() {
+    const latest = STATE.latest;
+    if (!latest || !latest.calibration) return;
+    const calibration = latest.calibration;
+    const methods = calibration.methods;
+
+    const raw = methods.raw.ece;
+    const best = methods.federated_binning.ece;
+    document.getElementById('cal-raw-ece').textContent = pct(raw);
+    document.getElementById('cal-best-ece').textContent = pct(best);
+    document.getElementById('cal-reduction').textContent =
+        raw > 0 ? Math.round((1 - best / raw) * 100) + '%' : '—';
+    document.getElementById('cal-exactness').textContent = calibration.exactness_gap.toFixed(6);
+
+    const serverSees = {
+        raw: '—',
+        local_average_temperature: 'one number per client',
+        centralised_temperature: 'pooled logits (oracle)',
+        federated_temperature: 'binned logit means',
+        centralised_binning: 'pooled rows (oracle)',
+        federated_binning: 'integer counts per bin'
+    };
+    const labels = {
+        raw: 'No calibration',
+        local_average_temperature: 'Average local temperatures',
+        centralised_temperature: 'Centralised temperature (oracle)',
+        federated_temperature: 'Federated temperature',
+        centralised_binning: 'Centralised binning (oracle)',
+        federated_binning: 'Federated binning (ours)'
+    };
+
+    const tbody = document.querySelector('#cal-table tbody');
+    tbody.innerHTML = Object.keys(methods).map(key => {
+        const entry = methods[key];
+        const highlight = key === 'federated_binning' ? 'highlight' : '';
+        return `<tr class="${highlight}">
+            <td class="text-ink">${labels[key] || key}</td>
+            <td class="text-ink font-semibold">${pct(entry.ece)}</td>
+            <td class="text-ink">${num(entry.brier, 4)}</td>
+            <td class="text-ink">${num(entry.nll, 4)}</td>
+            <td class="text-subtle text-[11px]">${serverSees[key] || '—'}</td>
+        </tr>`;
+    }).join('');
+
+    document.getElementById('cal-note').textContent =
+        'Federated binning reproduces the centralised oracle exactly (gap ' +
+        calibration.exactness_gap.toFixed(6) + ') while the server only ever sees ' +
+        'per-bin positive and total counts.';
+
+    // reliability diagram
+    const datasets = [
+        {
+            label: 'Perfect calibration',
+            data: [{ x: 0, y: 0 }, { x: 1, y: 1 }],
+            borderColor: 'rgba(87,112,138,.5)', borderDash: [4, 4], borderWidth: 1,
+            pointRadius: 0, fill: false, tension: 0
+        }
+    ];
+    const series = [
+        ['raw', 'Raw', COLORS.amber],
+        ['federated_temperature', 'Federated temperature', COLORS.blue],
+        ['federated_binning', 'Federated binning', COLORS.emerald]
+    ];
+    series.forEach(([key, label, color]) => {
+        const curve = methods[key].reliability;
+        const points = curve.counts
+            .map((count, index) => ({ x: curve.confidence[index], y: curve.accuracy[index], count }))
+            .filter(point => point.count > 0);
+        datasets.push({
+            label, data: points, borderColor: color, backgroundColor: color,
+            borderWidth: 2, pointRadius: 4, tension: .2, fill: false, showLine: true
+        });
+    });
+
+    makeChart('chart-reliability', {
+        type: 'line',
+        data: { datasets },
+        options: baseOptions({
+            scales: {
+                x: { type: 'linear', min: 0, max: 1, title: { display: true, text: 'Predicted probability', color: TICK, font: { size: 10 } }, grid: { color: GRID }, ticks: { color: TICK, font: { size: 10 } } },
+                y: { min: 0, max: 1, title: { display: true, text: 'Observed frequency', color: TICK, font: { size: 10 } }, grid: { color: GRID }, ticks: { color: TICK, font: { size: 10 } } }
+            }
+        })
+    });
+}
+
+/* ------------------------------------------------------------ fairness */
+function renderFairness() {
+    const latest = STATE.latest;
+    if (!latest || !latest.fairness) return;
+    const fairness = latest.fairness;
+    const groups = fairness.group_order;
+
+    document.getElementById('fair-eo-before').textContent = pct(fairness.baseline_gaps.equal_opportunity);
+    document.getElementById('fair-eo-after').textContent = pct(fairness.repaired_gaps.equal_opportunity);
+    document.getElementById('fair-cost').textContent = pct(fairness.cost.delta_accuracy);
+    document.getElementById('fair-dp').textContent = pct(fairness.baseline_gaps.demographic_parity);
+
+    const sourceBadge = document.getElementById('fair-tuning-source');
+    const source = fairness.tuning_source || 'evaluation_set';
+    sourceBadge.textContent = source === 'client_calibration'
+        ? 'client calibration splits'
+        : 'evaluation set (optimistic)';
+    sourceBadge.className = 'badge ' + (source === 'client_calibration'
+        ? 'bg-emerald-50 text-good border border-emerald-200'
+        : 'bg-amber-50 text-warn border border-amber-200');
+    document.getElementById('fair-tuning-tpr').textContent =
+        fairness.tuning_reference_tpr !== undefined ? pct(fairness.tuning_reference_tpr) : '—';
+    document.getElementById('fair-eval-tpr').textContent =
+        fairness.eval_reference_tpr !== undefined ? pct(fairness.eval_reference_tpr) : '—';
+
+    const baselineBody = document.querySelector('#fair-table tbody');
+    baselineBody.innerHTML = groups.map(group => {
+        const row = fairness.baseline[group];
+        return `<tr>
+            <td class="text-ink font-semibold">${group}</td>
+            <td class="text-ink">${row.n}</td>
+            <td class="text-ink">${pct(row.prevalence)}</td>
+            <td class="text-ink">${pct(row.tpr)}</td>
+            <td class="text-ink">${pct(row.fpr)}</td>
+            <td class="text-ink">${pct(row.ppv)}</td>
+            <td class="text-ink">${pct(row.ece)}</td>
+        </tr>`;
+    }).join('');
+
+    const repairedBody = document.querySelector('#fair-repaired-table tbody');
+    repairedBody.innerHTML = groups.map(group => {
+        const row = fairness.repaired[group];
+        const threshold = fairness.repaired_thresholds[group];
+        return `<tr>
+            <td class="text-ink font-semibold">${group}</td>
+            <td class="text-good font-mono">${num(threshold, 2)}</td>
+            <td class="text-ink">${pct(row.tpr)}</td>
+            <td class="text-ink">${pct(row.fpr)}</td>
+            <td class="text-ink">${pct(row.predicted_positive_rate)}</td>
+        </tr>`;
+    }).join('');
+
+    makeChart('chart-tpr', {
+        type: 'bar',
+        data: {
+            labels: groups,
+            datasets: [
+                { label: 'Before repair', data: groups.map(g => fairness.baseline[g].tpr * 100), backgroundColor: 'rgba(190,18,60,.45)', borderColor: COLORS.rose, borderWidth: 1 },
+                { label: 'After repair', data: groups.map(g => fairness.repaired[g].tpr * 100), backgroundColor: 'rgba(4,120,87,.45)', borderColor: COLORS.emerald, borderWidth: 1 }
+            ]
+        },
+        options: baseOptions({
+            scales: {
+                x: { grid: { color: GRID }, ticks: { color: TICK, font: { size: 10 } } },
+                y: { min: 0, max: 100, grid: { color: GRID }, ticks: { color: TICK, font: { size: 10 }, callback: v => v + '%' } }
+            }
+        })
+    });
+
+    const frontier = fairness.frontier;
+    makeChart('chart-frontier', {
+        type: 'line',
+        data: {
+            labels: frontier.map(p => p.threshold.toFixed(2)),
+            datasets: [
+                { label: 'Accuracy', data: frontier.map(p => p.accuracy * 100), borderColor: COLORS.blue, tension: .3, borderWidth: 2, pointRadius: 2, yAxisID: 'y' },
+                { label: 'EO gap', data: frontier.map(p => p.equal_opportunity * 100), borderColor: COLORS.rose, tension: .3, borderWidth: 2, pointRadius: 2, yAxisID: 'y1' }
+            ]
+        },
+        options: baseOptions({
+            interaction: { mode: 'index', intersect: false },
+            scales: {
+                x: { grid: { color: GRID }, ticks: { color: TICK, font: { size: 9 } }, title: { display: true, text: 'Global threshold', color: TICK, font: { size: 10 } } },
+                y: { position: 'left', min: 0, max: 100, grid: { color: GRID }, ticks: { color: TICK, font: { size: 10 }, callback: v => v + '%' }, title: { display: true, text: 'Accuracy', color: TICK, font: { size: 10 } } },
+                y1: { position: 'right', min: 0, max: 100, grid: { drawOnChartArea: false }, ticks: { color: TICK, font: { size: 10 }, callback: v => v + '%' }, title: { display: true, text: 'EO gap', color: TICK, font: { size: 10 } } }
+            }
+        })
+    });
+}
+
+/* ------------------------------------------------------- explanations */
+function renderExplain() {
+    const latest = STATE.latest;
+    if (!latest || !latest.explanation) return;
+    const explanation = latest.explanation;
+    const uncertainty = explanation.background_uncertainty || {};
+
+    const flip = explanation.top1_flip_rate !== undefined
+        ? explanation.top1_flip_rate
+        : (explanation.signed_top1_flip_rate || 0);
+    document.getElementById('exp-flip').textContent = pct(flip);
+    const ciLow = explanation.flip_rate_ci_low;
+    const ciHigh = explanation.flip_rate_ci_high;
+    document.getElementById('exp-flip-note').textContent =
+        (ciLow !== undefined && ciHigh !== undefined)
+            ? '95% bootstrap CI ' + pct(ciLow) + ' – ' + pct(ciHigh)
+            : 'global vs local cohort baseline';
+    document.getElementById('exp-margin').textContent = num(explanation.mean_margin, 3);
+    document.getElementById('exp-robust').textContent = pct(uncertainty.mean_probability_robust);
+    document.getElementById('exp-robust95').textContent = pct(uncertainty.fraction_robust_95);
+
+    const cohortSummary = explanation.cohort_summary || {};
+    const cohortBody = document.querySelector('#exp-cohort-table tbody');
+    const cohorts = Object.keys(cohortSummary);
+    if (!cohorts.length) {
+        cohortBody.innerHTML = '<tr><td colspan="6" class="text-subtle">No cohort summary at this round.</td></tr>';
+    } else {
+        cohortBody.innerHTML = cohorts.map(cohort => {
+            const row = cohortSummary[cohort];
+            return `<tr>
+                <td class="text-ink font-semibold">${cohort}</td>
+                <td class="text-ink">${row.n}</td>
+                <td class="text-warn font-mono">${pct(row.flip_rate)}</td>
+                <td class="text-ink font-mono">${num(row.mean_margin, 3)}</td>
+                <td class="text-good font-mono">${pct(row.mean_probability_robust)}</td>
+                <td class="text-ink font-mono">${pct(row.fraction_robust_95)}</td>
+            </tr>`;
+        }).join('');
+    }
+
+    const attribution = explanation.global_mean_abs;
+    const features = Object.keys(attribution).sort((a, b) => attribution[b] - attribution[a]);
+
+    makeChart('chart-attribution', {
+        type: 'bar',
+        data: {
+            labels: features,
+            datasets: [{
+                label: 'Mean |φ| (log-odds)',
+                data: features.map(f => attribution[f]),
+                backgroundColor: 'rgba(15,118,110,.45)',
+                borderColor: COLORS.brand, borderWidth: 1
+            }]
+        },
+        options: baseOptions({
+            indexAxis: 'y',
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: { color: GRID }, ticks: { color: TICK, font: { size: 10 } } },
+                y: { grid: { color: GRID }, ticks: { color: TICK, font: { size: 10 } } }
+            }
+        })
+    });
+
+    const curve = explanation.robustness_curve;
+    if (curve && curve.thresholds && curve.thresholds.length) {
+        makeChart('chart-robustness', {
+            type: 'line',
+            data: {
+                labels: curve.thresholds.map(t => t.toFixed(2)),
+                datasets: [
+                    {
+                        label: 'Point estimate',
+                        data: curve.point_survival.map(v => v * 100),
+                        borderColor: COLORS.brand,
+                        backgroundColor: 'rgba(15,118,110,.10)',
+                        fill: true, tension: .25, borderWidth: 2, pointRadius: 3
+                    },
+                    {
+                        label: 'Background uncertainty',
+                        data: curve.uncertainty_survival.map(v => v * 100),
+                        borderColor: COLORS.blue,
+                        borderDash: [5, 3], tension: .25, borderWidth: 2, pointRadius: 3, fill: false
+                    }
+                ]
+            },
+            options: baseOptions({
+                scales: {
+                    x: { grid: { color: GRID }, ticks: { color: TICK, font: { size: 10 } }, title: { display: true, text: 'Margin threshold δ', color: TICK, font: { size: 10 } } },
+                    y: { min: 0, max: 100, grid: { color: GRID }, ticks: { color: TICK, font: { size: 10 }, callback: v => v + '%' }, title: { display: true, text: 'Share with R > δ', color: TICK, font: { size: 10 } } }
+                }
+            })
+        });
+    }
+
+    const phase = explanation.phase_diagram;
+    if (phase && phase.alpha_grid && phase.alpha_grid.length) {
+        makeChart('chart-phase', {
+            type: 'line',
+            data: {
+                labels: phase.alpha_grid.map(a => a.toFixed(2)),
+                datasets: [
+                    {
+                        label: 'Flip rate',
+                        data: phase.flip_rate.map(v => v * 100),
+                        borderColor: COLORS.rose,
+                        tension: .2, borderWidth: 2, pointRadius: 2
+                    },
+                    {
+                        label: 'Union bound',
+                        data: phase.union_bound.map(v => v * 100),
+                        borderColor: COLORS.amber,
+                        borderDash: [5, 3], tension: .2, borderWidth: 2, pointRadius: 2
+                    },
+                    {
+                        label: 'Survival P(α* ≥ α)',
+                        data: phase.survival.map(v => v * 100),
+                        borderColor: COLORS.brand,
+                        tension: .2, borderWidth: 2, pointRadius: 2
+                    }
+                ]
+            },
+            options: baseOptions({
+                interaction: { mode: 'index', intersect: false },
+                scales: {
+                    x: { grid: { color: GRID }, ticks: { color: TICK, font: { size: 9 } }, title: { display: true, text: 'Baseline multiplier α', color: TICK, font: { size: 10 } } },
+                    y: { min: 0, max: 100, grid: { color: GRID }, ticks: { color: TICK, font: { size: 10 }, callback: v => v + '%' }, title: { display: true, text: 'Share of patients', color: TICK, font: { size: 10 } } }
+                }
+            })
+        });
+        const critical = phase.critical_alpha || {};
+        document.getElementById('exp-phase-note').textContent =
+            'At α = 1: flip ' + pct(phase.observed_flip_rate) +
+            ', union bound ' + pct(phase.observed_union_bound) +
+            ', mean margin ' + num(phase.observed_mean_margin, 3) +
+            '. Median α* ' + num(critical.median, 3) +
+            '; finite for ' + pct(critical.fraction_finite) + ' of patients.';
+    }
+
+    const tbody = document.querySelector('#exp-table tbody');
+    if (!explanation.examples.length) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-subtle">No fragile explanations at this round.</td></tr>';
+    } else {
+        const statusClass = status =>
+            status === 'stable' ? 'text-good'
+                : status === 'fragile' ? 'text-risk' : 'text-warn';
+        tbody.innerHTML = explanation.examples.map(example => `
+            <tr>
+                <td class="text-ink">${example.age_band}</td>
+                <td class="text-ink">${example.top_global}</td>
+                <td class="${example.top_global === example.top_local ? 'text-ink' : 'text-warn'}">${example.top_local}</td>
+                <td class="text-subtle font-mono">${num(example.margin, 3)}</td>
+                <td class="text-subtle font-mono">${pct(example.probability_robust)}</td>
+                <td class="${statusClass(example.status)} font-semibold">${example.status || '—'}</td>
+            </tr>`).join('');
+    }
+}
+
+/* ---------------------------------------------------------- valuation */
+async function loadValuation(refresh) {
+    const url = '/api/valuation' + (refresh ? '?refresh=1' : '');
+    const response = await fetch(url);
+    if (!response.ok) return;
+    const report = await response.json();
+    window.__valuation = report;
+
+    const tbody = document.querySelector('#val-table tbody');
+    tbody.innerHTML = report.clients.map(client => {
+        const key = 'Client ' + client.id;
+        return `<tr>
+            <td class="text-ink font-semibold">${key}</td>
+            <td class="text-subtle">${client.cohort}</td>
+            <td class="text-ink">${client.n_samples}</td>
+            <td class="text-good">${report.shapley.accuracy[key].toFixed(4)}</td>
+            <td class="text-accent">${report.shapley.auc[key].toFixed(4)}</td>
+            <td class="text-warn">${report.shapley.ece[key].toFixed(4)}</td>
+            <td class="text-brand">${report.shapley.brier[key].toFixed(4)}</td>
+        </tr>`;
+    }).join('');
+
+    const ranks = report.rank_agreement;
+    const lines = Object.keys(ranks).map(key => {
+        const [a, b] = key.split('_vs_');
+        return `${a} vs ${b}: Kendall τ = ${ranks[key].toFixed(2)}`;
+    });
+    document.getElementById('val-rank-note').textContent =
+        'Ranking agreement across metrics — ' + lines.join(' · ') +
+        '. A low or negative τ means the "most valuable cohort" depends on which metric you value.';
+
+    const clients = report.clients.map(c => 'Client ' + c.id);
+    const metrics = ['accuracy', 'auc', 'ece', 'brier'];
+    const colours = { accuracy: COLORS.emerald, auc: COLORS.blue, ece: COLORS.amber, brier: COLORS.teal };
+    makeChart('chart-shapley', {
+        type: 'bar',
+        data: {
+            labels: clients,
+            datasets: metrics.map(metric => ({
+                label: metric.toUpperCase(),
+                data: clients.map(client => report.shapley[metric][client]),
+                backgroundColor: colours[metric] + '88',
+                borderColor: colours[metric],
+                borderWidth: 1
+            }))
+        },
+        options: baseOptions({
+            scales: {
+                x: { grid: { color: GRID }, ticks: { color: TICK, font: { size: 10 } } },
+                y: { grid: { color: GRID }, ticks: { color: TICK, font: { size: 10 } }, title: { display: true, text: 'Improvement over untrained model', color: TICK, font: { size: 10 } } }
+            }
+        })
+    });
+}
+
+/* ------------------------------------------------------------- actions */
+async function runRound() {
+    const button = document.getElementById('btn-simulate');
+    button.disabled = true;
+    button.innerHTML = '<i class="fa-solid fa-arrows-spin mr-2 animate-spin"></i> Aggregating...';
+    try {
+        const response = await fetch('/simulate_round', { method: 'POST' });
+        if (!response.ok) throw new Error('round failed');
+        await loadState();
+    } catch (error) {
+        alert('Failed to simulate round.');
+        console.error(error);
+    } finally {
+        button.disabled = false;
+        button.innerHTML = '<i class="fa-solid fa-arrows-spin mr-2"></i> Trigger FedAvg Round';
+    }
+}
+
+async function resetSimulation() {
+    if (!confirm('Start a cold model (zero weights, no rounds)? The current run stays in the database and remains exportable.')) return;
+    await fetch('/reset_simulation', { method: 'POST' });
+    window.__valuation = null;
+    await loadState();
+}
+
+loadState();
+</script>
+{% endblock %}

@@ -1,0 +1,331 @@
+{% extends "base.html" %}
+
+{% block title %}Patient Diagnostic Form - FedHealth{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="mb-8">
+        <h1 class="text-3xl font-extrabold tracking-tight text-ink font-heading">Clinical Diagnostic Form</h1>
+        <p class="text-sm text-subtle mt-1">
+            Inputs are scored by the current federated model. No record is stored and nothing is
+            transmitted to another node.
+        </p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <!-- Input form -->
+        <div class="lg:col-span-2 glass-panel p-8 rounded-2xl">
+            <form id="predict-form" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-semibold text-subtle uppercase tracking-wider mb-2">Pregnancies</label>
+                        <input type="number" name="Pregnancies" min="0" max="20" value="2" required
+                               class="w-full bg-white border border-line rounded-xl px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15">
+                        <p class="text-[10px] text-subtle mt-1">Number of times pregnant</p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-subtle uppercase tracking-wider mb-2">Glucose (mg/dL)</label>
+                        <input type="number" name="Glucose" min="0" max="300" value="148" required
+                               class="w-full bg-white border border-line rounded-xl px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15">
+                        <p class="text-[10px] text-subtle mt-1">2-hour oral glucose tolerance test</p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-subtle uppercase tracking-wider mb-2">Blood Pressure (mmHg)</label>
+                        <input type="number" name="BloodPressure" min="0" max="150" value="72" required
+                               class="w-full bg-white border border-line rounded-xl px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15">
+                        <p class="text-[10px] text-subtle mt-1">Diastolic blood pressure</p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-subtle uppercase tracking-wider mb-2">Skin Thickness (mm)</label>
+                        <input type="number" name="SkinThickness" min="0" max="100" value="35" required
+                               class="w-full bg-white border border-line rounded-xl px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15">
+                        <p class="text-[10px] text-subtle mt-1">Triceps skin fold thickness</p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-subtle uppercase tracking-wider mb-2">Insulin (&mu;U/mL)</label>
+                        <input type="number" name="Insulin" min="0" max="900" value="169" required
+                               class="w-full bg-white border border-line rounded-xl px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15">
+                        <p class="text-[10px] text-subtle mt-1">2-hour serum insulin</p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-subtle uppercase tracking-wider mb-2">BMI (kg/m&sup2;)</label>
+                        <input type="number" name="BMI" step="0.1" min="0" max="70" value="33.6" required
+                               class="w-full bg-white border border-line rounded-xl px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15">
+                        <p class="text-[10px] text-subtle mt-1">Body mass index</p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-subtle uppercase tracking-wider mb-2">Diabetes Pedigree Function</label>
+                        <input type="number" name="DiabetesPedigreeFunction" step="0.001" min="0.01" max="3.0" value="0.627" required
+                               class="w-full bg-white border border-line rounded-xl px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15">
+                        <p class="text-[10px] text-subtle mt-1">Family-history likelihood score</p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-subtle uppercase tracking-wider mb-2">Age (years)</label>
+                        <input type="number" name="Age" min="1" max="120" value="50" required
+                               class="w-full bg-white border border-line rounded-xl px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15">
+                        <p class="text-[10px] text-subtle mt-1">Patient age in years</p>
+                    </div>
+                </div>
+
+                <div class="pt-2 space-y-4">
+                    <div class="rounded-xl border border-line bg-muted/60 p-4 space-y-3">
+                        <p class="text-xs font-semibold text-ink">Two baselines, two questions</p>
+                        <div class="space-y-2 text-[11px] leading-relaxed text-subtle">
+                            <p>
+                                <span class="font-semibold text-ink">Global cohort</span> is the pooled training
+                                population across every cohort. Explaining against it asks: what makes this
+                                patient different from the whole screened population?
+                            </p>
+                            <p>
+                                <span class="font-semibold text-ink">Local cohort</span> is this patient's own age
+                                band. Explaining against it asks: what makes this patient different from peers of
+                                the same age?
+                            </p>
+                        </div>
+                        <p class="text-[11px] text-subtle">
+                            Neither baseline is more correct. The model is unchanged; only the reference
+                            population moves.
+                        </p>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-subtle uppercase tracking-wider mb-2">Explain against</label>
+                        <div class="flex gap-2">
+                            <label class="flex-1 cursor-pointer">
+                                <input type="radio" name="background" value="global" class="peer sr-only" checked>
+                                <span class="block text-center px-3 py-2 rounded-xl text-xs border border-line text-subtle peer-checked:bg-brand peer-checked:border-brand peer-checked:text-white transition-colors">
+                                    Global cohort
+                                </span>
+                            </label>
+                            <label class="flex-1 cursor-pointer">
+                                <input type="radio" name="background" value="local" class="peer sr-only">
+                                <span class="block text-center px-3 py-2 rounded-xl text-xs border border-line text-subtle peer-checked:bg-accent peer-checked:border-accent peer-checked:text-white transition-colors">
+                                    Local cohort
+                                </span>
+                            </label>
+                        </div>
+                        <p class="text-[10px] text-subtle mt-2">
+                            The same weights produce different explanations depending on which population the
+                            patient is compared against.
+                        </p>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full btn-primary text-white font-semibold py-3.5 rounded-xl text-sm flex items-center justify-center">
+                    <i class="fa-solid fa-calculator mr-2"></i> Compute Diagnostic Prediction
+                </button>
+            </form>
+        </div>
+
+        <!-- Results -->
+        <div class="space-y-6">
+            <div class="glass-panel p-6 rounded-2xl min-h-[340px] flex flex-col items-center justify-center text-center">
+                <div id="result-placeholder" class="space-y-3">
+                    <div class="h-16 w-16 rounded-full bg-muted border border-line flex items-center justify-center text-subtle mx-auto">
+                        <i class="fa-solid fa-heart-pulse text-2xl animate-pulse"></i>
+                    </div>
+                    <h3 class="text-sm font-bold text-ink">Diagnostic output</h3>
+                    <p class="text-[11px] text-subtle max-w-[210px]">Fill in the features and run the analysis.</p>
+                </div>
+
+                <div id="result-display" class="hidden w-full space-y-5">
+                    <div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-subtle">Prediction</span>
+                        <h2 id="outcome-text" class="text-2xl font-black mt-1">—</h2>
+                        <p class="text-[10px] text-subtle mt-1" id="threshold-note"></p>
+                    </div>
+
+                    <div class="relative h-32 w-32 mx-auto flex items-center justify-center">
+                        <svg class="w-full h-full transform -rotate-90">
+                            <circle cx="64" cy="64" r="50" stroke="#d6e3ec" stroke-width="10" fill="transparent" />
+                            <circle id="confidence-circle" cx="64" cy="64" r="50" stroke="#047857" stroke-width="10"
+                                    stroke-dasharray="314" stroke-dashoffset="314" fill="transparent" stroke-linecap="round" />
+                        </svg>
+                        <div class="absolute text-center">
+                            <span id="confidence-val" class="text-xl font-extrabold text-ink">—</span>
+                            <span class="block text-[9px] text-subtle uppercase">P(diabetic)</span>
+                        </div>
+                    </div>
+
+                    <p class="text-[11px] text-subtle leading-relaxed" id="outcome-desc"></p>
+                    <p class="text-[9px] text-subtle" id="background-note"></p>
+                </div>
+            </div>
+
+            <div id="contribution-panel" class="hidden glass-panel p-6 rounded-2xl">
+                <div class="flex items-center justify-between mb-1">
+                    <h3 class="text-xs font-bold text-ink font-heading uppercase tracking-wider">Log-odds contributions</h3>
+                    <span class="text-[9px] text-subtle" id="contrib-units"></span>
+                </div>
+                <p class="text-[10px] text-subtle mb-3">
+                    Exact linear Shapley values. Positive pushes toward diabetes, negative away.
+                </p>
+                <div class="space-y-2.5" id="contrib-list"></div>
+            </div>
+
+            <div id="robustness-panel" class="hidden glass-panel p-6 rounded-2xl">
+                <div class="flex items-center justify-between gap-2 mb-2">
+                    <h3 class="text-xs font-bold text-ink font-heading uppercase tracking-wider">Baseline-robustness check</h3>
+                    <span id="robust-badge" class="badge bg-muted text-ink border border-line">—</span>
+                </div>
+                <p class="text-[10px] text-subtle mb-4" id="robust-text"></p>
+                <div class="grid grid-cols-2 gap-3 text-[11px]">
+                    <div class="bg-muted rounded-xl border border-line p-3">
+                        <span class="block text-[9px] uppercase tracking-wider text-subtle">Top factor · global</span>
+                        <span class="font-semibold text-ink" id="robust-top-global">—</span>
+                    </div>
+                    <div class="bg-muted rounded-xl border border-line p-3">
+                        <span class="block text-[9px] uppercase tracking-wider text-subtle">Top factor · local</span>
+                        <span class="font-semibold text-ink" id="robust-top-local">—</span>
+                    </div>
+                    <div class="bg-muted rounded-xl border border-line p-3">
+                        <span class="block text-[9px] uppercase tracking-wider text-subtle">Margin R</span>
+                        <span class="font-mono font-semibold text-ink" id="robust-margin">—</span>
+                    </div>
+                    <div class="bg-muted rounded-xl border border-line p-3">
+                        <span class="block text-[9px] uppercase tracking-wider text-subtle">P(R &gt; 0)</span>
+                        <span class="font-mono font-semibold text-ink" id="robust-prob">—</span>
+                    </div>
+                </div>
+                <p class="text-[9px] text-subtle mt-3" id="robust-note"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Baseline comparison -->
+    <div id="comparison-panel" class="hidden glass-panel p-6 rounded-2xl mt-8">
+        <h3 class="text-sm font-bold text-ink mb-1 font-heading">Same patient, two baselines</h3>
+        <p class="text-[11px] text-subtle mb-4">
+            One model, two defensible reference populations. If the top risk factor changes identity, the
+            explanation is a property of the cohort as much as of the patient.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <h4 class="text-[10px] font-bold uppercase tracking-wider text-accent mb-2">Global cohort</h4>
+                <div id="compare-global" class="space-y-1.5"></div>
+            </div>
+            <div>
+                <h4 class="text-[10px] font-bold uppercase tracking-wider text-brand mb-2">Local cohort</h4>
+                <div id="compare-local" class="space-y-1.5"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const FEATURE_LABELS = {{ feature_labels|tojson }};
+
+function renderBars(container, contributions, maxAbs) {
+    const entries = Object.entries(contributions).sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]));
+    container.innerHTML = '';
+    entries.forEach(([feature, value]) => {
+        const width = Math.min(Math.abs(value) / (maxAbs || 1), 1) * 100;
+        const positive = value > 0;
+        container.innerHTML += `
+            <div>
+                <div class="flex justify-between text-[10px] text-ink mb-0.5">
+                    <span>${FEATURE_LABELS[feature] || feature}</span>
+                    <span class="${positive ? 'text-risk' : 'text-good'} font-mono">${positive ? '+' : ''}${value.toFixed(3)}</span>
+                </div>
+                <div class="h-1.5 bg-muted rounded-full overflow-hidden">
+                    <div class="h-full ${positive ? 'bg-risk' : 'bg-good'}" style="width:${width}%"></div>
+                </div>
+            </div>`;
+    });
+}
+
+document.getElementById('predict-form').addEventListener('submit', async function (event) {
+    event.preventDefault();
+
+    const formData = new FormData(this);
+    const payload = {};
+    formData.forEach((value, key) => {
+        if (key === 'background') payload[key] = value;
+        else payload[key] = parseFloat(value);
+    });
+    if (!payload.background) payload.background = 'global';
+
+    let result;
+    try {
+        const response = await fetch('/predict_data', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (!response.ok) throw new Error('request failed');
+        result = await response.json();
+    } catch (error) {
+        alert('Prediction failed.');
+        console.error(error);
+        return;
+    }
+
+    document.getElementById('result-placeholder').classList.add('hidden');
+    document.getElementById('result-display').classList.remove('hidden');
+
+    const isDiabetic = result.prediction === 'Diabetic';
+    const outcome = document.getElementById('outcome-text');
+    outcome.textContent = result.prediction;
+    outcome.className = 'text-2xl font-black mt-1 ' + (isDiabetic ? 'text-risk' : 'text-good');
+
+    const circle = document.getElementById('confidence-circle');
+    circle.setAttribute('stroke', isDiabetic ? '#be123c' : '#047857');
+
+    const probability = result.probability_diabetic * 100;
+    document.getElementById('confidence-val').textContent = probability.toFixed(1) + '%';
+    const circumference = 2 * Math.PI * 50;
+    circle.style.strokeDashoffset = circumference - (probability / 100) * circumference;
+
+    document.getElementById('threshold-note').textContent =
+        'Decision threshold ' + result.threshold.toFixed(2) +
+        ' · patient cohort ' + result.age_band;
+    document.getElementById('outcome-desc').textContent = isDiabetic
+        ? 'Model output exceeds the decision threshold. Recommend confirmatory testing and clinical review; this is a screening aid, not a diagnosis.'
+        : 'Model output is below the decision threshold. Routine follow-up is appropriate; a negative screen does not rule out disease.';
+    document.getElementById('background-note').textContent =
+        'Explained against: ' + result.background_used;
+
+    const robustness = result.robustness;
+    if (robustness) {
+        document.getElementById('robustness-panel').classList.remove('hidden');
+        const badge = document.getElementById('robust-badge');
+        const stable = robustness.status === 'stable';
+        const fragile = robustness.status === 'fragile';
+        badge.textContent = stable ? 'Stable' : fragile ? 'Fragile' : 'Inconclusive';
+        badge.className = 'badge ' + (stable
+            ? 'bg-emerald-50 text-good border border-emerald-200'
+            : fragile
+                ? 'bg-rose-50 text-risk border border-rose-200'
+                : 'bg-amber-50 text-warn border border-amber-200');
+        document.getElementById('robust-text').textContent = robustness.changed
+            ? 'The top factor changes when the same model is explained against this patient\'s local cohort instead of the global cohort.'
+            : 'The top factor is the same under both baselines. The margin below says how much room there is before it would flip.';
+        document.getElementById('robust-top-global').textContent =
+            FEATURE_LABELS[robustness.top_global] || robustness.top_global;
+        document.getElementById('robust-top-local').textContent =
+            FEATURE_LABELS[robustness.top_local] || robustness.top_local;
+        document.getElementById('robust-margin').textContent =
+            (robustness.margin > 0 ? '+' : '') + robustness.margin.toFixed(3);
+        document.getElementById('robust-prob').textContent =
+            (robustness.probability_robust * 100).toFixed(1) + '%';
+        document.getElementById('robust-note').textContent =
+            'P(R > 0) is the probability that this top factor survives re-estimating the local cohort mean at the observed cohort size (n = ' +
+            (robustness.local_background_n ?? '—') + '). This measures explanation stability, not clinical risk.';
+    }
+
+    document.getElementById('contribution-panel').classList.remove('hidden');
+    document.getElementById('contrib-units').textContent = 'log-odds';
+    const values = Object.values(result.contributions);
+    const maxAbs = Math.max(...values.map(v => Math.abs(v)), 0.0001);
+    renderBars(document.getElementById('contrib-list'), result.contributions, maxAbs);
+
+    document.getElementById('comparison-panel').classList.remove('hidden');
+    const globalValues = Object.values(result.contributions_global);
+    const localValues = Object.values(result.contributions_local);
+    const compareMax = Math.max(...globalValues.concat(localValues).map(v => Math.abs(v)), 0.0001);
+    renderBars(document.getElementById('compare-global'), result.contributions_global, compareMax);
+    renderBars(document.getElementById('compare-local'), result.contributions_local, compareMax);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Federated Health{% endblock %}</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        page: '#f4f8fb',
+                        surface: '#ffffff',
+                        muted: '#eef4f8',
+                        ink: '#0f2b3d',
+                        subtle: '#57708a',
+                        line: '#d6e3ec',
+                        brand: '#0f766e',
+                        accent: '#0369a1',
+                        risk: '#be123c',
+                        good: '#047857',
+                        warn: '#b45309',
+                    },
+                    fontFamily: {
+                        heading: ['Outfit', 'sans-serif'],
+                        body: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body class="bg-page text-ink font-body min-h-screen flex flex-col justify-between">
+    <!-- Header / Navbar -->
+    <header class="border-b border-line bg-white/90 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <a href="{{ url_for('landing') }}" class="flex items-center space-x-3">
+                    <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-brand to-accent flex items-center justify-center shadow-sm">
+                        <i class="fa-solid fa-shield-halved text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="text-xl font-extrabold tracking-tight text-ink font-heading">FedHealth</span>
+                        <span class="hidden sm:inline text-[11px] block text-subtle">Privacy-Preserving Diagnostic System</span>
+                    </div>
+                </a>
+
+                <!-- Navigation Links -->
+                <nav class="hidden md:flex space-x-6 text-sm font-medium items-center">
+                    <a href="{{ url_for('landing') }}" class="text-subtle hover:text-brand transition-colors duration-200">
+                        <i class="fa-solid fa-house mr-1"></i> Home
+                    </a>
+                    {% if session.get('user') %}
+                        <a href="{{ url_for('dashboard') }}" class="text-subtle hover:text-brand transition-colors duration-200">
+                            <i class="fa-solid fa-chart-line mr-1"></i> Dashboard
+                        </a>
+                        <a href="{{ url_for('predict_page') }}" class="text-subtle hover:text-brand transition-colors duration-200">
+                            <i class="fa-solid fa-stethoscope mr-1"></i> Diagnostic Form
+                        </a>
+                    {% endif %}
+                </nav>
+
+                <!-- Auth Actions -->
+                <div class="flex items-center space-x-3">
+                    {% if session.get('user') %}
+                        <div class="hidden sm:flex items-center space-x-2 bg-muted px-3 py-1.5 rounded-lg border border-line">
+                            <i class="fa-solid fa-user-doctor text-brand"></i>
+                            <span class="text-xs text-ink font-semibold">Dr. {{ session['user']['name'] }}</span>
+                        </div>
+                        <a href="{{ url_for('logout') }}" class="text-xs bg-white hover:bg-rose-50 text-subtle hover:text-risk border border-line hover:border-rose-200 px-3 py-1.5 rounded-lg transition-all duration-200">
+                            <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="text-sm font-semibold text-subtle hover:text-brand transition-colors duration-200">Login</a>
+                        <a href="{{ url_for('signup') }}" class="text-sm font-semibold bg-brand hover:bg-teal-800 text-white px-4 py-2 rounded-xl transition-all duration-200 shadow-sm">Sign Up</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-line bg-white py-8 text-center text-xs text-subtle">
+        <div class="max-w-7xl mx-auto px-4">
+            <p class="mb-2">Federated Learning for Early Detection of Diabetes &middot; Calibration, Subgroup Fairness and Federated Explanations</p>
+            <p>&copy; 2026 FedHealth Diagnostic System. Records stay local; only model weights and aggregate sufficient statistics are exchanged.</p>
+        </div>
+    </footer>
+</body>
+</html>

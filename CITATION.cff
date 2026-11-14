@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this software or its results, please cite this repository."
+title: "Beyond Accuracy in Federated Diabetes Screening"
+abstract: >-
+  A measurement study of calibration, subgroup fairness, explanation robustness,
+  and client valuation in a federated diabetes-screening model.
+authors:
+  - name: "FedHealth contributors"
+year: 2026
+version: "1.0.0"
+license: MIT
+type: software
+keywords:
+  - federated learning
+  - calibration
+  - fairness
+  - explainability
+  - diabetes screening

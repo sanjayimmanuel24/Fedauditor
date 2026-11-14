@@ -1,0 +1,42 @@
+# Environments
+venv/
+.venv/
+env/
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+
+# Python caches and build output
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
+
+# Runtime state
+users.db
+*.db
+*.sqlite3
+instance/
+_smoke_*/
+*.log
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+
+# Local / excluded media
+Demo.mp4
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
