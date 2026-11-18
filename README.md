@@ -1,155 +1,190 @@
-# Beyond Accuracy in Federated Diabetes Screening
+# FedAuditor
 
-**A measurement study of calibration, subgroup fairness, and explanation robustness.**
+**An AI agent that audits a federated clinical model without ever seeing patient data.**
 
-A federated learning system for diabetes risk screening that treats **calibration, subgroup
-fairness, explanation stability, and client valuation** as first-class outputs rather than
-afterthoughts.
+In federated learning, hospitals or regions train one shared model without sharing their records.
+That protects privacy, but it also means nobody can look at the data to check whether a site is
+faulty. FedAuditor gives an LLM agent a small set of audit tools that return only noisy,
+privacy-budgeted summary statistics. The agent screens the federation, finds faulty sites, names
+the fault and when it started, and writes a report. Every number in that report must point to a
+logged tool result, and an automatic fact-checker verifies it.
 
-The base model is deliberately simple: L2-regularised logistic regression trained with
-federated averaging over three simulated age-cohort clients. The contribution is not the model.
-It is the measurement layer that shows what a respectable accuracy number hides.
+To measure this we built **FedFault**: 8 planted fault types, each at 3 severities over 5 seeds,
+on a federation built from the CDC BRFSS 2023 diabetes survey, with each of the 52 US states
+and territories as one client.
 
-The explanation layer reports a **continuous baseline-robustness diagnostic**. The flip rate is
-still reported, but only as the sign of a margin; the margin itself, its uncertainty, and its
-sampling reliability are the measurement.
+| Auditor (125 test scenarios, logistic regression) | Precision | Recall | Fault type correct | Claims verified | Cost |
+|---|---|---|---|---|---|
+| Rule baseline (same tools and budget) | 0.99 | 0.88 | 0.87 | 100% | free |
+| Claude Haiku 5.5, prompt v5 | 0.97 | 0.89 | 0.91 | 99.9% | US$1.16 total |
 
-## What this project measures
+The agent is much better at subgroup bias (finds 100% of affected sites at medium severity vs 60%
+for the rules). Pooled AUC, the usual monitoring number, hides 7 of the 8 faults.
 
-- **Federated calibration without a server dataset.** Fixed-edge histogram binning is exactly
-  reproducible from per-bin integer counts.
-- **Subgroup fairness from confusion counts only.** Equalised-odds repair works from integer
-  counts and reports the accuracy cost.
-- **Cohort-relative explanations.** For a linear model the Shapley value is closed form; the
-  interesting variable is the background cohort. The project measures how far the top factor
-  survives a change of baseline.
-- **Client value depends on the metric.** With three clients, exact Shapley values are tractable
-  for every subset.
+This project builds on **FedHealth**, a federated diabetes-screening system with calibration,
+fairness and explanation measurements. Its original README is in
+[`docs/FEDHEALTH_README.md`](docs/FEDHEALTH_README.md), and its measurement modules are reused as the
+agent's tools.
 
-Every claim below is implemented in code and covered by the experiment harness. Full methods and
-results are in [`docs/METHODS.md`](docs/METHODS.md) and [`docs/RESULTS.md`](docs/RESULTS.md).
+---
 
-## Headline result
+## Setup
 
-Five seeds × fifteen rounds × two partitioning regimes, with 95% confidence intervals:
+### 1. Requirements
 
-| Metric | Age-cohort split (non-IID) | Random shards (IID) |
-|---|---|---|
-| Accuracy | 0.762 ± 0.044 | 0.768 ± 0.051 |
-| Signed top-1 flip rate | **22.6% ± 5.0** | **4.9% ± 2.3** |
-| Mean `P(R > 0)` | **0.775 ± 0.043** | **0.925 ± 0.013** |
-| Median critical multiplier `α*` | **2.36 ± 0.73** | **20.62 ± 15.95** |
+- **Python 3.12** (3.10 or newer should work)
+- **Git**
+- About **1 GB** of free disk space (Python packages + BRFSS data)
+- Optional: **LaTeX** (MiKTeX or TeX Live) to rebuild the paper PDF
+- Optional: an **Anthropic API key**, only to run *new* LLM audits (all saved audits are included)
 
-The two regimes are almost indistinguishable on accuracy, but they separate on explanation
-stability. Accuracy, calibration, and the aggregate fairness gap do not see the difference that
-matters.
+### 2. Get the code
 
-## Quickstart
+```bash
+git clone https://github.com/sanjayimmanuel24/Fedauditor.git
+cd Fedauditor
+```
+
+### 3. Create a virtual environment and install packages
+
+Windows (PowerShell):
 
 ```powershell
 python -m venv venv
-./venv/Scripts/Activate.ps1
+.\venv\Scripts\Activate.ps1
 pip install -r requirements.txt
+```
 
-Copy-Item .env.example .env
-python -c "import secrets; print(secrets.token_hex(32))"
-# paste the value into .env as FEDHEALTH_SECRET_KEY
+macOS / Linux:
 
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+If PowerShell refuses to run `Activate.ps1`, run
+`Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once, or skip activation and call
+`.\venv\Scripts\python.exe` directly in the commands below.
+
+### 4. Create your `.env` file
+
+```powershell
+Copy-Item .env.example .env          # Windows
+```
+
+```bash
+cp .env.example .env                 # macOS / Linux
+```
+
+Then put a random value in `FEDHEALTH_SECRET_KEY` (generate one with
+`python -c "import secrets; print(secrets.token_hex(32))"`). If you want to run new paid LLM
+audits, also uncomment `ANTHROPIC_API_KEY` and add your key. **Never commit `.env`**; it is
+already in `.gitignore`.
+
+### 5. Download the BRFSS data (once)
+
+```bash
+python -m fedauditor.prepare_brfss --year 2023
+```
+
+This downloads the CDC's public BRFSS 2023 file (about 100 MB) and writes a recoded cache to
+`data/brfss/` (not stored in git). It is needed for the walkthrough and for re-running the
+federation, faults and audits. The web app, the tests and the paper work without it.
+
+### 6. Create the demo login and start the app
+
+```bash
 python seed_demo.py
 python app.py
 ```
 
-Open <http://127.0.0.1:5000/> and log in with `demo@fedhealth.local` / `demo12345`.
+Open <http://127.0.0.1:5000> and log in with **demo@fedhealth.local / demo12345**.
 
-Full installation, environment, experiment, and troubleshooting instructions are in
-[`docs/SETUP.md`](docs/SETUP.md).
+- **FedAuditor** (top menu, or <http://127.0.0.1:5000/fedauditor>): pick any saved audit; every
+  claim in the report is a link to the exact logged tool output it cites.
+- **Dashboard**: the original FedHealth measurement dashboard (PIMA data).
 
-## Reproduce the results
+### 7. Check that everything works
 
-```powershell
-python experiments.py --seeds 5 --rounds 15 --out results
-python experiments.py --dataset uci_early --seeds 5 --rounds 15 --skip-weighting --out results_second
-python paper_assets.py --results results --external results_second --latex
+```bash
+python -m unittest discover -s tests
 ```
 
-The saved outputs are in [`results/`](results/) and [`results_second/`](results_second/). Every
-cell in the paper tables is read from `summary.json`; nothing is typed by hand.
+All 78 tests should pass (about 30 seconds, no data download or API key needed).
 
-Run the measurement tests:
+---
 
-```powershell
-./venv/Scripts/python.exe -m unittest discover -s tests -v
+## Running the project
+
+All commands run from the repository root with the virtual environment active.
+
+| What | Command | Cost / time |
+|---|---|---|
+| Live demo of the whole pipeline (data, model, fault, tools, audit, fact-check) | `python -m fedauditor.walkthrough` | free, ~1 min |
+| Clean federated baseline (LR, XGBoost, MLP) | `python -m fedauditor.run_baseline --dataset brfss` | free, a few min |
+| FedFault benchmark (375 federated runs) | `python -m fedauditor.run_fedfault --dataset brfss --models lr mlp xgb --workers 4` | free, long |
+| Rule-baseline audits on the grid | `python -m fedauditor.run_audit_grid --agents rules --models lr` | free |
+| One LLM audit | `python -m fedauditor.run_audit --fault poisoning --severity low --llm claude-haiku-5-5` | **paid** (~1 cent with Haiku) |
+| Compare auditors | `python -m fedauditor.compare_agents --model lr --labels rules claude-haiku-5-5 claude-haiku-5-5-p5 --conf 0 0.51` | free |
+| Paper tables and figures | `python -m fedauditor.make_figures` | free |
+
+Runners are resumable: finished scenarios are skipped. Saved outputs are already in
+`results/fedauditor/`, so you only need to re-run something if you change the code.
+
+### Rebuild the paper
+
+```bash
+cd paper
+pdflatex fedauditor
+bibtex fedauditor
+pdflatex fedauditor
+pdflatex fedauditor
 ```
 
-## Project structure
+Run `python -m fedauditor.make_figures` first if the results changed; the paper reads its tables
+from `results/fedauditor/figures/`.
 
-```text
-.
-├── app.py                     Flask routes, per-user RunSession, JSON serialisation
-├── config.py                  paths, datasets, model and simulation settings
-├── data_loader.py             dataset registry, loading, imputation, age-band partition
-├── federated_scaler.py        federated mean/variance from additive statistics
-├── federated_engine.py        FedAvg loop and per-round audits
-├── federated_calibration.py   exact federated histogram binning
-├── federated_fairness.py      subgroup counts and equalised-odds repair
-├── federated_explain.py       linear Shapley, robustness margin, background uncertainty
-├── federated_theory.py        half-space geometry and phase sensitivity
-├── federated_metrics.py       accuracy, AUC, Brier, NLL, ECE, reliability, bootstrap CI
-├── client_valuation.py        exact Shapley over client coalitions
-├── experiment_store.py        SQLite persistence and CSV export
-├── experiments.py             multi-seed experiment harness
-├── paper_assets.py            summary.json -> Markdown/LaTeX tables
-├── seed_demo.py               create a known demo login
-├── data/                      public datasets and provenance notes
-├── docs/                      setup, methods, results, limitations, paper notes
-├── notebooks/                 exploratory notebook and legacy artifacts
-├── results/                   primary experiment outputs
-├── results_second/            external-validation outputs
-├── static/                    CSS
-├── templates/                 Flask templates and dashboard
-└── tests/                     unit tests for explanations and theory
+---
+
+## What is in the repository
+
+```
+fedauditor/             FedAuditor package
+  brfss.py, data.py       BRFSS download and recoding; per-state train/calibration/test splits
+  federation.py, models.py  Flower FedAvg loop; logistic regression, MLP, XGBoost
+  faults.py               FedFault: plants faults and records the ground truth
+  audit_env.py, tools.py  8 privacy-budgeted audit tools, Laplace noise, privacy accountant
+  agent.py, baseline.py   Claude LLM auditor and rule-based auditor
+  openai_agent.py         Same auditor for open models (Ollama / vLLM)
+  report.py               Report format, fact-checker and scoring
+  run_*.py, compare_agents.py, make_figures.py, walkthrough.py   command-line entry points
+app.py, templates/      Flask web app, including the FedAuditor report page
+tests/                  Unit tests (78)
+results/fedauditor/     Benchmark runs, all saved audits, comparison tables, figures
+paper/                  6-page IEEE conference paper (LaTeX source + PDF)
+docs/walkthrough/       Step-by-step project walkthrough (PDF)
+docs/presentation/      Guide-review slides (PPTX)
+notebooks/              Kaggle notebook for running open models (Qwen)
+data/                   PIMA and UCI datasets; BRFSS cache goes in data/brfss/ (not in git)
 ```
 
-## Documentation
+## Troubleshooting
 
-| Document | Contents |
-|---|---|
-| [`docs/SETUP.md`](docs/SETUP.md) | Install, `.env`, demo login, run, experiments, tests, troubleshooting |
-| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Module map, request flow, persistence, dashboard, privacy boundary |
-| [`docs/METHODS.md`](docs/METHODS.md) | Federated calibration, scaler, fairness, explanations, theory, valuation |
-| [`docs/RESULTS.md`](docs/RESULTS.md) | Main results, weighting ablation, external validation |
-| [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) | What must not be claimed, and why |
-| [`docs/DATA.md`](docs/DATA.md) | Dataset provenance, licensing, preprocessing, what leaves a client |
-| [`docs/OVERVIEW.md`](docs/OVERVIEW.md) | Full claims table and long-form project overview |
-| [`docs/CHANGELOG.md`](docs/CHANGELOG.md) | What changed from the original tutorial version |
-| [`docs/PAPER_GUIDE.md`](docs/PAPER_GUIDE.md) | Conference framing, venue plan, figure/table plan |
-| [`docs/PAPER_PROMPT.md`](docs/PAPER_PROMPT.md) | Strict prompt for drafting the paper from saved results |
-| [`docs/PROFESSOR_BRIEF.md`](docs/PROFESSOR_BRIEF.md) | One-page supervision briefing |
-| [`CONTRIBUTING.md`](CONTRIBUTING.md) | Local development, tests, style, PR checklist |
-| [`data/README.md`](data/README.md) | Dataset details and citations |
-| [`results/README.md`](results/README.md) | Primary output file index |
-| [`results_second/README.md`](results_second/README.md) | External-validation output index |
-| [`notebooks/README.md`](notebooks/README.md) | Exploratory notebook and legacy artifacts |
+- **`ModuleNotFoundError`**: the virtual environment is not active, or `pip install -r
+  requirements.txt` did not finish. Activate it and install again.
+- **Login fails on a new machine**: the user database is not in git. Run `python seed_demo.py`.
+- **Port 5000 is busy**: set `PORT=5001` in `.env` and open that port instead.
+- **BRFSS download fails**: download `LLCP2023XPT.zip` from the CDC BRFSS 2023 page, unzip it and
+  run `python -m fedauditor.prepare_brfss --year 2023 --xpt path/to/LLCP2023.XPT`.
+- **`latexmk` complains about Perl** (MiKTeX): use the `pdflatex` / `bibtex` sequence above.
 
-## Limitations
+## Working on two machines
 
-Read [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) before quoting any number. The short version:
+Run `git pull` before you start and `git push` when you finish. Keep your `.env` file on each
+machine separately; it is never pushed.
 
-- No differential privacy, secure aggregation, or encryption. Records are not centralised;
-  privacy is not guaranteed.
-- Fairness thresholds are selected on small, distribution-shifted calibration splits.
-- The centralised baseline is not compute-matched to FedAvg.
-- The explanation diagnostic measures baseline stability, not correctness.
-- External validation uses a different instrument, not a second PIMA split.
-- PIMA is a single-population, all-female cohort. Age-cohort results are not demographic
-  fairness claims.
-- The model is linear. Exact Shapley and exact count-based calibration are properties of this
-  model class.
-- Screening output is not a diagnosis.
+## Licence
 
-## License and citation
-
-Code is released under the [MIT License](LICENSE). The datasets are public UCI research datasets;
-see [`docs/DATA.md`](docs/DATA.md) for provenance and citation guidance.
-
-If you use this work, see [`CITATION.cff`](CITATION.cff).
+See [`LICENSE`](LICENSE). The BRFSS data is public and comes from the US Centers for Disease
+Control and Prevention.
