@@ -1,0 +1,10 @@
+Fault,LR L,LR M,LR H,MLP H,XGB H
+Label noise,0.000,0.000,0.000,-0.001,-0.001
+Drift,0.000,0.000,-0.001,0.000,0.000
+Poisoning,0.000,0.000,-0.184,-0.207,-0.049
+Free-rider,0.000,0.000,0.000,-0.001,0.000
+Prevalence shift,0.000,0.000,0.000,0.000,0.000
+Subgroup bias,0.000,0.000,-0.001,-0.001,0.000
+Missing-data artefact,0.000,0.000,0.000,0.000,0.000
+Expl. instability,0.000,0.000,0.000,0.000,-0.001
+"\textit{Clean, seed range}",,,0.008,0.005,0.008

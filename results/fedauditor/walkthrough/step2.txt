@@ -1,0 +1,5 @@
+=== Step 2: Clean federated model ===
+FedAvg, logistic regression, 20 rounds, 52 clients
+Training time    : 6.1 s
+Pooled test AUC  : 0.821   ECE: 0.016
+Per-state AUC    : 0.769 - 0.865

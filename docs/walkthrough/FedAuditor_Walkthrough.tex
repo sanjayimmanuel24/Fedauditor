@@ -1,0 +1,275 @@
+% FedAuditor project walkthrough for the guide. Build in this folder:
+%   pdflatex FedAuditor_Walkthrough ; pdflatex FedAuditor_Walkthrough
+% Console outputs come from `python -m fedauditor.walkthrough` (results/fedauditor/walkthrough/),
+% tables from `python -m fedauditor.make_figures` (results/fedauditor/figures/).
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage[table]{xcolor}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{fancyvrb}
+\usepackage{float}
+\usepackage{placeins}
+\usepackage{enumitem}
+\usepackage{tcolorbox}
+\usepackage[hidelinks]{hyperref}
+\setlist{itemsep=2pt,topsep=4pt}
+\setlength{\parskip}{4pt}
+\setlength{\parindent}{0pt}
+
+\newcommand{\res}{../../results/fedauditor}
+\newcommand{\out}[1]{\begin{tcolorbox}[colback=gray!5,colframe=gray!40,boxrule=0.4pt,
+  left=4pt,right=4pt,top=2pt,bottom=2pt,title={\footnotesize Console output: \texttt{#1}},
+  coltitle=black,colbacktitle=gray!15,fonttitle=\footnotesize]
+  \VerbatimInput[fontsize=\scriptsize]{\res/walkthrough/#1}\end{tcolorbox}}
+\newcommand{\shot}[2]{\begin{figure}[H]\centering
+  \includegraphics[width=0.88\textwidth]{img/#1}\caption{#2}\end{figure}}
+
+\title{\textbf{FedAuditor}\\[2pt]\large From FedHealth to a privacy-budgeted, fact-checked LLM
+auditor for federated clinical models\\[4pt]\normalsize Project walkthrough: every step and its output}
+\date{November 2026}
+\author{}
+
+\begin{document}
+\maketitle
+\vspace{-1.5em}
+
+\begin{tcolorbox}[colback=blue!3,colframe=blue!40,title=Summary]
+\textbf{Problem.} In federated learning the coordinator never sees patient data, so it cannot tell
+when one hospital or region has a fault (wrong labels, broken exports, an under-diagnosed subgroup,
+a malicious update). Pooled accuracy does not show these faults.
+
+\textbf{What we built.} An LLM agent that audits a federated model using only noisy, privacy-budgeted
+aggregate tools. It never sees a patient record, and every number in its report is checked against
+the tool log by a fact-checker. To test it we built \textbf{FedFault}, a benchmark with 8 planted
+fault types $\times$ 3 severities $\times$ 5 seeds, on real CDC BRFSS data with 52 US states as clients.
+
+\textbf{Result.} Over 125 test scenarios, Claude Haiku~5.5 finds the faulty clients with precision 0.97
+and recall 0.89, names the fault in 91\% of scenarios, and 2{,}262 of its 2{,}264 claims are verified;
+the whole evaluation cost US\$1.16. A tuned rule baseline scores 0.99 / 0.88 / 87\%. The agent is
+much better at subgroup bias. A 6-page IEEE conference paper and a dashboard page are ready.
+\end{tcolorbox}
+
+\tableofcontents
+\newpage
+
+% =================================================================================================
+\section{Starting point: FedHealth}
+
+The original project (FedHealth) trained a logistic regression with FedAvg over \textbf{3 simulated
+age-cohort clients} on the PIMA dataset (768 records), with a Flask dashboard and a measurement layer
+(calibration, subgroup fairness, explanation stability, client Shapley values). The guide's feedback
+was that it was ``very basic''. We kept all of it and built on top of it: the measurement modules
+became the agent's tools.
+
+\shot{0_original_dashboard.jpg}{The original FedHealth dashboard: PIMA, 768 records, 3 age-cohort clients.}
+
+\textbf{What changed}, in five phases:
+\begin{center}\small
+\begin{tabular}{lll}
+\toprule
+Phase & Work & Main output \\
+\midrule
+1 & Real data and federation & BRFSS 2023, 52 state clients, LR/MLP/XGBoost \\
+2 & FedFault benchmark & 8 faults $\times$ 3 severities $\times$ 5 seeds + clean runs, ground truth \\
+3 & Agent, tools, fact-checker & 8 noisy budgeted tools, Claude agent, claim checker \\
+4 & Experiments & 125 audits per auditor, rule baseline, prompt ablation, open models \\
+5 & Paper and dashboard & 6-page IEEE paper, FedAuditor page in the Flask app \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+All outputs in Sections 2--5 below were produced by running the project's own scripts; the
+console boxes are copied unedited from \texttt{python -m fedauditor.walkthrough}, which re-runs the
+whole pipeline live (free, no API calls).
+
+% =================================================================================================
+\section{Phase 1: real data and a real federation}
+
+We replaced PIMA (768 rows, 3 artificial clients) with the CDC Behavioral Risk Factor Surveillance
+System 2023: about 433{,}000 survey respondents, recoded to a diabetes outcome with 17 risk factors.
+Each US state or territory is one client, so the federation is naturally non-identical and very
+unbalanced. Missing-value imputation and feature scaling are computed in a federated way.
+
+\out{step1.txt}
+
+The federation runs with the Flower framework for 20 rounds of FedAvg. Three model families are
+supported: logistic regression (LR), a small neural network (MLP) and XGBoost (tree bagging).
+
+\out{step2.txt}
+
+\begin{center}\small
+\begin{tabular}{lccc}
+\toprule
+Model & Federated AUC & Central AUC (pooled data) & Per-state AUC \\
+\midrule
+Logistic regression & 0.821 & 0.821 & 0.76--0.87 \\
+XGBoost & 0.826 & 0.826 & \\
+MLP & 0.816 & 0.828 (still rising) & \\
+\bottomrule
+\end{tabular}
+\end{center}
+Federated training matches central training, so the federation itself is sound before any fault is
+planted.
+
+% =================================================================================================
+\section{Phase 2: the FedFault benchmark}
+
+To measure an auditor we need faults with a known answer. Each scenario plants one fault in 3 clients
+(about 5\% of the federation), chosen among the larger clients and kept the same at every severity.
+
+\begin{center}\small
+\begin{tabular}{p{3.6cm}p{8.6cm}c}
+\toprule
+Fault & What is planted & Low / Med / High \\
+\midrule
+Label noise & fraction of labels flipped & 0.1 / 0.2 / 0.3 \\
+Drift & from mid-training, top-3 risk features shift by $k$ SD & 0.5 / 1 / 2 \\
+Poisoning & update replaced by $-k$ times itself & 1 / 3 / 10 \\
+Free-rider & fraction of rounds the client sends back the global model & 0.3 / 0.6 / 1.0 \\
+Prevalence shift & only $1/k$ of negatives kept & 2 / 4 / 8 \\
+Subgroup bias & fraction of positives in one subgroup recorded as negative & 0.3 / 0.6 / 0.9 \\
+Missing-data artefact & fraction of rows with two features exported as a sentinel code & 0.1 / 0.25 / 0.5 \\
+Explanation instability & noise of $k\times$ the update norm added to every upload & 1 / 3 / 10 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Seed 10 is used only for development; seeds 20--24 are the test set: 120 faulty + 5 clean = 125
+scenarios per model, run for LR, MLP and XGBoost (375 federations).
+
+\out{step3.txt}
+
+The key observation, over all 375 runs: \textbf{pooled AUC hides almost every fault} (Table~\ref{tab:pooled}).
+Only high-severity poisoning is visible. Everything else changes AUC by at most 0.001, less than the
+0.008 that AUC varies between clean runs with different seeds. This is why an auditor is needed.
+
+\input{\res/figures/pooled_auc.tex}
+
+% =================================================================================================
+\section{Phase 3: privacy-budgeted tools, the agent and the fact-checker}
+
+\textbf{Tools.} The auditor can never read records. It calls 8 tools that compute statistics at each
+client and release only noisy aggregates:
+\begin{itemize}
+\item \texttt{federation\_overview} (free): clients, sizes, features, sensitive attributes;
+\item \texttt{global\_performance}, \texttt{client\_performance}: AUC, calibration, prevalence per client;
+\item \texttt{client\_updates}: how large each client's update is and whether it points the same way as the others;
+\item \texttt{feature\_summary}, \texttt{subgroup\_outcomes}, \texttt{drift\_by\_round}, \texttt{attribution\_churn}.
+\end{itemize}
+Each paid call adds Laplace noise of scale $c\,m/(n\varepsilon)$ and spends $\varepsilon$ from a budget of
+20 per audit. Because noise grows as clients get smaller, every table carries \emph{noise-adjusted}
+flags, so that small states are not flagged just for being noisy.
+
+\out{step4.txt}
+
+\textbf{Agent.} A Claude model runs a tool-use loop: it screens all clients, drills into suspicious ones,
+and submits a JSON report. Each finding names a client, fault type, onset round and confidence, and
+lists \emph{claims}: (tool call id, metric, value, client/round/feature/group).
+
+\textbf{Fact-checker.} Every claim is looked up in the tool log; it is accepted only if the cited call
+has a row with the same keys and a value within $0.005 + 2\%$. \textbf{Rule baseline.} A non-LLM
+auditor with the same tools, budget and report format (fixed plan + thresholds), so we can see what
+the LLM adds. Below, the rule auditor audits the poisoning scenario from Step 3, end to end:
+
+\out{step5.txt}
+
+The first live LLM audit (Claude Opus~5.5, same scenario) also flagged MD, MI and MT as poisoning
+from round 1: precision, recall and type accuracy 1.0, 7/7 claims verified, 15 tool calls, about
+US\$0.31.
+
+% =================================================================================================
+\section{Phase 4: experiments}
+
+We audited all 125 LR test scenarios with the rule baseline and with Claude Haiku~5.5 (two prompt
+versions), scoring every report against the ground truth.
+
+\out{step6.txt}
+
+\input{\res/figures/main_table.tex}
+
+\input{\res/figures/recall_heatmap.tex}
+\input{\res/figures/type_confusion.tex}
+\input{\res/figures/behaviour.tex}
+\input{\res/figures/rules_models.tex}
+\FloatBarrier
+
+\textbf{Findings.}
+\begin{itemize}
+\item The agent and the rules find faulty clients equally well (recall 0.89 vs 0.88); the agent
+  names the fault better (0.91 vs 0.87) and dates it better (0.24 vs 0.35 rounds).
+\item \textbf{Subgroup bias}: the agent finds every affected client at medium severity; the rules find 60\%
+  (Table~\ref{tab:recall}).
+\item The agent is weaker on the faintest drift and free-riding. Nobody detects the lowest severity of
+  subgroup bias or explanation instability: the signal is below the privacy noise.
+\item \textbf{Prompt v5} added one rule (``check local AUC before calling poisoning''): label noise
+  mis-typed as poisoning dropped from 12/15 scenarios to 0/15, and type accuracy rose 0.79 $\to$ 0.91
+  (Table~\ref{tab:confusion}).
+\item Both agent false alarms are Guam, the smallest client, at confidence exactly 0.5.
+\item The fact-checker rejected 9 claims (prompt v4) and 2 (v5); two v4 claims were genuinely wrong numbers
+  (O/E 7.38 claimed vs 1.81 logged). Cost: under one cent per audit.
+\end{itemize}
+
+
+\textbf{Open-weight models} (Qwen3 8B and 30B, run free on Kaggle/locally with the same tools and prompt)
+failed for model reasons: the 8B model fixed on the smallest state and never screened; the 30B
+thinking model took 16--29 minutes per audit and read noise as faults; the 30B instruct model caught
+poisoning but over-flagged weak signals and mis-cited numbers, which the fact-checker caught. This is
+reported in the paper as a finding.
+
+% =================================================================================================
+\section{Phase 5: dashboard and paper}
+
+\textbf{Dashboard.} A new \emph{FedAuditor} page in the Flask app shows any saved audit. Every claim is a
+link; clicking it opens the tool call it cites and highlights the exact logged row.
+
+\shot{1_report_top.jpg}{FedAuditor page: planted fault, flagged clients, type, claims verified (25/25), privacy budget, and the agent's summary.}
+\shot{2_claims.jpg}{One finding with its claims. Each claim shows the claimed value, the logged value, the cited call and the check result.}
+\shot{3_cited_row.jpg}{After clicking claim \texttt{c6}: the cited \texttt{subgroup\_outcomes} call opens and the row for MA is highlighted (O/E ratio 0.0, $z_\text{noise}=-8.98$).}
+\shot{4_figures.jpg}{Benchmark results shown on the same page: recall heatmap and fault-type confusion.}
+
+\textbf{Paper.} A 6-page IEEE conference paper (\texttt{paper/fedauditor.pdf}): introduction, related work
+(29 references, including the four closest papers FedAgentBench, Agentic-FL, FL-MAESTRO and
+ModelAuditor, none of which audits a federated model), problem setting, FedFault, method, experiments,
+discussion, limitations. All its tables are generated by a script and checked against the saved results.
+
+% =================================================================================================
+\section{How to reproduce}
+
+All commands run from \texttt{Final-Year/} with the project's virtual environment:
+\begin{center}\footnotesize
+\begin{tabular}{ll}
+\toprule
+Step & Command \\
+\midrule
+Download and recode BRFSS & \texttt{python -m fedauditor.prepare\_brfss -{}-year 2023} \\
+Clean baseline & \texttt{python -m fedauditor.run\_baseline -{}-dataset brfss} \\
+FedFault grid (375 runs) & \texttt{python -m fedauditor.run\_fedfault -{}-models lr mlp xgb} \\
+One LLM audit (paid) & \texttt{python -m fedauditor.run\_audit -{}-fault poisoning -{}-severity low} \\
+Audit grid & \texttt{python -m fedauditor.run\_audit\_grid -{}-agents rules claude} \\
+Compare auditors & \texttt{python -m fedauditor.compare\_agents -{}-model lr} \\
+Tables and figures & \texttt{python -m fedauditor.make\_figures} \\
+This walkthrough (free) & \texttt{python -m fedauditor.walkthrough} \\
+Web app & \texttt{python app.py} $\to$ \url{http://127.0.0.1:5000/fedauditor} \\
+Tests & \texttt{python -m unittest discover -s tests} (78 tests, all pass) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Limitations and next steps}
+\begin{itemize}
+\item The privacy budget is a calibrated accounting device, not a formal differential-privacy proof
+  for every statistic (exact for means and rates, heuristic for AUC and update statistics).
+\item LLM audits were run on LR only (API budget); the rule baseline covers LR, MLP and XGBoost.
+\item One dataset; five clean runs, so false-alarm rates are coarse.
+\item The fact-checker checks numbers, not wording: in one report the agent called the \texttt{Sex}$=1$
+  group ``women'' although 1 means men.
+\item Next: formal privacy mechanism, LLM audits on MLP/XGBoost, a second dataset (eICU) for the
+  journal version, and checking qualitative claims.
+\end{itemize}
+
+\end{document}

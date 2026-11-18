@@ -40,3 +40,17 @@ Demo.mp4
 Thumbs.db
 .vscode/
 .idea/
+
+# BRFSS raw downloads and cache (public CDC data, rebuilt by fedauditor.prepare_brfss)
+data/brfss/
+
+# FedAuditor Kaggle bundle (contains BRFSS data)
+results/kaggle/
+
+# LaTeX build leftovers (sources and the final PDFs are kept)
+*.aux
+*.bbl
+*.blg
+*.out
+*.toc
+*.synctex.gz

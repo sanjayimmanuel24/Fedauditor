@@ -1,0 +1,4 @@
+Model,Prec.,Rec.,Type,Onset,FAR
+Logistic regression,0.99,0.88,0.87,0.35,0/5
+MLP,0.99,0.89,0.87,0.37,0/5
+XGBoost,1.00,0.84,0.82,0.53,0/5

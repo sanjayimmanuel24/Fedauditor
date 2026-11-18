@@ -1,0 +1,14 @@
+=== Step 4: Privacy-budgeted audit tools ===
+c1 federation_overview (free): 52 clients, 20 rounds, model lr, budget left 20.0
+
+c2 client_updates (epsilon 3, budget left 17.0): noisy update statistics per client; only outliers
+                   with |z|>3 carry flags
+  client | rounds | median_norm_ratio | min_norm_ratio | mean_cos | min_cos | flags
+  GU | 20 | 0.7605 | 0.2953 | 0.1878 | -0.1077 | median_norm_ratio z=+3.2
+  MD | 20 | 1.341 | 1.145 | -0.6456 | -0.9824 | mean_cos z=-8.9; min_cos z=-6.5
+  MI | 20 | 1.119 | 0.9368 | -0.6949 | -0.992 | mean_cos z=-9.2; min_cos z=-6.5
+  MT | 20 | 0.9751 | 0.8304 | -0.5056 | -0.9838 | mean_cos z=-7.8; min_cos z=-6.5
+  (52 clients in the table, 4 flagged)
+
+c3 client_updates (epsilon 50) -> refused: privacy budget exhausted: 17.0 left, 50.0 requested
+Budget spent 3 of 20; every call is logged as c1, c2, ...

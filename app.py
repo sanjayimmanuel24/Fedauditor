@@ -9,7 +9,9 @@ from flask import (
     jsonify,
     redirect,
     render_template,
+    abort,
     request,
+    send_from_directory,
     session,
     url_for,
 )
@@ -360,6 +362,39 @@ def export_rounds(run_db_id: int):
             "Content-Disposition": f"attachment; filename=fedhealth_rounds_{run_db_id}.csv"
         },
     )
+
+
+# ---------------------------------------------------------------------------
+# FedAuditor: audit report with each claim linked to the tool call it cites
+# ---------------------------------------------------------------------------
+@app.route("/fedauditor")
+def fedauditor_page():
+    if _require_login():
+        return redirect(url_for("login"))
+    from fedauditor.audit_view import DEFAULT_AUDIT, list_audits, load_view
+
+    audits = list_audits()
+    name = request.args.get("audit") or (DEFAULT_AUDIT if DEFAULT_AUDIT in audits else
+                                        (audits[0] if audits else ""))
+    try:
+        view = load_view(name)
+    except KeyError:
+        if request.args.get("audit"):
+            abort(404)
+        view = None
+    figs = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results", "fedauditor", "figures")
+    figures = [f for f in ("recall_heatmap.svg", "type_confusion.svg") if os.path.exists(os.path.join(figs, f))]
+    return render_template("fedauditor.html", audits=audits, view=view, figures=figures)
+
+
+@app.route("/fedauditor/figures/<path:name>")
+def fedauditor_figure(name: str):
+    if _require_login():
+        return redirect(url_for("login"))
+    if name not in ("recall_heatmap.svg", "type_confusion.svg"):
+        abort(404)
+    figs = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results", "fedauditor", "figures")
+    return send_from_directory(figs, name, mimetype="image/svg+xml")
 
 
 if __name__ == "__main__":

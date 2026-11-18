@@ -1,0 +1,16 @@
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\caption{Rule baseline on the three model families (125 evaluation scenarios each, thresholds tuned on LR development runs only).}
+\label{tab:models}
+\begin{tabular}{lrrrrr}
+\toprule
+Model & Prec. & Rec. & Type & Onset & FAR \\
+\midrule
+Logistic regression & 0.99 & 0.88 & 0.87 & 0.35 & 0/5 \\
+MLP & 0.99 & 0.89 & 0.87 & 0.37 & 0/5 \\
+XGBoost & 1.00 & 0.84 & 0.82 & 0.53 & 0/5 \\
+\bottomrule
+\end{tabular}
+\end{table}

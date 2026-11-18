@@ -1,0 +1,6 @@
+=== Step 3: Plant a fault (FedFault benchmark) ===
+Scenario         : brfss-lr-fedavg-r20-poisoning-low-s20
+Planted fault    : poisoning (low): update replaced by -1 x itself
+Faulty clients   : MD, MI, MT from round 1
+Pooled AUC       : clean 0.8209 -> faulty 0.8210  (change +0.0001)
+=> The pooled number hides the fault; an auditor has to look per client.

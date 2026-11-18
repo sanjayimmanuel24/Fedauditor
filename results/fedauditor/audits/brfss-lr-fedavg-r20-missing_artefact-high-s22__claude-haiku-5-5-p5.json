@@ -1,0 +1,3684 @@
+{
+ "scenario": {
+  "fault": "missing_artefact",
+  "severity": "high",
+  "seed": 22,
+  "dataset": "brfss",
+  "model": "lr",
+  "rounds": 20,
+  "strategy": "fedavg",
+  "n_affected": null,
+  "id": "brfss-lr-fedavg-r20-missing_artefact-high-s22",
+  "level": 0.5
+ },
+ "truth": {
+  "fault": "missing_artefact",
+  "severity": "high",
+  "level": 0.5,
+  "clients": [
+   "MT",
+   "NJ",
+   "SC"
+  ],
+  "onset_round": 1,
+  "details": {
+   "MT": {
+    "row_fraction": 0.5,
+    "features": [
+     {
+      "feature": "BMI",
+      "index": 2,
+      "sentinel": 0.0,
+      "sentinel_scaled": -4.393760621100484
+     },
+     {
+      "feature": "PhysHlth",
+      "index": 11,
+      "sentinel": 99.0,
+      "sentinel_scaled": 10.979454971603925
+     }
+    ]
+   },
+   "NJ": {
+    "row_fraction": 0.5,
+    "features": [
+     {
+      "feature": "BMI",
+      "index": 2,
+      "sentinel": 0.0,
+      "sentinel_scaled": -4.393760621100484
+     },
+     {
+      "feature": "PhysHlth",
+      "index": 11,
+      "sentinel": 99.0,
+      "sentinel_scaled": 10.979454971603925
+     }
+    ]
+   },
+   "SC": {
+    "row_fraction": 0.5,
+    "features": [
+     {
+      "feature": "BMI",
+      "index": 2,
+      "sentinel": 0.0,
+      "sentinel_scaled": -4.393760621100484
+     },
+     {
+      "feature": "PhysHlth",
+      "index": 11,
+      "sentinel": 99.0,
+      "sentinel_scaled": 10.979454971603925
+     }
+    ]
+   }
+  }
+ },
+ "agent": "ClaudeAuditor",
+ "stop": "submitted",
+ "turns": 5,
+ "usage": {
+  "input": 12,
+  "output": 12163,
+  "cache_read": 54512,
+  "cache_write": 18796
+ },
+ "report_errors": [],
+ "seconds": 59.1,
+ "budget": {
+  "total": 20.0,
+  "spent": 19.5
+ },
+ "report": {
+  "findings": [
+   {
+    "client": "SC",
+    "fault_type": "missing_artefact",
+    "onset_round": 1,
+    "confidence": 0.85,
+    "rationale": "BMI has a cluster of zeros: the 1st percentile is about 0 and the mean is about 15 (median client mean 28.4, median p01 18). The same pattern is present at round 1, so the fault starts from the first round. PhysHlth has a 99th percentile near 73 and mean near 38 (median p99 about 30), consistent with sentinel-coded missing values. The local model under-predicts (CITL -0.075, z -4.4) and calibration is poor (ECE z +5.3). Subgroup O/E is high in both sex groups. Its updates have the lowest mean cosine in the federation (0.073), which is consistent with training on corrupted features.",
+    "claims": [
+     {
+      "call_id": "c5",
+      "client": "SC",
+      "feature": "BMI",
+      "metric": "mean",
+      "value": 20.39
+     },
+     {
+      "call_id": "c5",
+      "client": "SC",
+      "feature": "BMI",
+      "metric": "p01",
+      "value": 3.379
+     },
+     {
+      "call_id": "c5",
+      "client": "SC",
+      "feature": "BMI",
+      "metric": "z_noise",
+      "value": -9.334
+     },
+     {
+      "call_id": "c10",
+      "client": "SC",
+      "feature": "BMI",
+      "metric": "p01",
+      "value": 0.002636
+     },
+     {
+      "call_id": "c10",
+      "client": "SC",
+      "feature": "BMI",
+      "metric": "mean",
+      "value": 15.03
+     },
+     {
+      "call_id": "c11",
+      "client": "SC",
+      "feature": "BMI",
+      "metric": "p01",
+      "value": -0.06697,
+      "round": 1
+     },
+     {
+      "call_id": "c11",
+      "client": "SC",
+      "feature": "BMI",
+      "metric": "mean",
+      "value": 15.05,
+      "round": 1
+     },
+     {
+      "call_id": "c5",
+      "client": "SC",
+      "feature": "PhysHlth",
+      "metric": "p99",
+      "value": 70.73
+     },
+     {
+      "call_id": "c5",
+      "client": "SC",
+      "feature": "PhysHlth",
+      "metric": "z_noise",
+      "value": 20.73
+     },
+     {
+      "call_id": "c10",
+      "client": "SC",
+      "feature": "PhysHlth",
+      "metric": "mean",
+      "value": 37.75
+     },
+     {
+      "call_id": "c3",
+      "client": "SC",
+      "metric": "citl",
+      "value": -0.07528
+     },
+     {
+      "call_id": "c3",
+      "client": "SC",
+      "metric": "ece",
+      "value": 0.08858
+     },
+     {
+      "call_id": "c2",
+      "client": "SC",
+      "metric": "mean_cos",
+      "value": 0.07304
+     }
+    ]
+   },
+   {
+    "client": "NJ",
+    "fault_type": "missing_artefact",
+    "onset_round": 1,
+    "confidence": 0.85,
+    "rationale": "BMI has a cluster of zeros: p01 is about 0 and the mean is about 13.3 to 13.9 (median p01 18). This is present at round 1 as well. PhysHlth has a 99th percentile near 73 and mean near 40, consistent with sentinel-coded missing values. The local model under-predicts (CITL -0.048) and the Sex=1 subgroup has O/E 1.67. Its update cosine is low (mean 0.175, min -0.51).",
+    "claims": [
+     {
+      "call_id": "c5",
+      "client": "NJ",
+      "feature": "BMI",
+      "metric": "mean",
+      "value": 13.31
+     },
+     {
+      "call_id": "c5",
+      "client": "NJ",
+      "feature": "BMI",
+      "metric": "p01",
+      "value": 0.9711
+     },
+     {
+      "call_id": "c5",
+      "client": "NJ",
+      "feature": "BMI",
+      "metric": "z_noise",
+      "value": -10.41
+     },
+     {
+      "call_id": "c10",
+      "client": "NJ",
+      "feature": "BMI",
+      "metric": "p01",
+      "value": 0.1425
+     },
+     {
+      "call_id": "c10",
+      "client": "NJ",
+      "feature": "BMI",
+      "metric": "mean",
+      "value": 13.93
+     },
+     {
+      "call_id": "c11",
+      "client": "NJ",
+      "feature": "BMI",
+      "metric": "p01",
+      "value": -0.01419,
+      "round": 1
+     },
+     {
+      "call_id": "c11",
+      "client": "NJ",
+      "feature": "BMI",
+      "metric": "mean",
+      "value": 13.88,
+      "round": 1
+     },
+     {
+      "call_id": "c5",
+      "client": "NJ",
+      "feature": "PhysHlth",
+      "metric": "p99",
+      "value": 73.24
+     },
+     {
+      "call_id": "c5",
+      "client": "NJ",
+      "feature": "PhysHlth",
+      "metric": "z_noise",
+      "value": 20.99
+     },
+     {
+      "call_id": "c10",
+      "client": "NJ",
+      "feature": "PhysHlth",
+      "metric": "mean",
+      "value": 39.86
+     },
+     {
+      "call_id": "c3",
+      "client": "NJ",
+      "metric": "citl",
+      "value": -0.04771
+     },
+     {
+      "call_id": "c2",
+      "client": "NJ",
+      "metric": "mean_cos",
+      "value": 0.1752
+     },
+     {
+      "call_id": "c6",
+      "client": "NJ",
+      "group": "1.0",
+      "metric": "oe_ratio",
+      "value": 1.665
+     }
+    ]
+   },
+   {
+    "client": "MT",
+    "fault_type": "missing_artefact",
+    "onset_round": 1,
+    "confidence": 0.85,
+    "rationale": "BMI has a cluster of zeros: p01 is about 0 and the mean is about 13.7 (median p01 18). This is present at round 1 as well. PhysHlth has a 99th percentile near 73 and mean near 40, consistent with sentinel-coded missing values. The local model under-predicts (CITL -0.039) and the Sex=1 subgroup has O/E 1.60. Its update cosine is low (mean 0.064, min -0.61).",
+    "claims": [
+     {
+      "call_id": "c5",
+      "client": "MT",
+      "feature": "BMI",
+      "metric": "p01",
+      "value": -1.265
+     },
+     {
+      "call_id": "c5",
+      "client": "MT",
+      "feature": "BMI",
+      "metric": "z_noise",
+      "value": -11.23
+     },
+     {
+      "call_id": "c5",
+      "client": "MT",
+      "feature": "BMI",
+      "metric": "mean",
+      "value": 15.62
+     },
+     {
+      "call_id": "c10",
+      "client": "MT",
+      "feature": "BMI",
+      "metric": "p01",
+      "value": 0.1762
+     },
+     {
+      "call_id": "c10",
+      "client": "MT",
+      "feature": "BMI",
+      "metric": "mean",
+      "value": 13.66
+     },
+     {
+      "call_id": "c11",
+      "client": "MT",
+      "feature": "BMI",
+      "metric": "p01",
+      "value": 0.05131,
+      "round": 1
+     },
+     {
+      "call_id": "c11",
+      "client": "MT",
+      "feature": "BMI",
+      "metric": "mean",
+      "value": 13.67,
+      "round": 1
+     },
+     {
+      "call_id": "c5",
+      "client": "MT",
+      "feature": "PhysHlth",
+      "metric": "p99",
+      "value": 73.32
+     },
+     {
+      "call_id": "c5",
+      "client": "MT",
+      "feature": "PhysHlth",
+      "metric": "z_noise",
+      "value": 19.96
+     },
+     {
+      "call_id": "c10",
+      "client": "MT",
+      "feature": "PhysHlth",
+      "metric": "mean",
+      "value": 40.02
+     },
+     {
+      "call_id": "c3",
+      "client": "MT",
+      "metric": "citl",
+      "value": -0.0392
+     },
+     {
+      "call_id": "c2",
+      "client": "MT",
+      "metric": "mean_cos",
+      "value": 0.0642
+     },
+     {
+      "call_id": "c6",
+      "client": "MT",
+      "group": "1.0",
+      "metric": "oe_ratio",
+      "value": 1.602
+     }
+    ]
+   }
+  ],
+  "summary": "Screened all 52 clients with the aggregate tools (updates, local performance, drift, feature tails, subgroup outcomes for Sex/AgeGroup/Income, attribution churn), then confirmed suspects with narrower queries. Three clients (SC, NJ, MT) show the same missing-value artefact: BMI has a mass of near-zero values (mean about 14-15 versus a federation median of 28.4, p01 about 0 versus 18), and PhysHlth has a 99th percentile near 73 (median about 30). The artefact is present at round 1, so onset is 1. All three also under-predict risk (negative CITL) and have the lowest update cosines in the federation, which fits training on corrupted features. Other weak leads were not reported: DC drift (z=+3.9), GU CITL (z=-3.4 on n=237), and scattered AgeGroup/Income subgroup outliers for CT, PR, WY, TX and NH (noise-level z_noise of 3.3 to 3.8). No updates were flagged for poisoning, free-riding or instability. Budget spent: 19.5 of 20.The audit is submitted. Three clients (SC, NJ, MT) show a missing-value artefact from round 1; nothing else in the federation met the evidence bar.\n\n**Findings**\n- **SC, NJ, MT \u2013 missing_artefact, onset round 1 (confidence 0.85 each).** BMI has a mass of near-zero values: the 1st percentile is about 0 and the mean is about 14\u201315, against a federation median of 28.4 and a p01 of 18. PhysHlth has a 99th percentile near 73 and a mean near 40, against a median p99 of about 30. This looks like sentinel-coded missing values. The pattern is still there at round 1, so the onset is round 1. All three also under-predict risk (negative CITL), and their update cosines are the lowest in the federation, which fits training on corrupted features. SC additionally shows poor calibration (ECE z=+5.3) and the highest subgroup O/E ratios.\n\n**Not reported**\n- DC drift (z=+3.9) is below the threshold.\n- GU's CITL (z=\u22123.4) is on only 237 records.\n- The scattered AgeGroup and Income subgroup outliers (CT, PR, WY, TX, NH) have noise-level z-scores of 3.3\u20133.8 and do not fit a consistent subgroup-bias pattern.\n- No client was flagged on update norm or cosine, so I found no poisoning, free-riding or explanation-instability evidence.\n\nBudget spent: 19.5 of 20.\n\n"
+ },
+ "log": [
+  {
+   "id": "c1",
+   "tool": "federation_overview",
+   "args": {},
+   "ok": true,
+   "result": {
+    "call_id": "c1",
+    "tool": "federation_overview",
+    "epsilon_spent": 0.0,
+    "budget_left": 20.0,
+    "model": "lr",
+    "strategy": "fedavg",
+    "rounds": 20,
+    "n_clients": 52,
+    "clients": {
+     "columns": [
+      "client",
+      "n_train"
+     ],
+     "rows": [
+      [
+       "AK",
+       2274
+      ],
+      [
+       "AL",
+       1794
+      ],
+      [
+       "AR",
+       2085
+      ],
+      [
+       "AZ",
+       4881
+      ],
+      [
+       "CA",
+       4407
+      ],
+      [
+       "CO",
+       3618
+      ],
+      [
+       "CT",
+       3581
+      ],
+      [
+       "DC",
+       1334
+      ],
+      [
+       "DE",
+       1687
+      ],
+      [
+       "FL",
+       5033
+      ],
+      [
+       "GA",
+       3111
+      ],
+      [
+       "GU",
+       708
+      ],
+      [
+       "HI",
+       3658
+      ],
+      [
+       "IA",
+       4029
+      ],
+      [
+       "ID",
+       2712
+      ],
+      [
+       "IL",
+       2434
+      ],
+      [
+       "IN",
+       4251
+      ],
+      [
+       "KS",
+       4182
+      ],
+      [
+       "LA",
+       2110
+      ],
+      [
+       "MA",
+       3597
+      ],
+      [
+       "MD",
+       6683
+      ],
+      [
+       "ME",
+       4974
+      ],
+      [
+       "MI",
+       3936
+      ],
+      [
+       "MN",
+       6309
+      ],
+      [
+       "MO",
+       2837
+      ],
+      [
+       "MS",
+       1652
+      ],
+      [
+       "MT",
+       3169
+      ],
+      [
+       "NC",
+       1622
+      ],
+      [
+       "ND",
+       2292
+      ],
+      [
+       "NE",
+       5883
+      ],
+      [
+       "NH",
+       2778
+      ],
+      [
+       "NJ",
+       3472
+      ],
+      [
+       "NM",
+       1433
+      ],
+      [
+       "NV",
+       1062
+      ],
+      [
+       "NY",
+       6573
+      ],
+      [
+       "OH",
+       5359
+      ],
+      [
+       "OK",
+       2670
+      ],
+      [
+       "OR",
+       2557
+      ],
+      [
+       "PR",
+       2057
+      ],
+      [
+       "RI",
+       2239
+      ],
+      [
+       "SC",
+       3798
+      ],
+      [
+       "SD",
+       2433
+      ],
+      [
+       "TN",
+       2244
+      ],
+      [
+       "TX",
+       3852
+      ],
+      [
+       "UT",
+       4364
+      ],
+      [
+       "VA",
+       2802
+      ],
+      [
+       "VI",
+       810
+      ],
+      [
+       "VT",
+       3170
+      ],
+      [
+       "WA",
+       11181
+      ],
+      [
+       "WI",
+       4974
+      ],
+      [
+       "WV",
+       1887
+      ],
+      [
+       "WY",
+       1859
+      ]
+     ]
+    },
+    "features": [
+     "HighBP",
+     "HighChol",
+     "BMI",
+     "Smoker",
+     "Stroke",
+     "HeartDisease",
+     "PhysActivity",
+     "HvyAlcohol",
+     "AnyHealthcare",
+     "GenHlth",
+     "MentHlth",
+     "PhysHlth",
+     "DiffWalk",
+     "Sex",
+     "AgeGroup",
+     "Education",
+     "Income"
+    ],
+    "sensitive_attributes": {
+     "Sex": [
+      "0.0",
+      "1.0"
+     ],
+     "AgeGroup": [
+      "1.0",
+      "10.0",
+      "11.0",
+      "12.0",
+      "13.0",
+      "2.0",
+      "3.0",
+      "4.0",
+      "5.0",
+      "6.0",
+      "7.0",
+      "8.0",
+      "9.0"
+     ],
+     "Income": [
+      "1.0",
+      "2.0",
+      "3.0",
+      "4.0",
+      "5.0",
+      "6.0",
+      "7.0"
+     ]
+    }
+   }
+  },
+  {
+   "id": "c2",
+   "tool": "client_updates",
+   "args": {},
+   "ok": true,
+   "result": {
+    "call_id": "c2",
+    "tool": "client_updates",
+    "epsilon_spent": 2.5,
+    "budget_left": 17.5,
+    "clients": {
+     "columns": [
+      "client",
+      "rounds",
+      "median_norm_ratio",
+      "min_norm_ratio",
+      "mean_cos",
+      "min_cos",
+      "flags"
+     ],
+     "rows": [
+      [
+       "AK",
+       20,
+       0.9974,
+       0.9138,
+       0.5476,
+       0.0836,
+       ""
+      ],
+      [
+       "AL",
+       20,
+       1.035,
+       0.6161,
+       0.362,
+       -0.08574,
+       ""
+      ],
+      [
+       "AR",
+       20,
+       0.9983,
+       0.7101,
+       0.3466,
+       -0.1255,
+       ""
+      ],
+      [
+       "AZ",
+       20,
+       1.272,
+       1.049,
+       0.5716,
+       0.1256,
+       ""
+      ],
+      [
+       "CA",
+       20,
+       1.062,
+       0.9301,
+       0.6867,
+       0.3856,
+       ""
+      ],
+      [
+       "CO",
+       20,
+       1.11,
+       0.9458,
+       0.6814,
+       0.3002,
+       ""
+      ],
+      [
+       "CT",
+       20,
+       0.7719,
+       0.6072,
+       0.6963,
+       0.3789,
+       ""
+      ],
+      [
+       "DC",
+       20,
+       0.8284,
+       0.7094,
+       0.3785,
+       -0.08994,
+       ""
+      ],
+      [
+       "DE",
+       20,
+       0.6497,
+       0.5906,
+       0.3501,
+       -0.0843,
+       ""
+      ],
+      [
+       "FL",
+       20,
+       1.275,
+       1.142,
+       0.6519,
+       0.3285,
+       ""
+      ],
+      [
+       "GA",
+       20,
+       0.8231,
+       0.6655,
+       0.2448,
+       -0.2701,
+       ""
+      ],
+      [
+       "GU",
+       20,
+       0.8879,
+       0.342,
+       0.1787,
+       -0.2172,
+       ""
+      ],
+      [
+       "HI",
+       20,
+       1.262,
+       1.04,
+       0.4468,
+       0.04178,
+       ""
+      ],
+      [
+       "IA",
+       20,
+       1.013,
+       0.8738,
+       0.5357,
+       -0.001255,
+       ""
+      ],
+      [
+       "ID",
+       20,
+       1.198,
+       1.064,
+       0.4599,
+       -0.008506,
+       ""
+      ],
+      [
+       "IL",
+       20,
+       0.8752,
+       0.7764,
+       0.4386,
+       -0.1018,
+       ""
+      ],
+      [
+       "IN",
+       20,
+       1.041,
+       0.9224,
+       0.7496,
+       0.5586,
+       ""
+      ],
+      [
+       "KS",
+       20,
+       1.012,
+       0.8172,
+       0.6452,
+       0.2069,
+       ""
+      ],
+      [
+       "LA",
+       20,
+       0.7798,
+       0.5969,
+       0.5071,
+       0.3186,
+       ""
+      ],
+      [
+       "MA",
+       20,
+       1.071,
+       0.8745,
+       0.4806,
+       -0.1225,
+       ""
+      ],
+      [
+       "MD",
+       20,
+       1.113,
+       0.9846,
+       0.551,
+       -0.05398,
+       ""
+      ],
+      [
+       "ME",
+       20,
+       1.34,
+       1.193,
+       0.6342,
+       0.3267,
+       ""
+      ],
+      [
+       "MI",
+       20,
+       0.9645,
+       0.8321,
+       0.6752,
+       0.2814,
+       ""
+      ],
+      [
+       "MN",
+       20,
+       1.453,
+       1.26,
+       0.4109,
+       -0.2085,
+       ""
+      ],
+      [
+       "MO",
+       20,
+       0.7064,
+       0.4749,
+       0.5949,
+       0.02252,
+       ""
+      ],
+      [
+       "MS",
+       20,
+       0.6102,
+       0.4709,
+       0.4738,
+       0.177,
+       ""
+      ],
+      [
+       "MT",
+       20,
+       1.352,
+       0.6587,
+       0.0642,
+       -0.6069,
+       ""
+      ],
+      [
+       "NC",
+       20,
+       0.5935,
+       0.5464,
+       0.534,
+       0.1323,
+       ""
+      ],
+      [
+       "ND",
+       20,
+       0.6716,
+       0.5869,
+       0.5268,
+       0.0006739,
+       ""
+      ],
+      [
+       "NE",
+       20,
+       1.239,
+       1.03,
+       0.7183,
+       0.3808,
+       ""
+      ],
+      [
+       "NH",
+       20,
+       1.064,
+       0.9609,
+       0.4291,
+       0.01168,
+       ""
+      ],
+      [
+       "NJ",
+       20,
+       1.681,
+       0.8627,
+       0.1752,
+       -0.5111,
+       ""
+      ],
+      [
+       "NM",
+       20,
+       0.5913,
+       0.5271,
+       0.5701,
+       0.3174,
+       ""
+      ],
+      [
+       "NV",
+       20,
+       0.4741,
+       0.4173,
+       0.5887,
+       0.3032,
+       ""
+      ],
+      [
+       "NY",
+       20,
+       1.319,
+       0.9752,
+       0.6677,
+       0.2594,
+       ""
+      ],
+      [
+       "OH",
+       20,
+       1.222,
+       1.097,
+       0.496,
+       0.09518,
+       ""
+      ],
+      [
+       "OK",
+       20,
+       0.889,
+       0.7953,
+       0.4503,
+       0.02356,
+       ""
+      ],
+      [
+       "OR",
+       20,
+       0.7908,
+       0.7599,
+       0.6838,
+       0.2987,
+       ""
+      ],
+      [
+       "PR",
+       20,
+       0.9827,
+       0.7966,
+       0.2755,
+       -0.0567,
+       ""
+      ],
+      [
+       "RI",
+       20,
+       0.837,
+       0.7404,
+       0.4613,
+       0.008749,
+       ""
+      ],
+      [
+       "SC",
+       20,
+       1.834,
+       0.8237,
+       0.07304,
+       -0.5424,
+       ""
+      ],
+      [
+       "SD",
+       20,
+       0.8006,
+       0.5665,
+       0.3009,
+       -0.1502,
+       ""
+      ],
+      [
+       "TN",
+       20,
+       1.219,
+       0.8252,
+       0.5331,
+       0.2253,
+       ""
+      ],
+      [
+       "TX",
+       20,
+       0.9931,
+       0.8241,
+       0.707,
+       0.4213,
+       ""
+      ],
+      [
+       "UT",
+       20,
+       1.27,
+       1.008,
+       0.7836,
+       0.5211,
+       ""
+      ],
+      [
+       "VA",
+       20,
+       0.9991,
+       0.8216,
+       0.52,
+       0.1821,
+       ""
+      ],
+      [
+       "VI",
+       20,
+       0.531,
+       0.3364,
+       0.3723,
+       0.1082,
+       ""
+      ],
+      [
+       "VT",
+       20,
+       1.267,
+       1.122,
+       0.5328,
+       0.1048,
+       ""
+      ],
+      [
+       "WA",
+       20,
+       1.971,
+       1.252,
+       0.7492,
+       0.3604,
+       ""
+      ],
+      [
+       "WI",
+       20,
+       0.9266,
+       0.7384,
+       0.6828,
+       0.296,
+       ""
+      ],
+      [
+       "WV",
+       20,
+       0.7459,
+       0.5475,
+       0.4095,
+       0.1499,
+       ""
+      ],
+      [
+       "WY",
+       20,
+       0.7795,
+       0.5169,
+       0.5213,
+       0.1761,
+       ""
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "id": "c3",
+   "tool": "client_performance",
+   "args": {},
+   "ok": true,
+   "result": {
+    "call_id": "c3",
+    "tool": "client_performance",
+    "epsilon_spent": 2.5,
+    "budget_left": 15.0,
+    "round": 20,
+    "clients": {
+     "columns": [
+      "client",
+      "n",
+      "auc",
+      "ece",
+      "brier",
+      "prevalence",
+      "mean_pred",
+      "citl",
+      "flags"
+     ],
+     "rows": [
+      [
+       "AK",
+       758,
+       0.8029,
+       0.02299,
+       0.08045,
+       0.1065,
+       0.123,
+       0.01647,
+       ""
+      ],
+      [
+       "AL",
+       598,
+       0.8168,
+       0.05971,
+       0.1319,
+       0.1912,
+       0.164,
+       -0.02717,
+       ""
+      ],
+      [
+       "AR",
+       696,
+       0.8113,
+       0.02658,
+       0.1146,
+       0.1703,
+       0.181,
+       0.0107,
+       ""
+      ],
+      [
+       "AZ",
+       1628,
+       0.8362,
+       0.03943,
+       0.1019,
+       0.1356,
+       0.1435,
+       0.007855,
+       ""
+      ],
+      [
+       "CA",
+       1470,
+       0.8423,
+       0.03198,
+       0.08611,
+       0.1168,
+       0.1276,
+       0.01079,
+       ""
+      ],
+      [
+       "CO",
+       1207,
+       0.8427,
+       0.03131,
+       0.06672,
+       0.08622,
+       0.1016,
+       0.01536,
+       ""
+      ],
+      [
+       "CT",
+       1194,
+       0.7901,
+       0.01328,
+       0.0877,
+       0.1131,
+       0.1261,
+       0.01299,
+       ""
+      ],
+      [
+       "DC",
+       445,
+       0.7643,
+       0.0316,
+       0.0634,
+       0.09242,
+       0.1047,
+       0.01228,
+       ""
+      ],
+      [
+       "DE",
+       563,
+       0.7198,
+       0.03394,
+       0.111,
+       0.1543,
+       0.1498,
+       -0.004498,
+       ""
+      ],
+      [
+       "FL",
+       1678,
+       0.7977,
+       0.03424,
+       0.1134,
+       0.163,
+       0.1575,
+       -0.00551,
+       ""
+      ],
+      [
+       "GA",
+       1037,
+       0.7828,
+       0.03592,
+       0.1195,
+       0.175,
+       0.1576,
+       -0.01745,
+       ""
+      ],
+      [
+       "GU",
+       237,
+       0.846,
+       0.07446,
+       0.13,
+       0.208,
+       0.126,
+       -0.08201,
+       "citl z=-3.4"
+      ],
+      [
+       "HI",
+       1220,
+       0.7983,
+       0.02093,
+       0.09951,
+       0.1285,
+       0.1213,
+       -0.007133,
+       ""
+      ],
+      [
+       "IA",
+       1344,
+       0.8094,
+       0.02137,
+       0.09618,
+       0.1306,
+       0.1447,
+       0.01408,
+       ""
+      ],
+      [
+       "ID",
+       905,
+       0.7494,
+       0.02862,
+       0.0797,
+       0.103,
+       0.1215,
+       0.0185,
+       ""
+      ],
+      [
+       "IL",
+       812,
+       0.8339,
+       0.02534,
+       0.08706,
+       0.1272,
+       0.1276,
+       0.0003416,
+       ""
+      ],
+      [
+       "IN",
+       1417,
+       0.8274,
+       0.03045,
+       0.1087,
+       0.164,
+       0.1504,
+       -0.01361,
+       ""
+      ],
+      [
+       "KS",
+       1395,
+       0.7923,
+       0.01435,
+       0.1001,
+       0.1335,
+       0.1374,
+       0.003846,
+       ""
+      ],
+      [
+       "LA",
+       704,
+       0.8224,
+       0.0457,
+       0.117,
+       0.1744,
+       0.1524,
+       -0.02204,
+       ""
+      ],
+      [
+       "MA",
+       1200,
+       0.8478,
+       0.01988,
+       0.07766,
+       0.1011,
+       0.1057,
+       0.004679,
+       ""
+      ],
+      [
+       "MD",
+       2228,
+       0.8102,
+       0.02238,
+       0.1065,
+       0.1511,
+       0.1486,
+       -0.002497,
+       ""
+      ],
+      [
+       "ME",
+       1658,
+       0.836,
+       0.02637,
+       0.09299,
+       0.1392,
+       0.1527,
+       0.01353,
+       ""
+      ],
+      [
+       "MI",
+       1313,
+       0.8591,
+       0.0255,
+       0.1052,
+       0.1404,
+       0.135,
+       -0.00548,
+       ""
+      ],
+      [
+       "MN",
+       2103,
+       0.8008,
+       0.01309,
+       0.0903,
+       0.1179,
+       0.1293,
+       0.01136,
+       ""
+      ],
+      [
+       "MO",
+       946,
+       0.8979,
+       0.0217,
+       0.09835,
+       0.1425,
+       0.1466,
+       0.004113,
+       ""
+      ],
+      [
+       "MS",
+       551,
+       0.8368,
+       0.03357,
+       0.1106,
+       0.1675,
+       0.1424,
+       -0.02505,
+       ""
+      ],
+      [
+       "MT",
+       1057,
+       0.8262,
+       0.05376,
+       0.1006,
+       0.1236,
+       0.08436,
+       -0.0392,
+       ""
+      ],
+      [
+       "NC",
+       541,
+       0.7934,
+       0.01752,
+       0.09884,
+       0.1345,
+       0.1326,
+       -0.001905,
+       ""
+      ],
+      [
+       "ND",
+       764,
+       0.8289,
+       0.03687,
+       0.09662,
+       0.1267,
+       0.132,
+       0.005311,
+       ""
+      ],
+      [
+       "NE",
+       1961,
+       0.7808,
+       0.01653,
+       0.09713,
+       0.1325,
+       0.1441,
+       0.01158,
+       ""
+      ],
+      [
+       "NH",
+       926,
+       0.8118,
+       0.04132,
+       0.08496,
+       0.1281,
+       0.1489,
+       0.02084,
+       ""
+      ],
+      [
+       "NJ",
+       1158,
+       0.7798,
+       0.04425,
+       0.09831,
+       0.1208,
+       0.07312,
+       -0.04771,
+       ""
+      ],
+      [
+       "NM",
+       478,
+       0.8086,
+       0.03403,
+       0.1102,
+       0.1426,
+       0.1425,
+       -0.0001128,
+       ""
+      ],
+      [
+       "NV",
+       355,
+       0.7891,
+       0.05974,
+       0.107,
+       0.1267,
+       0.1435,
+       0.01675,
+       ""
+      ],
+      [
+       "NY",
+       2191,
+       0.8333,
+       0.01608,
+       0.08154,
+       0.115,
+       0.1201,
+       0.005098,
+       ""
+      ],
+      [
+       "OH",
+       1787,
+       0.8062,
+       0.02242,
+       0.1131,
+       0.1658,
+       0.1515,
+       -0.01425,
+       ""
+      ],
+      [
+       "OK",
+       890,
+       0.7571,
+       0.02739,
+       0.09924,
+       0.1477,
+       0.1398,
+       -0.007891,
+       ""
+      ],
+      [
+       "OR",
+       853,
+       0.7465,
+       0.01304,
+       0.08226,
+       0.1222,
+       0.1251,
+       0.002893,
+       ""
+      ],
+      [
+       "PR",
+       686,
+       0.797,
+       0.0307,
+       0.1285,
+       0.1914,
+       0.1793,
+       -0.01201,
+       ""
+      ],
+      [
+       "RI",
+       747,
+       0.7747,
+       0.01799,
+       0.09943,
+       0.1325,
+       0.1258,
+       -0.006688,
+       ""
+      ],
+      [
+       "SC",
+       1266,
+       0.7393,
+       0.08858,
+       0.1366,
+       0.1744,
+       0.09913,
+       -0.07528,
+       "ece z=+5.3; citl z=-4.4"
+      ],
+      [
+       "SD",
+       811,
+       0.8289,
+       0.02632,
+       0.1061,
+       0.161,
+       0.1485,
+       -0.01253,
+       ""
+      ],
+      [
+       "TN",
+       749,
+       0.9085,
+       0.03034,
+       0.1002,
+       0.1692,
+       0.1421,
+       -0.02703,
+       ""
+      ],
+      [
+       "TX",
+       1284,
+       0.8483,
+       0.01972,
+       0.1008,
+       0.1461,
+       0.1352,
+       -0.01085,
+       ""
+      ],
+      [
+       "UT",
+       1455,
+       0.7945,
+       0.02064,
+       0.07533,
+       0.09577,
+       0.1074,
+       0.01163,
+       ""
+      ],
+      [
+       "VA",
+       934,
+       0.8253,
+       0.01026,
+       0.11,
+       0.1636,
+       0.1589,
+       -0.004763,
+       ""
+      ],
+      [
+       "VI",
+       270,
+       0.6941,
+       0.05376,
+       0.1477,
+       0.1682,
+       0.1598,
+       -0.008349,
+       ""
+      ],
+      [
+       "VT",
+       1057,
+       0.8219,
+       0.02619,
+       0.07176,
+       0.08928,
+       0.1124,
+       0.02309,
+       ""
+      ],
+      [
+       "WA",
+       3728,
+       0.8031,
+       0.0129,
+       0.08396,
+       0.1096,
+       0.1198,
+       0.01014,
+       ""
+      ],
+      [
+       "WI",
+       1659,
+       0.798,
+       0.01933,
+       0.1084,
+       0.1516,
+       0.1591,
+       0.007482,
+       ""
+      ],
+      [
+       "WV",
+       629,
+       0.8761,
+       0.0551,
+       0.1268,
+       0.2073,
+       0.1736,
+       -0.0337,
+       ""
+      ],
+      [
+       "WY",
+       620,
+       0.7943,
+       0.03971,
+       0.1075,
+       0.1388,
+       0.1515,
+       0.01269,
+       ""
+      ],
+      [
+       "_pooled",
+       58163,
+       0.8124,
+       0.01244,
+       0.09817,
+       0.1357,
+       0.1348,
+       -0.0009011,
+       ""
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "id": "c4",
+   "tool": "drift_by_round",
+   "args": {},
+   "ok": true,
+   "result": {
+    "call_id": "c4",
+    "tool": "drift_by_round",
+    "epsilon_spent": 2.5,
+    "budget_left": 12.5,
+    "pooled": {
+     "columns": [
+      "round",
+      "prevalence",
+      "citl"
+     ],
+     "rows": [
+      [
+       1,
+       0.1351,
+       0.1876
+      ],
+      [
+       2,
+       0.1356,
+       0.1082
+      ],
+      [
+       3,
+       0.136,
+       0.06927
+      ],
+      [
+       4,
+       0.1361,
+       0.04894
+      ],
+      [
+       5,
+       0.135,
+       0.03489
+      ],
+      [
+       6,
+       0.1361,
+       0.02343
+      ],
+      [
+       7,
+       0.1366,
+       0.01836
+      ],
+      [
+       8,
+       0.1358,
+       0.01444
+      ],
+      [
+       9,
+       0.136,
+       0.01154
+      ],
+      [
+       10,
+       0.1358,
+       0.008799
+      ],
+      [
+       11,
+       0.1362,
+       0.006361
+      ],
+      [
+       12,
+       0.1367,
+       0.005438
+      ],
+      [
+       13,
+       0.1358,
+       0.004363
+      ],
+      [
+       14,
+       0.1352,
+       0.002902
+      ],
+      [
+       15,
+       0.1358,
+       0.0006849
+      ],
+      [
+       16,
+       0.1354,
+       0.0005618
+      ],
+      [
+       17,
+       0.1351,
+       -0.002191
+      ],
+      [
+       18,
+       0.1355,
+       -0.001479
+      ],
+      [
+       19,
+       0.1364,
+       -0.002786
+      ],
+      [
+       20,
+       0.1362,
+       -0.001511
+      ]
+     ]
+    },
+    "clients": {
+     "columns": [
+      "client",
+      "max_shift_sd",
+      "mean_shift_sd",
+      "max_shift_feature",
+      "onset_round",
+      "citl_first",
+      "citl_last",
+      "flags"
+     ],
+     "rows": [
+      [
+       "AK",
+       0.3395,
+       0.07598,
+       "AgeGroup",
+       1,
+       0.252,
+       0.03944,
+       ""
+      ],
+      [
+       "AL",
+       0.344,
+       0.05563,
+       "Sex",
+       null,
+       0.1068,
+       -0.1564,
+       ""
+      ],
+      [
+       "AR",
+       0.4681,
+       0.08487,
+       "PhysHlth",
+       null,
+       0.08916,
+       0.09614,
+       ""
+      ],
+      [
+       "AZ",
+       0.235,
+       0.06155,
+       "HeartDisease",
+       null,
+       0.229,
+       0.03868,
+       ""
+      ],
+      [
+       "CA",
+       0.2076,
+       0.03509,
+       "Income",
+       null,
+       0.2067,
+       -0.03328,
+       ""
+      ],
+      [
+       "CO",
+       0.08961,
+       0.01535,
+       "Stroke",
+       null,
+       0.2044,
+       -0.01949,
+       ""
+      ],
+      [
+       "CT",
+       0.1798,
+       0.03254,
+       "Education",
+       null,
+       0.1947,
+       0.0102,
+       ""
+      ],
+      [
+       "DC",
+       2.087,
+       0.2729,
+       "DiffWalk",
+       null,
+       0.1872,
+       -0.04079,
+       "max_shift_sd z=+3.9"
+      ],
+      [
+       "DE",
+       0.6271,
+       0.1969,
+       "Income",
+       1,
+       0.4545,
+       0.01257,
+       ""
+      ],
+      [
+       "FL",
+       0.1996,
+       0.03638,
+       "Smoker",
+       null,
+       0.1676,
+       -0.00439,
+       ""
+      ],
+      [
+       "GA",
+       0.2837,
+       0.06491,
+       "Sex",
+       null,
+       0.06903,
+       -0.03763,
+       ""
+      ],
+      [
+       "GU",
+       1.214,
+       0.4255,
+       "BMI",
+       3,
+       -0.6841,
+       0.2514,
+       ""
+      ],
+      [
+       "HI",
+       0.2348,
+       0.03956,
+       "AgeGroup",
+       null,
+       0.158,
+       0.005375,
+       ""
+      ],
+      [
+       "IA",
+       0.2651,
+       0.03418,
+       "HighChol",
+       null,
+       0.2083,
+       -0.03275,
+       ""
+      ],
+      [
+       "ID",
+       0.3889,
+       0.0748,
+       "HighBP",
+       null,
+       0.1923,
+       -0.08241,
+       ""
+      ],
+      [
+       "IL",
+       0.5018,
+       0.09407,
+       "Stroke",
+       null,
+       0.008531,
+       0.01582,
+       ""
+      ],
+      [
+       "IN",
+       0.2397,
+       0.03814,
+       "HighChol",
+       null,
+       0.1754,
+       -0.0208,
+       ""
+      ],
+      [
+       "KS",
+       0.1899,
+       0.0369,
+       "Education",
+       null,
+       0.179,
+       -0.02178,
+       ""
+      ],
+      [
+       "LA",
+       0.7159,
+       0.1191,
+       "PhysActivity",
+       null,
+       0.1591,
+       0.004191,
+       ""
+      ],
+      [
+       "MA",
+       0.3387,
+       0.08692,
+       "HeartDisease",
+       null,
+       0.1973,
+       -0.02263,
+       ""
+      ],
+      [
+       "MD",
+       0.1532,
+       0.02445,
+       "Stroke",
+       null,
+       0.2066,
+       -0.008529,
+       ""
+      ],
+      [
+       "ME",
+       0.2656,
+       0.04004,
+       "PhysActivity",
+       null,
+       0.179,
+       0.01239,
+       ""
+      ],
+      [
+       "MI",
+       0.3159,
+       0.05763,
+       "DiffWalk",
+       null,
+       0.1677,
+       -0.1038,
+       ""
+      ],
+      [
+       "MN",
+       0.4369,
+       0.111,
+       "Stroke",
+       null,
+       0.222,
+       0.0818,
+       ""
+      ],
+      [
+       "MO",
+       0.3454,
+       0.05438,
+       "DiffWalk",
+       null,
+       0.09841,
+       -0.0004354,
+       ""
+      ],
+      [
+       "MS",
+       0.727,
+       0.1098,
+       "HighChol",
+       null,
+       0.1593,
+       -0.02847,
+       ""
+      ],
+      [
+       "MT",
+       0.7239,
+       0.1052,
+       "Sex",
+       null,
+       0.1768,
+       -0.02437,
+       ""
+      ],
+      [
+       "NC",
+       0.9596,
+       0.1714,
+       "Smoker",
+       null,
+       0.2301,
+       -0.03441,
+       ""
+      ],
+      [
+       "ND",
+       0.4572,
+       0.07377,
+       "HeartDisease",
+       null,
+       0.1884,
+       -0.01402,
+       ""
+      ],
+      [
+       "NE",
+       0.1324,
+       0.02028,
+       "DiffWalk",
+       null,
+       0.07405,
+       -0.02526,
+       ""
+      ],
+      [
+       "NH",
+       0.4325,
+       0.06261,
+       "GenHlth",
+       null,
+       0.0587,
+       0.02242,
+       ""
+      ],
+      [
+       "NJ",
+       0.3736,
+       0.079,
+       "DiffWalk",
+       null,
+       0.01113,
+       -0.01276,
+       ""
+      ],
+      [
+       "NM",
+       0.4706,
+       0.1005,
+       "Stroke",
+       null,
+       0.2004,
+       -0.3922,
+       ""
+      ],
+      [
+       "NV",
+       0.5893,
+       0.07382,
+       "DiffWalk",
+       null,
+       0.2839,
+       -0.03596,
+       ""
+      ],
+      [
+       "NY",
+       0.1733,
+       0.02997,
+       "GenHlth",
+       null,
+       0.2154,
+       0.03119,
+       ""
+      ],
+      [
+       "OH",
+       0.1501,
+       0.02486,
+       "PhysActivity",
+       null,
+       0.1866,
+       -0.01489,
+       ""
+      ],
+      [
+       "OK",
+       0.4169,
+       0.04203,
+       "Smoker",
+       null,
+       0.1882,
+       0.003711,
+       ""
+      ],
+      [
+       "OR",
+       0.2392,
+       0.0578,
+       "BMI",
+       null,
+       0.1388,
+       -0.1798,
+       ""
+      ],
+      [
+       "PR",
+       0.3849,
+       0.05995,
+       "HeartDisease",
+       null,
+       -0.0725,
+       -0.2105,
+       ""
+      ],
+      [
+       "RI",
+       0.4844,
+       0.09867,
+       "Stroke",
+       null,
+       0.199,
+       -0.01638,
+       ""
+      ],
+      [
+       "SC",
+       0.3611,
+       0.07045,
+       "Smoker",
+       null,
+       0.1502,
+       -0.03445,
+       ""
+      ],
+      [
+       "SD",
+       0.7859,
+       0.1512,
+       "Income",
+       null,
+       0.173,
+       -0.02812,
+       ""
+      ],
+      [
+       "TN",
+       0.2545,
+       0.05579,
+       "Smoker",
+       null,
+       0.1688,
+       0.05807,
+       ""
+      ],
+      [
+       "TX",
+       0.311,
+       0.06184,
+       "DiffWalk",
+       null,
+       0.1791,
+       0.009075,
+       ""
+      ],
+      [
+       "UT",
+       0.2002,
+       0.04811,
+       "HvyAlcohol",
+       null,
+       0.1549,
+       0.0162,
+       ""
+      ],
+      [
+       "VA",
+       0.341,
+       0.05256,
+       "AgeGroup",
+       null,
+       0.1451,
+       0.03693,
+       ""
+      ],
+      [
+       "VI",
+       1.287,
+       0.3428,
+       "Income",
+       2,
+       -0.4818,
+       -0.06762,
+       ""
+      ],
+      [
+       "VT",
+       0.2194,
+       0.0626,
+       "Income",
+       null,
+       0.2343,
+       0.09716,
+       ""
+      ],
+      [
+       "WA",
+       0.1279,
+       0.0148,
+       "AgeGroup",
+       null,
+       0.207,
+       0.03955,
+       ""
+      ],
+      [
+       "WI",
+       0.2349,
+       0.0396,
+       "PhysHlth",
+       null,
+       0.1686,
+       -0.01306,
+       ""
+      ],
+      [
+       "WV",
+       0.4053,
+       0.06598,
+       "AgeGroup",
+       null,
+       0.25,
+       0.04466,
+       ""
+      ],
+      [
+       "WY",
+       0.3575,
+       0.09519,
+       "PhysHlth",
+       null,
+       0.1361,
+       -0.007283,
+       ""
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "id": "c5",
+   "tool": "feature_summary",
+   "args": {},
+   "ok": true,
+   "result": {
+    "call_id": "c5",
+    "tool": "feature_summary",
+    "epsilon_spent": 2.5,
+    "budget_left": 10.0,
+    "round": 20,
+    "outliers": {
+     "columns": [
+      "client",
+      "feature",
+      "mean",
+      "sd",
+      "p01",
+      "p99",
+      "outlier_stat",
+      "z",
+      "z_noise"
+     ],
+     "rows": [
+      [
+       "MT",
+       "BMI",
+       15.62,
+       15.03,
+       -1.265,
+       43.0,
+       "p01",
+       -16.64,
+       -11.23
+      ],
+      [
+       "NJ",
+       "BMI",
+       13.31,
+       13.64,
+       0.9711,
+       43.12,
+       "p01",
+       -14.71,
+       -10.41
+      ],
+      [
+       "NV",
+       "BMI",
+       40.84,
+       6.967,
+       14.8,
+       49.49,
+       "mean",
+       7.751,
+       3.026
+      ],
+      [
+       "SC",
+       "BMI",
+       20.39,
+       16.42,
+       3.379,
+       46.23,
+       "p01",
+       -12.63,
+       -9.334
+      ],
+      [
+       "GU",
+       "Stroke",
+       0.5706,
+       0.4034,
+       0.07351,
+       0.9668,
+       "mean",
+       15.37,
+       3.07
+      ],
+      [
+       "IL",
+       "Stroke",
+       0.07347,
+       0.1891,
+       -0.04514,
+       1.178,
+       "p99",
+       7.764,
+       3.351
+      ],
+      [
+       "PR",
+       "Stroke",
+       -0.1996,
+       0.2209,
+       0.1341,
+       0.9174,
+       "mean",
+       -6.702,
+       -3.416
+      ],
+      [
+       "AR",
+       "HvyAlcohol",
+       0.334,
+       0.2721,
+       -0.02752,
+       0.9488,
+       "mean",
+       8.029,
+       3.414
+      ],
+      [
+       "CT",
+       "GenHlth",
+       2.312,
+       1.511,
+       0.9412,
+       6.292,
+       "p99",
+       11.87,
+       6.292
+      ],
+      [
+       "ND",
+       "GenHlth",
+       1.442,
+       1.526,
+       -0.07656,
+       4.968,
+       "p01",
+       -7.498,
+       -3.437
+      ],
+      [
+       "WV",
+       "MentHlth",
+       7.808,
+       10.25,
+       -3.697,
+       14.6,
+       "p99",
+       -14.76,
+       -5.335
+      ],
+      [
+       "MT",
+       "PhysHlth",
+       40.21,
+       35.15,
+       0.4476,
+       73.32,
+       "p99",
+       31.29,
+       19.96
+      ],
+      [
+       "ND",
+       "PhysHlth",
+       -4.29,
+       7.275,
+       -3.484,
+       30.42,
+       "mean",
+       -5.59,
+       -3.141
+      ],
+      [
+       "NJ",
+       "PhysHlth",
+       39.83,
+       35.66,
+       -1.594,
+       73.24,
+       "p99",
+       31.23,
+       20.99
+      ],
+      [
+       "SC",
+       "PhysHlth",
+       37.12,
+       37.96,
+       -1.87,
+       70.73,
+       "p99",
+       29.42,
+       20.73
+      ],
+      [
+       "IN",
+       "Sex",
+       0.4789,
+       0.601,
+       0.3718,
+       1.054,
+       "p01",
+       5.52,
+       3.742
+      ],
+      [
+       "NM",
+       "Sex",
+       0.3585,
+       0.5316,
+       0.9061,
+       1.193,
+       "p01",
+       13.53,
+       4.015
+      ],
+      [
+       "NV",
+       "Sex",
+       1.288,
+       0.2623,
+       0.9052,
+       1.074,
+       "p01",
+       13.51,
+       3.033
+      ],
+      [
+       "IA",
+       "AgeGroup",
+       7.424,
+       6.113,
+       1.45,
+       13.07,
+       "sd",
+       4.251,
+       3.192
+      ],
+      [
+       "NH",
+       "Education",
+       5.249,
+       1.702,
+       2.963,
+       6.062,
+       "sd",
+       6.107,
+       3.008
+      ],
+      [
+       "LA",
+       "Income",
+       5.077,
+       1.346,
+       0.7459,
+       8.647,
+       "p99",
+       8.337,
+       3.38
+      ]
+     ]
+    },
+    "medians": {
+     "columns": [
+      "client",
+      "feature",
+      "mean",
+      "sd",
+      "p01",
+      "p99"
+     ],
+     "rows": [
+      [
+       "(median)",
+       "HighBP",
+       0.4046,
+       0.4659,
+       -0.005419,
+       0.9873
+      ],
+      [
+       "(median)",
+       "HighChol",
+       0.3803,
+       0.4725,
+       -0.003152,
+       0.9959
+      ],
+      [
+       "(median)",
+       "BMI",
+       28.42,
+       6.433,
+       18.02,
+       49.08
+      ],
+      [
+       "(median)",
+       "Smoker",
+       0.3871,
+       0.4879,
+       -0.009969,
+       0.9844
+      ],
+      [
+       "(median)",
+       "Stroke",
+       0.03429,
+       0.1939,
+       -0.002047,
+       0.9928
+      ],
+      [
+       "(median)",
+       "HeartDisease",
+       0.08557,
+       0.2652,
+       0.007506,
+       1.005
+      ],
+      [
+       "(median)",
+       "PhysActivity",
+       0.7834,
+       0.42,
+       0.005202,
+       1.002
+      ],
+      [
+       "(median)",
+       "HvyAlcohol",
+       0.05754,
+       0.2539,
+       0.0001146,
+       0.9998
+      ],
+      [
+       "(median)",
+       "AnyHealthcare",
+       0.9569,
+       0.2178,
+       -0.002092,
+       1.002
+      ],
+      [
+       "(median)",
+       "GenHlth",
+       2.563,
+       1.051,
+       0.9964,
+       4.974
+      ],
+      [
+       "(median)",
+       "MentHlth",
+       4.348,
+       8.255,
+       -0.09417,
+       29.98
+      ],
+      [
+       "(median)",
+       "PhysHlth",
+       4.502,
+       8.791,
+       0.02795,
+       29.9
+      ],
+      [
+       "(median)",
+       "DiffWalk",
+       0.1484,
+       0.3499,
+       -0.0002907,
+       1.014
+      ],
+      [
+       "(median)",
+       "Sex",
+       0.4793,
+       0.497,
+       0.003349,
+       0.993
+      ],
+      [
+       "(median)",
+       "AgeGroup",
+       7.712,
+       3.527,
+       1.225,
+       12.91
+      ],
+      [
+       "(median)",
+       "Education",
+       5.134,
+       0.9668,
+       2.098,
+       5.998
+      ],
+      [
+       "(median)",
+       "Income",
+       4.604,
+       1.593,
+       0.9805,
+       6.947
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "id": "c6",
+   "tool": "subgroup_outcomes",
+   "args": {
+    "attribute": "Sex"
+   },
+   "ok": true,
+   "result": {
+    "call_id": "c6",
+    "tool": "subgroup_outcomes",
+    "epsilon_spent": 1.5,
+    "budget_left": 8.5,
+    "attribute": "Sex",
+    "threshold": 0.2,
+    "outliers": {
+     "columns": [
+      "client",
+      "group",
+      "n",
+      "outcome_rate",
+      "mean_pred",
+      "oe_ratio",
+      "fnr",
+      "outlier_stat",
+      "z",
+      "z_noise"
+     ],
+     "rows": [
+      [
+       "SC",
+       "0.0",
+       1291,
+       0.1747,
+       0.1044,
+       1.672,
+       0.4968,
+       "oe_ratio",
+       4.624,
+       4.315
+      ],
+      [
+       "MT",
+       "1.0",
+       1172,
+       0.1356,
+       0.08466,
+       1.602,
+       0.621,
+       "oe_ratio",
+       4.9,
+       4.175
+      ],
+      [
+       "NJ",
+       "1.0",
+       1153,
+       0.1317,
+       0.0791,
+       1.665,
+       0.7381,
+       "oe_ratio",
+       5.415,
+       4.502
+      ],
+      [
+       "SC",
+       "1.0",
+       1244,
+       0.1744,
+       0.09513,
+       1.834,
+       0.6205,
+       "oe_ratio",
+       6.774,
+       6.022
+      ]
+     ]
+    },
+    "medians": {
+     "columns": [
+      "client",
+      "group",
+      "n",
+      "outcome_rate",
+      "mean_pred",
+      "oe_ratio",
+      "fnr"
+     ],
+     "rows": [
+      [
+       "(median)",
+       "0.0",
+       null,
+       0.1237,
+       null,
+       1.001,
+       0.3997
+      ],
+      [
+       "(median)",
+       "1.0",
+       null,
+       0.148,
+       null,
+       0.9956,
+       0.3719
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "id": "c7",
+   "tool": "subgroup_outcomes",
+   "args": {
+    "attribute": "AgeGroup"
+   },
+   "ok": true,
+   "result": {
+    "call_id": "c7",
+    "tool": "subgroup_outcomes",
+    "epsilon_spent": 1.5,
+    "budget_left": 7.0,
+    "attribute": "AgeGroup",
+    "threshold": 0.2,
+    "outliers": {
+     "columns": [
+      "client",
+      "group",
+      "n",
+      "outcome_rate",
+      "mean_pred",
+      "oe_ratio",
+      "fnr",
+      "outlier_stat",
+      "z",
+      "z_noise"
+     ],
+     "rows": [
+      [
+       "CT",
+       "5.0",
+       176,
+       1,
+       0.07431,
+       13.46,
+       0,
+       "oe_ratio",
+       16.12,
+       3.37
+      ],
+      [
+       "PR",
+       "5.0",
+       185,
+       0.9137,
+       0.278,
+       3.287,
+       0,
+       "outcome_rate",
+       9.083,
+       3.026
+      ],
+      [
+       "WY",
+       "5.0",
+       204,
+       1,
+       0.1597,
+       6.26,
+       0,
+       "outcome_rate",
+       10.0,
+       3.632
+      ]
+     ]
+    },
+    "medians": {
+     "columns": [
+      "client",
+      "group",
+      "n",
+      "outcome_rate",
+      "mean_pred",
+      "oe_ratio",
+      "fnr"
+     ],
+     "rows": [
+      [
+       "(median)",
+       "1.0",
+       null,
+       0.03261,
+       null,
+       0.1099,
+       0.0
+      ],
+      [
+       "(median)",
+       "10.0",
+       null,
+       0.2165,
+       null,
+       0.9368,
+       0.483
+      ],
+      [
+       "(median)",
+       "11.0",
+       null,
+       0.1569,
+       null,
+       0.7044,
+       0.2739
+      ],
+      [
+       "(median)",
+       "12.0",
+       null,
+       0.2371,
+       null,
+       0.7686,
+       0.277
+      ],
+      [
+       "(median)",
+       "13.0",
+       null,
+       0.2227,
+       null,
+       0.7156,
+       0.4179
+      ],
+      [
+       "(median)",
+       "2.0",
+       null,
+       0.123,
+       null,
+       0.2917,
+       0.0
+      ],
+      [
+       "(median)",
+       "3.0",
+       null,
+       0.1422,
+       null,
+       0.7899,
+       0.0
+      ],
+      [
+       "(median)",
+       "4.0",
+       null,
+       0.05151,
+       null,
+       0.2666,
+       0.9662
+      ],
+      [
+       "(median)",
+       "5.0",
+       null,
+       0.06316,
+       null,
+       0.5405,
+       0.3523
+      ],
+      [
+       "(median)",
+       "6.0",
+       null,
+       0.1139,
+       null,
+       0.3047,
+       0.2547
+      ],
+      [
+       "(median)",
+       "7.0",
+       null,
+       0.1116,
+       null,
+       0.7687,
+       0.5608
+      ],
+      [
+       "(median)",
+       "8.0",
+       null,
+       0.1765,
+       null,
+       0.6915,
+       0.4218
+      ],
+      [
+       "(median)",
+       "9.0",
+       null,
+       0.1921,
+       null,
+       0.902,
+       0.2681
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "id": "c8",
+   "tool": "subgroup_outcomes",
+   "args": {
+    "attribute": "Income"
+   },
+   "ok": true,
+   "result": {
+    "call_id": "c8",
+    "tool": "subgroup_outcomes",
+    "epsilon_spent": 1.5,
+    "budget_left": 5.5,
+    "attribute": "Income",
+    "threshold": 0.2,
+    "outliers": {
+     "columns": [
+      "client",
+      "group",
+      "n",
+      "outcome_rate",
+      "mean_pred",
+      "oe_ratio",
+      "fnr",
+      "outlier_stat",
+      "z",
+      "z_noise"
+     ],
+     "rows": [
+      [
+       "NH",
+       "1.0",
+       117,
+       1,
+       0.1578,
+       6.337,
+       0,
+       "oe_ratio",
+       5.915,
+       3.28
+      ],
+      [
+       "TX",
+       "2.0",
+       285,
+       0.4008,
+       0.0365,
+       10.98,
+       0,
+       "oe_ratio",
+       14.87,
+       3.792
+      ]
+     ]
+    },
+    "medians": {
+     "columns": [
+      "client",
+      "group",
+      "n",
+      "outcome_rate",
+      "mean_pred",
+      "oe_ratio",
+      "fnr"
+     ],
+     "rows": [
+      [
+       "(median)",
+       "1.0",
+       null,
+       0.2365,
+       null,
+       0.7013,
+       0.0
+      ],
+      [
+       "(median)",
+       "2.0",
+       null,
+       0.2188,
+       null,
+       1.028,
+       0.3103
+      ],
+      [
+       "(median)",
+       "3.0",
+       null,
+       0.1767,
+       null,
+       0.9391,
+       0.2458
+      ],
+      [
+       "(median)",
+       "4.0",
+       null,
+       0.1607,
+       null,
+       0.9083,
+       0.3513
+      ],
+      [
+       "(median)",
+       "5.0",
+       null,
+       0.1241,
+       null,
+       0.9881,
+       0.4725
+      ],
+      [
+       "(median)",
+       "6.0",
+       null,
+       0.1026,
+       null,
+       1.19,
+       0.4939
+      ],
+      [
+       "(median)",
+       "7.0",
+       null,
+       0.05256,
+       null,
+       0.9401,
+       0.0
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "id": "c9",
+   "tool": "attribution_churn",
+   "args": {},
+   "ok": true,
+   "result": {
+    "call_id": "c9",
+    "tool": "attribution_churn",
+    "epsilon_spent": 1.0,
+    "budget_left": 4.5,
+    "by_round": {
+     "columns": [
+      "round",
+      "rank_corr_prev",
+      "top3_overlap_prev",
+      "patient_top1_agree_prev",
+      "rel_change_prev",
+      "top3"
+     ],
+     "rows": [
+      [
+       2,
+       0.2108,
+       0.3333,
+       0.9087,
+       0.755,
+       "HighBP, PhysHlth, BMI"
+      ],
+      [
+       3,
+       0.3627,
+       0.6667,
+       1,
+       1.14,
+       "BMI, Education, HighBP"
+      ],
+      [
+       4,
+       0.5833,
+       0.3333,
+       0.9277,
+       0.6834,
+       "DiffWalk, HighBP, GenHlth"
+      ],
+      [
+       5,
+       0.3701,
+       0.6667,
+       0.9645,
+       0.76,
+       "GenHlth, HighBP, HighChol"
+      ],
+      [
+       6,
+       0.6324,
+       0.6667,
+       0.9874,
+       0.8846,
+       "HighChol, BMI, HighBP"
+      ],
+      [
+       7,
+       0.5025,
+       0.3333,
+       1,
+       0.8992,
+       "Income, BMI, GenHlth"
+      ],
+      [
+       8,
+       0.6667,
+       0.0,
+       1,
+       0.6282,
+       "HighBP, PhysHlth, HighChol"
+      ],
+      [
+       9,
+       0.5049,
+       0.3333,
+       0.9732,
+       1.168,
+       "Sex, BMI, HighChol"
+      ],
+      [
+       10,
+       0.5,
+       0.0,
+       0.9901,
+       0.7945,
+       "HighBP, GenHlth, AgeGroup"
+      ],
+      [
+       11,
+       0.6373,
+       0.3333,
+       0.8926,
+       0.6835,
+       "HvyAlcohol, HighBP, BMI"
+      ],
+      [
+       12,
+       0.5319,
+       0.3333,
+       1,
+       0.7754,
+       "BMI, HighChol, AgeGroup"
+      ],
+      [
+       13,
+       0.7426,
+       0.3333,
+       0.8936,
+       0.5408,
+       "HighBP, HighChol, MentHlth"
+      ],
+      [
+       14,
+       0.5686,
+       0.0,
+       0.9849,
+       0.5152,
+       "BMI, AgeGroup, GenHlth"
+      ],
+      [
+       15,
+       0.5711,
+       0.3333,
+       1,
+       0.5065,
+       "GenHlth, PhysActivity, HeartDisease"
+      ],
+      [
+       16,
+       0.424,
+       0.3333,
+       0.9958,
+       0.7212,
+       "GenHlth, AgeGroup, BMI"
+      ],
+      [
+       17,
+       0.674,
+       0.6667,
+       1,
+       0.3989,
+       "HighBP, GenHlth, AgeGroup"
+      ],
+      [
+       18,
+       0.5539,
+       1.0,
+       0.9906,
+       0.477,
+       "GenHlth, HighBP, AgeGroup"
+      ],
+      [
+       19,
+       0.326,
+       0.6667,
+       1,
+       0.8257,
+       "BMI, GenHlth, HighBP"
+      ],
+      [
+       20,
+       0.4167,
+       0.6667,
+       0.9933,
+       0.5008,
+       "BMI, GenHlth, AgeGroup"
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "id": "c10",
+   "tool": "feature_summary",
+   "args": {
+    "clients": [
+     "MT",
+     "NJ",
+     "SC",
+     "GU"
+    ],
+    "features": [
+     "BMI",
+     "PhysHlth",
+     "MentHlth"
+    ]
+   },
+   "ok": true,
+   "result": {
+    "call_id": "c10",
+    "tool": "feature_summary",
+    "epsilon_spent": 2.0,
+    "budget_left": 2.5,
+    "round": 20,
+    "rows": {
+     "columns": [
+      "client",
+      "feature",
+      "mean",
+      "sd",
+      "p01",
+      "p99"
+     ],
+     "rows": [
+      [
+       "MT",
+       "BMI",
+       13.66,
+       14.64,
+       0.1762,
+       43.23
+      ],
+      [
+       "MT",
+       "PhysHlth",
+       40.02,
+       34.64,
+       0.06558,
+       73.39
+      ],
+      [
+       "MT",
+       "MentHlth",
+       4.638,
+       8.351,
+       -0.06813,
+       29.98
+      ],
+      [
+       "NJ",
+       "BMI",
+       13.93,
+       14.64,
+       0.1425,
+       43.31
+      ],
+      [
+       "NJ",
+       "PhysHlth",
+       39.86,
+       34.96,
+       -0.6364,
+       73.2
+      ],
+      [
+       "NJ",
+       "MentHlth",
+       3.998,
+       7.924,
+       0.5776,
+       29.9
+      ],
+      [
+       "SC",
+       "BMI",
+       15.03,
+       15.1,
+       0.002636,
+       46.35
+      ],
+      [
+       "SC",
+       "PhysHlth",
+       37.75,
+       34.87,
+       0.01568,
+       73.35
+      ],
+      [
+       "SC",
+       "MentHlth",
+       3.97,
+       8.201,
+       0.03943,
+       30.09
+      ],
+      [
+       "GU",
+       "BMI",
+       27.65,
+       6.764,
+       16.99,
+       53.17
+      ],
+      [
+       "GU",
+       "PhysHlth",
+       3.967,
+       8.684,
+       0.5868,
+       28.85
+      ],
+      [
+       "GU",
+       "MentHlth",
+       5.263,
+       8.713,
+       -0.2358,
+       31.03
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "id": "c11",
+   "tool": "feature_summary",
+   "args": {
+    "clients": [
+     "MT",
+     "NJ",
+     "SC"
+    ],
+    "features": [
+     "BMI"
+    ],
+    "round": 1
+   },
+   "ok": true,
+   "result": {
+    "call_id": "c11",
+    "tool": "feature_summary",
+    "epsilon_spent": 2.0,
+    "budget_left": 0.5,
+    "round": 1,
+    "rows": {
+     "columns": [
+      "client",
+      "feature",
+      "mean",
+      "sd",
+      "p01",
+      "p99"
+     ],
+     "rows": [
+      [
+       "MT",
+       "BMI",
+       13.67,
+       14.78,
+       0.05131,
+       43.24
+      ],
+      [
+       "NJ",
+       "BMI",
+       13.88,
+       14.69,
+       -0.01419,
+       43.31
+      ],
+      [
+       "SC",
+       "BMI",
+       15.05,
+       15.33,
+       -0.06697,
+       46.24
+      ]
+     ]
+    }
+   }
+  }
+ ],
+ "fact_check": {
+  "claims": 39,
+  "supported": 39,
+  "unsupported": [],
+  "support_rate": 1.0
+ },
+ "score": {
+  "fault": "missing_artefact",
+  "severity": "high",
+  "flagged": [
+   "MT",
+   "NJ",
+   "SC"
+  ],
+  "true_clients": [
+   "MT",
+   "NJ",
+   "SC"
+  ],
+  "tp": 3,
+  "fp": 0,
+  "fn": 0,
+  "precision": 1.0,
+  "recall": 1.0,
+  "false_alarm": null,
+  "type_accuracy": 1.0,
+  "onset_abs_error": 0.0,
+  "scenario_type_correct": true
+ }
+}

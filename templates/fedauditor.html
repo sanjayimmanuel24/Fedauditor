@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% block title %}FedAuditor - Audit Report{% endblock %}
+
+{% block head %}
+<style>
+    .kpi { font-variant-numeric: tabular-nums; }
+    .badge {
+        display: inline-flex; align-items: center; gap: .25rem;
+        font-size: .6rem; font-weight: 700; text-transform: uppercase;
+        letter-spacing: .04em; padding: .15rem .45rem; border-radius: .35rem;
+    }
+    table.log-table { width: 100%; border-collapse: collapse; }
+    table.log-table th {
+        font-size: .62rem; text-transform: uppercase; letter-spacing: .05em; color: #57708a;
+        text-align: left; padding: .4rem .6rem; border-bottom: 1px solid #d6e3ec; font-weight: 600;
+        position: sticky; top: 0; background: #f8fbfd;
+    }
+    table.log-table td {
+        padding: .35rem .6rem; font-size: .74rem; border-bottom: 1px solid rgba(214,227,236,.8);
+        font-variant-numeric: tabular-nums; white-space: nowrap;
+    }
+    details[id] { scroll-margin-top: 6rem; }
+    tr.cited td { background: rgba(15,118,110,.07); }
+    tr.cited td:first-child { box-shadow: inset 3px 0 0 #0f766e; }
+    tr.flash td { background: rgba(250,204,21,.35) !important; transition: background .3s; }
+    .claim-link { color: #0f766e; font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+    .claim-link:hover { color: #115e59; }
+    .scroll-x { overflow-x: auto; max-height: 26rem; overflow-y: auto; }
+    details > summary { cursor: pointer; list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] .chev { transform: rotate(90deg); }
+    .chev { transition: transform .15s; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+
+    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-extrabold text-ink tracking-tight font-heading">FedAuditor audit report</h1>
+            <p class="text-xs text-subtle mt-1 max-w-2xl">
+                An LLM agent audited a federated model using only noisy, privacy-budgeted aggregate tools.
+                Every claim in its report cites a logged tool call; click a claim to see the exact logged row.
+            </p>
+        </div>
+        <form method="get" class="flex flex-wrap items-center gap-2">
+            <label for="audit" class="text-xs text-subtle font-semibold">Audit</label>
+            <select id="audit" name="audit" onchange="this.form.submit()"
+                    class="text-xs border border-line rounded-lg px-2 py-2 bg-white max-w-[22rem]">
+                {% for a in audits %}
+                <option value="{{ a }}" {% if view and a == view.name %}selected{% endif %}>{{ a }}</option>
+                {% endfor %}
+            </select>
+            <noscript><button class="text-xs border border-line rounded-lg px-3 py-2 bg-white">Show</button></noscript>
+        </form>
+    </div>
+
+    {% if not view %}
+    <div class="glass-panel p-6 rounded-2xl border border-line text-sm text-subtle">
+        No saved audits found under <code>results/fedauditor/audits/</code>. Run
+        <code>python -m fedauditor.run_audit</code> first.
+    </div>
+    {% else %}
+    {% set sc = view.scenario %}{% set tr = view.truth %}{% set s = view.score %}{% set fc = view.fact_check %}
+
+    <!-- Scenario and outcome -->
+    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+        <div class="glass-panel p-5 rounded-2xl border border-line">
+            <span class="text-[10px] font-semibold uppercase tracking-wider text-subtle">Planted fault</span>
+            <h3 class="text-lg font-bold text-ink mt-2">{{ tr.fault }}{% if tr.severity and tr.severity != 'none' %} <span class="text-subtle font-medium">({{ tr.severity }})</span>{% endif %}</h3>
+            <p class="text-[10px] text-subtle mt-1">{{ (tr.clients or ['no clients']) | join(', ') }}{% if tr.onset_round %} &middot; from round {{ tr.onset_round }}{% endif %}</p>
+        </div>
+        <div class="glass-panel p-5 rounded-2xl border border-line">
+            <span class="text-[10px] font-semibold uppercase tracking-wider text-subtle">Flagged</span>
+            <h3 class="text-lg font-bold text-ink mt-2">{{ (s.flagged or ['none']) | join(', ') }}</h3>
+            <p class="text-[10px] text-subtle mt-1">{{ s.tp or 0 }} true, {{ s.fp or 0 }} false, {{ s.fn or 0 }} missed</p>
+        </div>
+        <div class="glass-panel p-5 rounded-2xl border border-line">
+            <span class="text-[10px] font-semibold uppercase tracking-wider text-subtle">Fault type</span>
+            <h3 class="text-lg font-bold mt-2 {% if s.scenario_type_correct %}text-good{% elif s.scenario_type_correct is none %}text-ink{% else %}text-risk{% endif %}">
+                {% if s.scenario_type_correct is none %}n/a{% elif s.scenario_type_correct %}correct{% else %}wrong{% endif %}
+            </h3>
+            <p class="text-[10px] text-subtle mt-1">onset error {{ s.onset_abs_error if s.onset_abs_error is not none else '–' }} rounds</p>
+        </div>
+        <div class="glass-panel p-5 rounded-2xl border border-line">
+            <span class="text-[10px] font-semibold uppercase tracking-wider text-subtle">Claims verified</span>
+            <h3 class="text-lg font-bold kpi mt-2 {% if fc.supported == fc.claims %}text-good{% else %}text-risk{% endif %}">{{ fc.supported }} / {{ fc.claims }}</h3>
+            <p class="text-[10px] text-subtle mt-1">checked against the tool log</p>
+        </div>
+        <div class="glass-panel p-5 rounded-2xl border border-line">
+            <span class="text-[10px] font-semibold uppercase tracking-wider text-subtle">Privacy budget</span>
+            <h3 class="text-lg font-bold text-ink kpi mt-2">&epsilon; {{ '%g' % view.budget.spent }} / {{ '%g' % view.budget.total }}</h3>
+            <p class="text-[10px] text-subtle mt-1">{{ view.calls | length }} tool calls &middot; {{ view.turns }} turns</p>
+        </div>
+    </div>
+    <p class="text-[11px] text-subtle -mt-4">
+        {{ sc.dataset | upper }} &middot; {{ sc.model | upper }} &middot; {{ sc.strategy }} &middot; {{ sc.rounds }} rounds &middot; seed {{ sc.seed }} &middot; auditor {{ view.agent }}
+    </p>
+
+    <!-- Summary -->
+    <div class="glass-panel p-6 rounded-2xl border border-line">
+        <h2 class="text-sm font-bold text-ink uppercase tracking-wider mb-2">Agent summary</h2>
+        <p class="text-sm text-ink leading-relaxed">{{ view.summary or 'No summary.' }}</p>
+    </div>
+
+    <!-- Findings -->
+    <div class="space-y-4">
+        <h2 class="text-sm font-bold text-ink uppercase tracking-wider">Findings ({{ view.findings | length }})</h2>
+        {% if not view.findings %}
+        <div class="glass-panel p-5 rounded-2xl border border-line text-sm text-subtle">The auditor reported no faulty clients.</div>
+        {% endif %}
+        {% for f in view.findings %}
+        <div class="glass-panel p-6 rounded-2xl border border-line">
+            <div class="flex flex-wrap items-center gap-2 mb-2">
+                <h3 class="text-lg font-bold text-ink">{{ f.client }}</h3>
+                <span class="badge bg-accent/10 text-accent border border-accent/20">{{ f.fault_type }}</span>
+                <span class="badge bg-muted text-ink border border-line">onset {{ f.onset_round }}</span>
+                <span class="badge bg-muted text-ink border border-line">confidence {{ f.confidence }}</span>
+                {% if f.client in (tr.clients or []) %}
+                <span class="badge bg-emerald-50 text-good border border-emerald-200"><i class="fa-solid fa-check"></i> planted</span>
+                {% else %}
+                <span class="badge bg-rose-50 text-risk border border-rose-200"><i class="fa-solid fa-xmark"></i> not planted</span>
+                {% endif %}
+            </div>
+            <p class="text-sm text-ink leading-relaxed mb-4">{{ f.rationale }}</p>
+            <div class="scroll-x border border-line rounded-xl">
+                <table class="log-table">
+                    <thead><tr><th>Claim</th><th>Metric</th><th>Claimed</th><th>Logged</th><th>Cites</th><th>Check</th></tr></thead>
+                    <tbody>
+                    {% for c in f.claims %}
+                    <tr>
+                        <td>{% for k, v in c['keys'].items() %}{{ k }}={{ v }}{% if not loop.last %}, {% endif %}{% endfor %}</td>
+                        <td class="font-mono">{{ c.metric }}</td>
+                        <td>{{ c.value }}</td>
+                        <td>{{ c.logged if c.logged is not none else '–' }}</td>
+                        <td><a class="claim-link font-mono" href="{{ c.href }}">{{ c.call_id }}</a> <span class="text-subtle">{{ c.tool or '' }}</span></td>
+                        <td>
+                            {% if c.supported %}<span class="badge bg-emerald-50 text-good border border-emerald-200"><i class="fa-solid fa-check"></i> supported</span>
+                            {% else %}<span class="badge bg-rose-50 text-risk border border-rose-200" title="{{ c.reason }}"><i class="fa-solid fa-xmark"></i> {{ c.reason }}</span>{% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Tool log -->
+    <div class="space-y-3">
+        <h2 class="text-sm font-bold text-ink uppercase tracking-wider">Tool call log</h2>
+        <p class="text-xs text-subtle -mt-1">Each call returns noisy aggregates only (Laplace noise, &epsilon; charged per call). Highlighted rows are cited by a claim.</p>
+        {% for call in view.calls %}
+        <details id="{{ call.anchor }}" class="glass-panel rounded-2xl border border-line" {% if call.n_cited %}open{% endif %}>
+            <summary class="px-5 py-3 flex flex-wrap items-center gap-2">
+                <i class="fa-solid fa-chevron-right chev text-subtle text-xs"></i>
+                <span class="font-mono font-bold text-ink">{{ call.id }}</span>
+                <span class="text-sm font-semibold text-ink">{{ call.tool }}</span>
+                {% if call.args %}<span class="font-mono text-xs text-subtle">{{ call.args | tojson }}</span>{% endif %}
+                <span class="badge bg-muted text-ink border border-line">&epsilon; {{ '%g' % (call.scalars.epsilon_spent or 0) }}</span>
+                {% if call.n_cited %}<span class="badge bg-accent/10 text-accent border border-accent/20">{{ call.n_cited }} cited row{{ 's' if call.n_cited != 1 }}</span>{% endif %}
+                {% if not call.ok %}<span class="badge bg-rose-50 text-risk border border-rose-200">failed</span>{% endif %}
+            </summary>
+            <div class="px-5 pb-5 space-y-3">
+                {% if call.scalars %}
+                <p class="text-[11px] text-subtle">{% for k, v in call.scalars.items() %}<span class="mr-3">{{ k }}: <span class="text-ink font-mono">{{ v }}</span></span>{% endfor %}</p>
+                {% endif %}
+                {% if call.error %}<p class="text-xs text-risk font-mono">{{ call.error }}</p>{% endif %}
+                {% for t in call.tables %}
+                <div>
+                    <p class="text-[11px] font-semibold text-subtle uppercase tracking-wider mb-1">{{ t.name }} ({{ t.rows | length }} rows)</p>
+                    <div class="scroll-x border border-line rounded-xl">
+                        <table class="log-table">
+                            <thead><tr>{% for col in t.columns %}<th>{{ col }}</th>{% endfor %}</tr></thead>
+                            <tbody>
+                            {% for r in t.rows %}
+                            <tr id="{{ r.anchor }}" class="{{ 'cited' if r.cited }}">{% for v in r.cells %}<td>{{ v if v is not none else '–' }}</td>{% endfor %}</tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </details>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if figures %}
+    <div class="space-y-3">
+        <h2 class="text-sm font-bold text-ink uppercase tracking-wider">Benchmark results (FedFault, BRFSS, LR)</h2>
+        <div class="grid grid-cols-1 gap-4">
+            {% for fig in figures %}
+            <div class="glass-panel p-4 rounded-2xl border border-line overflow-x-auto">
+                <img src="{{ url_for('fedauditor_figure', name=fig) }}" alt="{{ fig }}" class="max-w-none">
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+// Open the <details> around a linked row, scroll it into view and flash it.
+function showTarget() {
+    const id = decodeURIComponent(location.hash.slice(1));
+    if (!id) return;
+    const el = document.getElementById(id);
+    if (!el) return;
+    const d = el.tagName === 'DETAILS' ? el : el.closest('details');
+    if (d) d.open = true;
+    // After the browser's own jump to the anchor, so ours wins. A row sits in its own
+    // scrolling table box: centre the row in the box, then centre the box in the page.
+    setTimeout(() => {
+        const box = el.tagName === 'TR' ? el.closest('.scroll-x') : null;
+        if (box) {
+            box.scrollTop += el.getBoundingClientRect().top - box.getBoundingClientRect().top
+                             - box.clientHeight / 2;
+            box.scrollIntoView({block: 'center'});
+        } else {
+            el.scrollIntoView({block: 'start'});
+        }
+    }, 0);
+    if (el.tagName === 'TR') {
+        el.classList.add('flash');
+        setTimeout(() => el.classList.remove('flash'), 1600);
+    }
+}
+window.addEventListener('hashchange', showTarget);
+document.addEventListener('DOMContentLoaded', showTarget);
+</script>
+{% endblock %}

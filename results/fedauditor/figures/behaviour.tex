@@ -1,0 +1,16 @@
+\begin{table*}[t]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\caption{Audit behaviour per scenario (means over the 125 evaluation audits). ``Unsupp.'' is the total number of claims the fact-checker rejected; cost in US cents.}
+\label{tab:behaviour}
+\begin{tabular}{lrrrrrrrr}
+\toprule
+Auditor & Calls & Turns & Time (s) & $\varepsilon$ & Findings & Claims & Unsupp. & Cost (\textcent) \\
+\midrule
+Rule baseline & 8.4 & -- & 7 & 17.4 & 2.58 & 3.6 & 0 & 0.00 \\
+Haiku 5.5, prompt v4 & 11.7 & 5.5 & 61 & 20.0 & 2.62 & 16.2 & 9 & 0.89 \\
+Haiku 5.5, prompt v5 & 11.5 & 5.2 & 63 & 20.0 & 2.67 & 18.1 & 2 & 0.93 \\
+\bottomrule
+\end{tabular}
+\end{table*}

@@ -1,0 +1,22 @@
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\caption{Change in pooled test AUC caused by each planted fault, relative to the clean run with the same seed (mean of 5 seeds). LR at low/medium/high severity, MLP and XGBoost at high severity. The last row is the spread of clean-run AUC across seeds.}
+\label{tab:pooled}
+\begin{tabular}{lrrrrr}
+\toprule
+Fault & LR L & LR M & LR H & MLP H & XGB H \\
+\midrule
+Label noise & 0.000 & 0.000 & 0.000 & -0.001 & -0.001 \\
+Drift & 0.000 & 0.000 & -0.001 & 0.000 & 0.000 \\
+Poisoning & 0.000 & 0.000 & -0.184 & -0.207 & -0.049 \\
+Free-rider & 0.000 & 0.000 & 0.000 & -0.001 & 0.000 \\
+Prevalence shift & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 \\
+Subgroup bias & 0.000 & 0.000 & -0.001 & -0.001 & 0.000 \\
+Missing-data artefact & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 \\
+Expl. instability & 0.000 & 0.000 & 0.000 & 0.000 & -0.001 \\
+\textit{Clean, seed range} &  &  & 0.008 & 0.005 & 0.008 \\
+\bottomrule
+\end{tabular}
+\end{table}

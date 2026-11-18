@@ -1,0 +1,4078 @@
+{
+ "scenario": {
+  "fault": "prevalence_shift",
+  "severity": "high",
+  "seed": 10,
+  "dataset": "brfss",
+  "model": "lr",
+  "rounds": 20,
+  "strategy": "fedavg",
+  "n_affected": null,
+  "id": "brfss-lr-fedavg-r20-prevalence_shift-high-s10",
+  "level": 8.0
+ },
+ "truth": {
+  "fault": "prevalence_shift",
+  "severity": "high",
+  "level": 8.0,
+  "clients": [
+   "CA",
+   "NY",
+   "VT"
+  ],
+  "onset_round": 1,
+  "details": {
+   "CA": {
+    "odds_ratio": 8.0,
+    "train_prevalence_before": 0.1194,
+    "train_prevalence_after": 0.5302
+   },
+   "NY": {
+    "odds_ratio": 8.0,
+    "train_prevalence_before": 0.1147,
+    "train_prevalence_after": 0.4987
+   },
+   "VT": {
+    "odds_ratio": 8.0,
+    "train_prevalence_before": 0.0915,
+    "train_prevalence_after": 0.4517
+   }
+  }
+ },
+ "agent": "ClaudeAuditor",
+ "stop": "submitted",
+ "turns": 5,
+ "usage": {
+  "input": 12,
+  "output": 19542,
+  "cache_read": 47537,
+  "cache_write": 21540
+ },
+ "report_errors": [],
+ "seconds": 95.3,
+ "budget": {
+  "total": 20.0,
+  "spent": 20.0
+ },
+ "report": {
+  "findings": [
+   {
+    "client": "CA",
+    "fault_type": "prevalence_shift",
+    "onset_round": 1,
+    "confidence": 0.95,
+    "rationale": "CA's local outcome prevalence is about 0.51 while its mean predicted risk is about 0.19, giving CITL of -0.32 (z about -19). ECE is about 0.32, far above the federation pooled 0.017. AUC is normal (0.80), so the discrimination is intact and the problem is in the label level, which points to prevalence shift rather than label noise. Its updates are anomalous: median norm ratio about 4.4 (z +6.9) and negative mean cosine to the median update (z -5.4). The subgroup O/E ratio is about 2.5 in both sexes. CITL was already about -0.42 at round 1, so the fault appears to be present from the start.",
+    "claims": [
+     {
+      "call_id": "c3",
+      "client": "CA",
+      "metric": "citl",
+      "round": 20,
+      "value": -0.323
+     },
+     {
+      "call_id": "c3",
+      "client": "CA",
+      "metric": "prevalence",
+      "round": 20,
+      "value": 0.5117
+     },
+     {
+      "call_id": "c3",
+      "client": "CA",
+      "metric": "mean_pred",
+      "round": 20,
+      "value": 0.1886
+     },
+     {
+      "call_id": "c3",
+      "client": "CA",
+      "metric": "auc",
+      "round": 20,
+      "value": 0.8017
+     },
+     {
+      "call_id": "c3",
+      "client": "CA",
+      "metric": "ece",
+      "round": 20,
+      "value": 0.3249
+     },
+     {
+      "call_id": "c3",
+      "client": "CA",
+      "metric": "citl_z",
+      "round": 20,
+      "value": -19.2
+     },
+     {
+      "call_id": "c2",
+      "client": "CA",
+      "metric": "median_norm_ratio",
+      "value": 4.419
+     },
+     {
+      "call_id": "c2",
+      "client": "CA",
+      "metric": "mean_cos",
+      "value": -0.18
+     },
+     {
+      "call_id": "c2",
+      "client": "CA",
+      "metric": "median_norm_ratio_z",
+      "value": 6.9
+     },
+     {
+      "call_id": "c6",
+      "client": "CA",
+      "group": "0.0",
+      "metric": "oe_ratio",
+      "value": 2.494
+     },
+     {
+      "call_id": "c6",
+      "client": "CA",
+      "group": "1.0",
+      "metric": "oe_ratio",
+      "value": 2.506
+     },
+     {
+      "call_id": "c4",
+      "client": "CA",
+      "metric": "citl_first",
+      "value": -0.4215
+     }
+    ]
+   },
+   {
+    "client": "NY",
+    "fault_type": "prevalence_shift",
+    "onset_round": 1,
+    "confidence": 0.95,
+    "rationale": "NY's local outcome prevalence is about 0.51 against a mean predicted risk of about 0.20, giving CITL of -0.31 (z about -20.5) and ECE of about 0.33 (z +22). AUC is normal (0.817), so this is a label-level shift rather than label noise. Its updates are the largest in the federation: median norm ratio about 5.8 (z +7.9) and negative mean cosine (z -5.4). The O/E ratio is about 3.0 for sex 0 and 2.6 for sex 1. CITL was already about -0.30 at round 1.",
+    "claims": [
+     {
+      "call_id": "c3",
+      "client": "NY",
+      "metric": "citl",
+      "round": 20,
+      "value": -0.3141
+     },
+     {
+      "call_id": "c3",
+      "client": "NY",
+      "metric": "prevalence",
+      "round": 20,
+      "value": 0.5126
+     },
+     {
+      "call_id": "c3",
+      "client": "NY",
+      "metric": "mean_pred",
+      "round": 20,
+      "value": 0.1985
+     },
+     {
+      "call_id": "c3",
+      "client": "NY",
+      "metric": "auc",
+      "round": 20,
+      "value": 0.817
+     },
+     {
+      "call_id": "c3",
+      "client": "NY",
+      "metric": "ece",
+      "round": 20,
+      "value": 0.3264
+     },
+     {
+      "call_id": "c3",
+      "client": "NY",
+      "metric": "citl_z",
+      "round": 20,
+      "value": -20.5
+     },
+     {
+      "call_id": "c2",
+      "client": "NY",
+      "metric": "median_norm_ratio",
+      "value": 5.763
+     },
+     {
+      "call_id": "c2",
+      "client": "NY",
+      "metric": "mean_cos",
+      "value": -0.1744
+     },
+     {
+      "call_id": "c2",
+      "client": "NY",
+      "metric": "median_norm_ratio_z",
+      "value": 7.9
+     },
+     {
+      "call_id": "c6",
+      "client": "NY",
+      "group": "0.0",
+      "metric": "oe_ratio",
+      "value": 3.037
+     },
+     {
+      "call_id": "c6",
+      "client": "NY",
+      "group": "1.0",
+      "metric": "oe_ratio",
+      "value": 2.618
+     },
+     {
+      "call_id": "c4",
+      "client": "NY",
+      "metric": "citl_first",
+      "value": -0.2965
+     }
+    ]
+   },
+   {
+    "client": "VT",
+    "fault_type": "prevalence_shift",
+    "onset_round": 1,
+    "confidence": 0.75,
+    "rationale": "VT's round-20 outcome prevalence is about 0.48 against a mean predicted risk of about 0.17, giving CITL of -0.31 (z about -15) and ECE of about 0.25 (z +9.4). Its updates are anomalous (median norm ratio about 2.6, z +4.9; mean cosine -0.08, z -4.5). The O/E ratio is about 2.6 in both sexes. AUC is 0.78 on a small client (n=212), so it is not strongly degraded. A narrow per-round query at \u03b5=1 shows CITL -0.33 and prevalence 0.47 already at round 1, which suggests onset from the start, though that query is noisy. The drift table's late Sex-shift onset (round 12) is not corroborated by the prevalence signal and is not used as the basis for this finding.",
+    "claims": [
+     {
+      "call_id": "c3",
+      "client": "VT",
+      "metric": "citl",
+      "round": 20,
+      "value": -0.3117
+     },
+     {
+      "call_id": "c3",
+      "client": "VT",
+      "metric": "prevalence",
+      "round": 20,
+      "value": 0.4816
+     },
+     {
+      "call_id": "c3",
+      "client": "VT",
+      "metric": "mean_pred",
+      "round": 20,
+      "value": 0.1699
+     },
+     {
+      "call_id": "c3",
+      "client": "VT",
+      "metric": "auc",
+      "round": 20,
+      "value": 0.7816
+     },
+     {
+      "call_id": "c3",
+      "client": "VT",
+      "metric": "ece",
+      "round": 20,
+      "value": 0.2536
+     },
+     {
+      "call_id": "c3",
+      "client": "VT",
+      "metric": "citl_z",
+      "round": 20,
+      "value": -14.9
+     },
+     {
+      "call_id": "c3",
+      "client": "VT",
+      "metric": "prevalence_z",
+      "round": 20,
+      "value": 9.9
+     },
+     {
+      "call_id": "c2",
+      "client": "VT",
+      "metric": "median_norm_ratio",
+      "value": 2.649
+     },
+     {
+      "call_id": "c2",
+      "client": "VT",
+      "metric": "mean_cos",
+      "value": -0.07569
+     },
+     {
+      "call_id": "c2",
+      "client": "VT",
+      "metric": "median_norm_ratio_z",
+      "value": 4.9
+     },
+     {
+      "call_id": "c2",
+      "client": "VT",
+      "metric": "mean_cos_z",
+      "value": -4.5
+     },
+     {
+      "call_id": "c6",
+      "client": "VT",
+      "group": "0.0",
+      "metric": "oe_ratio",
+      "value": 2.657
+     },
+     {
+      "call_id": "c6",
+      "client": "VT",
+      "group": "1.0",
+      "metric": "oe_ratio",
+      "value": 2.542
+     },
+     {
+      "call_id": "c9",
+      "client": "VT",
+      "metric": "citl",
+      "round": 1,
+      "value": -0.327
+     },
+     {
+      "call_id": "c9",
+      "client": "VT",
+      "metric": "prevalence",
+      "round": 1,
+      "value": 0.465
+     }
+    ]
+   }
+  ],
+  "summary": "Screened all 52 clients with the all-client views of client_updates, client_performance, drift_by_round, feature_summary and subgroup_outcomes (Sex, AgeGroup, Income), then ran narrow follow-ups. Three clients (CA, NY, VT) stand out consistently across tools: local outcome prevalence about 0.48\u20130.51 against predicted risk about 0.17\u20130.20 (CITL about -0.31 and strongly significant), normal AUC, anomalous update norms with negative cosine, and high O/E in both sexes. I classified these as prevalence_shift; CA and NY are high confidence and VT moderate. Not reported: CT and GA age-group O/E outliers (their \u03b5=1 re-check values were not reproducible, so they are noise); WV, IL, SD, DE, DC and similar single feature-tail outliers (noise-level z_noise of 3\u20136 and not corroborated); GU's small-sample Sex drift; WA's and MO's update flags (weak, single-statistic). VI shows a Stroke-mean anomaly (z_noise about 4.2) and a late drift onset (round 13), but this is a weak lead with no corroboration in performance or updates, so I did not report it. Budget is fully spent (20.0 of 20.0 used)."
+ },
+ "log": [
+  {
+   "id": "c1",
+   "tool": "federation_overview",
+   "args": {},
+   "ok": true,
+   "result": {
+    "call_id": "c1",
+    "tool": "federation_overview",
+    "epsilon_spent": 0.0,
+    "budget_left": 20.0,
+    "model": "lr",
+    "strategy": "fedavg",
+    "rounds": 20,
+    "n_clients": 52,
+    "clients": {
+     "columns": [
+      "client",
+      "n_train"
+     ],
+     "rows": [
+      [
+       "AK",
+       2274
+      ],
+      [
+       "AL",
+       1794
+      ],
+      [
+       "AR",
+       2085
+      ],
+      [
+       "AZ",
+       4881
+      ],
+      [
+       "CA",
+       992
+      ],
+      [
+       "CO",
+       3618
+      ],
+      [
+       "CT",
+       3581
+      ],
+      [
+       "DC",
+       1334
+      ],
+      [
+       "DE",
+       1687
+      ],
+      [
+       "FL",
+       5033
+      ],
+      [
+       "GA",
+       3111
+      ],
+      [
+       "GU",
+       708
+      ],
+      [
+       "HI",
+       3658
+      ],
+      [
+       "IA",
+       4029
+      ],
+      [
+       "ID",
+       2712
+      ],
+      [
+       "IL",
+       2434
+      ],
+      [
+       "IN",
+       4251
+      ],
+      [
+       "KS",
+       4182
+      ],
+      [
+       "LA",
+       2110
+      ],
+      [
+       "MA",
+       3597
+      ],
+      [
+       "MD",
+       6683
+      ],
+      [
+       "ME",
+       4974
+      ],
+      [
+       "MI",
+       3936
+      ],
+      [
+       "MN",
+       6309
+      ],
+      [
+       "MO",
+       2837
+      ],
+      [
+       "MS",
+       1652
+      ],
+      [
+       "MT",
+       3169
+      ],
+      [
+       "NC",
+       1622
+      ],
+      [
+       "ND",
+       2292
+      ],
+      [
+       "NE",
+       5883
+      ],
+      [
+       "NH",
+       2778
+      ],
+      [
+       "NJ",
+       3472
+      ],
+      [
+       "NM",
+       1433
+      ],
+      [
+       "NV",
+       1062
+      ],
+      [
+       "NY",
+       1512
+      ],
+      [
+       "OH",
+       5359
+      ],
+      [
+       "OK",
+       2670
+      ],
+      [
+       "OR",
+       2557
+      ],
+      [
+       "PR",
+       2057
+      ],
+      [
+       "RI",
+       2239
+      ],
+      [
+       "SC",
+       3798
+      ],
+      [
+       "SD",
+       2433
+      ],
+      [
+       "TN",
+       2244
+      ],
+      [
+       "TX",
+       3852
+      ],
+      [
+       "UT",
+       4364
+      ],
+      [
+       "VA",
+       2802
+      ],
+      [
+       "VI",
+       810
+      ],
+      [
+       "VT",
+       642
+      ],
+      [
+       "WA",
+       11181
+      ],
+      [
+       "WI",
+       4974
+      ],
+      [
+       "WV",
+       1887
+      ],
+      [
+       "WY",
+       1859
+      ]
+     ]
+    },
+    "features": [
+     "HighBP",
+     "HighChol",
+     "BMI",
+     "Smoker",
+     "Stroke",
+     "HeartDisease",
+     "PhysActivity",
+     "HvyAlcohol",
+     "AnyHealthcare",
+     "GenHlth",
+     "MentHlth",
+     "PhysHlth",
+     "DiffWalk",
+     "Sex",
+     "AgeGroup",
+     "Education",
+     "Income"
+    ],
+    "sensitive_attributes": {
+     "Sex": [
+      "0.0",
+      "1.0"
+     ],
+     "AgeGroup": [
+      "1.0",
+      "10.0",
+      "11.0",
+      "12.0",
+      "13.0",
+      "2.0",
+      "3.0",
+      "4.0",
+      "5.0",
+      "6.0",
+      "7.0",
+      "8.0",
+      "9.0"
+     ],
+     "Income": [
+      "1.0",
+      "2.0",
+      "3.0",
+      "4.0",
+      "5.0",
+      "6.0",
+      "7.0"
+     ]
+    }
+   }
+  },
+  {
+   "id": "c2",
+   "tool": "client_updates",
+   "args": {},
+   "ok": true,
+   "result": {
+    "call_id": "c2",
+    "tool": "client_updates",
+    "epsilon_spent": 3.0,
+    "budget_left": 17.0,
+    "clients": {
+     "columns": [
+      "client",
+      "rounds",
+      "median_norm_ratio",
+      "min_norm_ratio",
+      "mean_cos",
+      "min_cos",
+      "flags"
+     ],
+     "rows": [
+      [
+       "AK",
+       20,
+       1.088,
+       0.8608,
+       0.4582,
+       -0.04293,
+       ""
+      ],
+      [
+       "AL",
+       20,
+       1.197,
+       0.6034,
+       0.3406,
+       -0.01773,
+       ""
+      ],
+      [
+       "AR",
+       20,
+       0.7784,
+       0.6404,
+       0.5102,
+       0.172,
+       ""
+      ],
+      [
+       "AZ",
+       20,
+       1.35,
+       1.058,
+       0.6023,
+       0.201,
+       ""
+      ],
+      [
+       "CA",
+       20,
+       4.419,
+       0.4373,
+       -0.18,
+       -0.3145,
+       "median_norm_ratio z=+6.9; mean_cos z=-5.4"
+      ],
+      [
+       "CO",
+       20,
+       1.224,
+       1.134,
+       0.6411,
+       0.166,
+       ""
+      ],
+      [
+       "CT",
+       20,
+       0.9341,
+       0.6777,
+       0.7758,
+       0.4278,
+       ""
+      ],
+      [
+       "DC",
+       20,
+       0.765,
+       0.6196,
+       0.5044,
+       0.285,
+       ""
+      ],
+      [
+       "DE",
+       20,
+       0.724,
+       0.509,
+       0.3593,
+       -0.0153,
+       ""
+      ],
+      [
+       "FL",
+       20,
+       1.12,
+       1.025,
+       0.4886,
+       -0.08027,
+       ""
+      ],
+      [
+       "GA",
+       20,
+       0.7701,
+       0.566,
+       0.3064,
+       -0.2961,
+       ""
+      ],
+      [
+       "GU",
+       20,
+       0.9734,
+       0.3251,
+       0.1799,
+       -0.1981,
+       ""
+      ],
+      [
+       "HI",
+       20,
+       1.126,
+       1.036,
+       0.4967,
+       0.02642,
+       ""
+      ],
+      [
+       "IA",
+       20,
+       1.19,
+       1.071,
+       0.5158,
+       -0.007823,
+       ""
+      ],
+      [
+       "ID",
+       20,
+       0.988,
+       0.9032,
+       0.5987,
+       0.05875,
+       ""
+      ],
+      [
+       "IL",
+       20,
+       0.7993,
+       0.6529,
+       0.5773,
+       -0.1103,
+       ""
+      ],
+      [
+       "IN",
+       20,
+       1.047,
+       0.9357,
+       0.6205,
+       0.1412,
+       ""
+      ],
+      [
+       "KS",
+       20,
+       0.9924,
+       0.869,
+       0.6194,
+       0.06214,
+       ""
+      ],
+      [
+       "LA",
+       20,
+       0.8237,
+       0.5842,
+       0.3542,
+       -0.02407,
+       ""
+      ],
+      [
+       "MA",
+       20,
+       1.181,
+       0.941,
+       0.6175,
+       0.1415,
+       ""
+      ],
+      [
+       "MD",
+       20,
+       1.175,
+       0.8939,
+       0.6939,
+       0.1798,
+       ""
+      ],
+      [
+       "ME",
+       20,
+       1.404,
+       1.215,
+       0.6072,
+       0.2671,
+       ""
+      ],
+      [
+       "MI",
+       20,
+       1.129,
+       1.064,
+       0.4987,
+       -0.1439,
+       ""
+      ],
+      [
+       "MN",
+       20,
+       1.377,
+       1.113,
+       0.5593,
+       -0.08539,
+       ""
+      ],
+      [
+       "MO",
+       20,
+       0.5958,
+       0.4199,
+       0.635,
+       0.1577,
+       "min_norm_ratio z=-3.8"
+      ],
+      [
+       "MS",
+       20,
+       0.8045,
+       0.508,
+       0.3807,
+       -0.05767,
+       ""
+      ],
+      [
+       "MT",
+       20,
+       0.9937,
+       0.8939,
+       0.594,
+       0.1912,
+       ""
+      ],
+      [
+       "NC",
+       20,
+       0.5718,
+       0.4997,
+       0.5589,
+       0.1375,
+       ""
+      ],
+      [
+       "ND",
+       20,
+       0.6609,
+       0.5954,
+       0.5788,
+       0.1647,
+       ""
+      ],
+      [
+       "NE",
+       20,
+       1.281,
+       1.105,
+       0.5526,
+       -0.1009,
+       ""
+      ],
+      [
+       "NH",
+       20,
+       1.123,
+       1.018,
+       0.5523,
+       0.08696,
+       ""
+      ],
+      [
+       "NJ",
+       20,
+       1.058,
+       0.9579,
+       0.6206,
+       0.2731,
+       ""
+      ],
+      [
+       "NM",
+       20,
+       0.5419,
+       0.4584,
+       0.4579,
+       0.0115,
+       ""
+      ],
+      [
+       "NV",
+       20,
+       0.5169,
+       0.415,
+       0.5311,
+       0.0733,
+       ""
+      ],
+      [
+       "NY",
+       20,
+       5.763,
+       0.5785,
+       -0.1744,
+       -0.2771,
+       "median_norm_ratio z=+7.9; mean_cos z=-5.4"
+      ],
+      [
+       "OH",
+       20,
+       1.228,
+       1.148,
+       0.5158,
+       0.06168,
+       ""
+      ],
+      [
+       "OK",
+       20,
+       0.8422,
+       0.801,
+       0.5082,
+       0.07554,
+       ""
+      ],
+      [
+       "OR",
+       20,
+       0.844,
+       0.7622,
+       0.6704,
+       0.3249,
+       ""
+      ],
+      [
+       "PR",
+       20,
+       0.915,
+       0.8035,
+       0.3806,
+       0.2133,
+       ""
+      ],
+      [
+       "RI",
+       20,
+       0.9059,
+       0.7222,
+       0.4993,
+       0.1284,
+       ""
+      ],
+      [
+       "SC",
+       20,
+       0.8695,
+       0.7225,
+       0.5197,
+       0.05791,
+       ""
+      ],
+      [
+       "SD",
+       20,
+       0.7567,
+       0.5728,
+       0.3471,
+       -0.1805,
+       ""
+      ],
+      [
+       "TN",
+       20,
+       0.9722,
+       0.7813,
+       0.469,
+       0.1185,
+       ""
+      ],
+      [
+       "TX",
+       20,
+       0.8998,
+       0.7278,
+       0.6676,
+       0.2205,
+       ""
+      ],
+      [
+       "UT",
+       20,
+       1.308,
+       1.056,
+       0.6969,
+       0.2634,
+       ""
+      ],
+      [
+       "VA",
+       20,
+       0.9674,
+       0.758,
+       0.5851,
+       0.2321,
+       ""
+      ],
+      [
+       "VI",
+       20,
+       0.5584,
+       0.2803,
+       0.3339,
+       -0.1698,
+       ""
+      ],
+      [
+       "VT",
+       20,
+       2.649,
+       0.3345,
+       -0.07569,
+       -0.3574,
+       "median_norm_ratio z=+4.9; mean_cos z=-4.5"
+      ],
+      [
+       "WA",
+       20,
+       2.316,
+       1.52,
+       0.785,
+       0.3554,
+       "median_norm_ratio z=+3.1"
+      ],
+      [
+       "WI",
+       20,
+       1.149,
+       1.002,
+       0.6808,
+       0.3139,
+       ""
+      ],
+      [
+       "WV",
+       20,
+       0.7914,
+       0.4938,
+       0.3613,
+       -0.02416,
+       ""
+      ],
+      [
+       "WY",
+       20,
+       0.803,
+       0.6829,
+       0.5338,
+       0.1813,
+       ""
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "id": "c3",
+   "tool": "client_performance",
+   "args": {},
+   "ok": true,
+   "result": {
+    "call_id": "c3",
+    "tool": "client_performance",
+    "epsilon_spent": 3.0,
+    "budget_left": 14.0,
+    "round": 20,
+    "clients": {
+     "columns": [
+      "client",
+      "n",
+      "auc",
+      "ece",
+      "brier",
+      "prevalence",
+      "mean_pred",
+      "citl",
+      "flags"
+     ],
+     "rows": [
+      [
+       "AK",
+       758,
+       0.784,
+       0.02611,
+       0.08729,
+       0.09952,
+       0.1285,
+       0.029,
+       ""
+      ],
+      [
+       "AL",
+       598,
+       0.8008,
+       0.03508,
+       0.137,
+       0.1977,
+       0.1719,
+       -0.02579,
+       ""
+      ],
+      [
+       "AR",
+       696,
+       0.7943,
+       0.05816,
+       0.1203,
+       0.1707,
+       0.1882,
+       0.01754,
+       ""
+      ],
+      [
+       "AZ",
+       1628,
+       0.7979,
+       0.02478,
+       0.1018,
+       0.1359,
+       0.1457,
+       0.009834,
+       ""
+      ],
+      [
+       "CA",
+       342,
+       0.8017,
+       0.3249,
+       0.3054,
+       0.5117,
+       0.1886,
+       -0.323,
+       "citl z=-19.2; ece z=+17.8; prevalence z=+11.2"
+      ],
+      [
+       "CO",
+       1207,
+       0.8485,
+       0.01809,
+       0.06858,
+       0.08606,
+       0.104,
+       0.01789,
+       ""
+      ],
+      [
+       "CT",
+       1194,
+       0.8135,
+       0.01411,
+       0.09007,
+       0.1152,
+       0.1237,
+       0.008502,
+       ""
+      ],
+      [
+       "DC",
+       445,
+       0.9123,
+       0.02605,
+       0.05723,
+       0.1049,
+       0.09852,
+       -0.006379,
+       ""
+      ],
+      [
+       "DE",
+       563,
+       0.7554,
+       0.05887,
+       0.1179,
+       0.1479,
+       0.1498,
+       0.001902,
+       ""
+      ],
+      [
+       "FL",
+       1678,
+       0.8207,
+       0.02338,
+       0.1116,
+       0.1625,
+       0.157,
+       -0.005465,
+       ""
+      ],
+      [
+       "GA",
+       1037,
+       0.8249,
+       0.02782,
+       0.1172,
+       0.1723,
+       0.1568,
+       -0.01558,
+       ""
+      ],
+      [
+       "GU",
+       237,
+       0.7772,
+       0.08575,
+       0.1383,
+       0.203,
+       0.1365,
+       -0.06653,
+       "citl z=-3.4"
+      ],
+      [
+       "HI",
+       1220,
+       0.8027,
+       0.02531,
+       0.09273,
+       0.1206,
+       0.1207,
+       7.944e-05,
+       ""
+      ],
+      [
+       "IA",
+       1344,
+       0.8039,
+       0.01852,
+       0.09375,
+       0.1323,
+       0.144,
+       0.01163,
+       ""
+      ],
+      [
+       "ID",
+       905,
+       0.8618,
+       0.02462,
+       0.08096,
+       0.1061,
+       0.1203,
+       0.01415,
+       ""
+      ],
+      [
+       "IL",
+       812,
+       0.8638,
+       0.0247,
+       0.08691,
+       0.1222,
+       0.1225,
+       0.0003416,
+       ""
+      ],
+      [
+       "IN",
+       1417,
+       0.8024,
+       0.03733,
+       0.1141,
+       0.1601,
+       0.1534,
+       -0.006784,
+       ""
+      ],
+      [
+       "KS",
+       1395,
+       0.823,
+       0.01649,
+       0.0927,
+       0.136,
+       0.1398,
+       0.003842,
+       ""
+      ],
+      [
+       "LA",
+       704,
+       0.8539,
+       0.02277,
+       0.1075,
+       0.177,
+       0.1675,
+       -0.009538,
+       ""
+      ],
+      [
+       "MA",
+       1200,
+       0.7929,
+       0.02126,
+       0.07679,
+       0.09831,
+       0.1113,
+       0.01301,
+       ""
+      ],
+      [
+       "MD",
+       2228,
+       0.7873,
+       0.02407,
+       0.1079,
+       0.1508,
+       0.1452,
+       -0.005587,
+       ""
+      ],
+      [
+       "ME",
+       1658,
+       0.8174,
+       0.01519,
+       0.09677,
+       0.1394,
+       0.154,
+       0.01457,
+       ""
+      ],
+      [
+       "MI",
+       1313,
+       0.8345,
+       0.0263,
+       0.09896,
+       0.14,
+       0.1461,
+       0.006076,
+       ""
+      ],
+      [
+       "MN",
+       2103,
+       0.8414,
+       0.01674,
+       0.08567,
+       0.1183,
+       0.1269,
+       0.008649,
+       ""
+      ],
+      [
+       "MO",
+       946,
+       0.8461,
+       0.01922,
+       0.1021,
+       0.1448,
+       0.1583,
+       0.01344,
+       ""
+      ],
+      [
+       "MS",
+       551,
+       0.8021,
+       0.02584,
+       0.1235,
+       0.172,
+       0.1704,
+       -0.001568,
+       ""
+      ],
+      [
+       "MT",
+       1057,
+       0.8374,
+       0.03248,
+       0.09176,
+       0.1272,
+       0.1421,
+       0.01486,
+       ""
+      ],
+      [
+       "NC",
+       541,
+       0.925,
+       0.01245,
+       0.09537,
+       0.1343,
+       0.1333,
+       -0.001018,
+       ""
+      ],
+      [
+       "ND",
+       764,
+       0.8006,
+       0.02542,
+       0.09989,
+       0.1238,
+       0.1313,
+       0.007533,
+       ""
+      ],
+      [
+       "NE",
+       1961,
+       0.8349,
+       0.02631,
+       0.09576,
+       0.1336,
+       0.1378,
+       0.004188,
+       ""
+      ],
+      [
+       "NH",
+       926,
+       0.8074,
+       0.04692,
+       0.1022,
+       0.1255,
+       0.1533,
+       0.02787,
+       ""
+      ],
+      [
+       "NJ",
+       1158,
+       0.8781,
+       0.02206,
+       0.08586,
+       0.1185,
+       0.117,
+       -0.001545,
+       ""
+      ],
+      [
+       "NM",
+       478,
+       0.7446,
+       0.02821,
+       0.1012,
+       0.1457,
+       0.1515,
+       0.005818,
+       ""
+      ],
+      [
+       "NV",
+       355,
+       0.7659,
+       0.04156,
+       0.09222,
+       0.1334,
+       0.1254,
+       -0.008048,
+       ""
+      ],
+      [
+       "NY",
+       492,
+       0.817,
+       0.3264,
+       0.2989,
+       0.5126,
+       0.1985,
+       -0.3141,
+       "ece z=+22.1; citl z=-20.5; prevalence z=+11.3"
+      ],
+      [
+       "OH",
+       1787,
+       0.8387,
+       0.02284,
+       0.1083,
+       0.1643,
+       0.1555,
+       -0.008774,
+       ""
+      ],
+      [
+       "OK",
+       890,
+       0.8137,
+       0.003622,
+       0.1065,
+       0.1497,
+       0.1567,
+       0.006963,
+       ""
+      ],
+      [
+       "OR",
+       853,
+       0.8177,
+       0.02871,
+       0.09233,
+       0.1178,
+       0.1234,
+       0.005597,
+       ""
+      ],
+      [
+       "PR",
+       686,
+       0.811,
+       0.03157,
+       0.1263,
+       0.19,
+       0.183,
+       -0.007038,
+       ""
+      ],
+      [
+       "RI",
+       747,
+       0.8506,
+       0.01774,
+       0.09149,
+       0.1282,
+       0.1292,
+       0.0009729,
+       ""
+      ],
+      [
+       "SC",
+       1266,
+       0.8198,
+       0.02094,
+       0.1163,
+       0.1712,
+       0.1621,
+       -0.009076,
+       ""
+      ],
+      [
+       "SD",
+       811,
+       0.8656,
+       0.05074,
+       0.1061,
+       0.1616,
+       0.1433,
+       -0.01832,
+       ""
+      ],
+      [
+       "TN",
+       749,
+       0.8574,
+       0.04957,
+       0.1116,
+       0.1692,
+       0.1524,
+       -0.01679,
+       ""
+      ],
+      [
+       "TX",
+       1284,
+       0.7993,
+       0.01746,
+       0.1014,
+       0.143,
+       0.1375,
+       -0.005536,
+       ""
+      ],
+      [
+       "UT",
+       1455,
+       0.8564,
+       0.01776,
+       0.07014,
+       0.09297,
+       0.112,
+       0.01908,
+       ""
+      ],
+      [
+       "VA",
+       934,
+       0.8099,
+       0.02312,
+       0.1122,
+       0.1605,
+       0.1465,
+       -0.01402,
+       ""
+      ],
+      [
+       "VI",
+       270,
+       0.7901,
+       0.05296,
+       0.1122,
+       0.1704,
+       0.1491,
+       -0.02132,
+       ""
+      ],
+      [
+       "VT",
+       212,
+       0.7816,
+       0.2536,
+       0.2753,
+       0.4816,
+       0.1699,
+       -0.3117,
+       "citl z=-14.9; prevalence z=+9.9; ece z=+9.4"
+      ],
+      [
+       "WA",
+       3728,
+       0.8162,
+       0.01743,
+       0.08295,
+       0.1104,
+       0.1229,
+       0.01245,
+       ""
+      ],
+      [
+       "WI",
+       1659,
+       0.8126,
+       0.02206,
+       0.1096,
+       0.1547,
+       0.1638,
+       0.009175,
+       ""
+      ],
+      [
+       "WV",
+       629,
+       0.8143,
+       0.02618,
+       0.1302,
+       0.2143,
+       0.1878,
+       -0.0265,
+       ""
+      ],
+      [
+       "WY",
+       620,
+       0.8096,
+       0.02834,
+       0.1003,
+       0.1372,
+       0.1427,
+       0.005472,
+       ""
+      ],
+      [
+       "_pooled",
+       54491,
+       0.82,
+       0.01662,
+       0.1022,
+       0.1448,
+       0.1424,
+       -0.002374,
+       ""
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "id": "c4",
+   "tool": "drift_by_round",
+   "args": {},
+   "ok": true,
+   "result": {
+    "call_id": "c4",
+    "tool": "drift_by_round",
+    "epsilon_spent": 3.0,
+    "budget_left": 11.0,
+    "pooled": {
+     "columns": [
+      "round",
+      "prevalence",
+      "citl"
+     ],
+     "rows": [
+      [
+       1,
+       0.1447,
+       0.1814
+      ],
+      [
+       2,
+       0.1447,
+       0.1038
+      ],
+      [
+       3,
+       0.1444,
+       0.06638
+      ],
+      [
+       4,
+       0.1445,
+       0.04283
+      ],
+      [
+       5,
+       0.1458,
+       0.03226
+      ],
+      [
+       6,
+       0.1467,
+       0.02245
+      ],
+      [
+       7,
+       0.1449,
+       0.01618
+      ],
+      [
+       8,
+       0.1463,
+       0.01196
+      ],
+      [
+       9,
+       0.1447,
+       0.009096
+      ],
+      [
+       10,
+       0.1451,
+       0.008204
+      ],
+      [
+       11,
+       0.1445,
+       0.004401
+      ],
+      [
+       12,
+       0.1451,
+       0.002333
+      ],
+      [
+       13,
+       0.1447,
+       0.00213
+      ],
+      [
+       14,
+       0.1449,
+       0.00113
+      ],
+      [
+       15,
+       0.1449,
+       0.0003694
+      ],
+      [
+       16,
+       0.145,
+       -0.001232
+      ],
+      [
+       17,
+       0.1448,
+       -0.001466
+      ],
+      [
+       18,
+       0.1461,
+       -0.002182
+      ],
+      [
+       19,
+       0.1456,
+       0.0001676
+      ],
+      [
+       20,
+       0.1446,
+       0.0008884
+      ]
+     ]
+    },
+    "clients": {
+     "columns": [
+      "client",
+      "max_shift_sd",
+      "mean_shift_sd",
+      "max_shift_feature",
+      "onset_round",
+      "citl_first",
+      "citl_last",
+      "flags"
+     ],
+     "rows": [
+      [
+       "AK",
+       0.4813,
+       0.03951,
+       "PhysActivity",
+       null,
+       0.161,
+       0.05689,
+       ""
+      ],
+      [
+       "AL",
+       0.3005,
+       0.09214,
+       "HighChol",
+       null,
+       0.1432,
+       0.2599,
+       ""
+      ],
+      [
+       "AR",
+       0.3522,
+       0.04933,
+       "GenHlth",
+       null,
+       0.0432,
+       0.08855,
+       ""
+      ],
+      [
+       "AZ",
+       0.1836,
+       0.02696,
+       "Education",
+       null,
+       0.1763,
+       -0.03472,
+       ""
+      ],
+      [
+       "CA",
+       1.07,
+       0.1444,
+       "HeartDisease",
+       null,
+       -0.4215,
+       -0.26,
+       ""
+      ],
+      [
+       "CO",
+       0.2393,
+       0.06414,
+       "GenHlth",
+       null,
+       0.2148,
+       -0.0001931,
+       ""
+      ],
+      [
+       "CT",
+       0.3003,
+       0.05941,
+       "Education",
+       null,
+       0.1734,
+       0.02219,
+       ""
+      ],
+      [
+       "DC",
+       0.6005,
+       0.1346,
+       "Income",
+       null,
+       0.2605,
+       0.03682,
+       ""
+      ],
+      [
+       "DE",
+       0.4538,
+       0.0631,
+       "Income",
+       null,
+       0.1987,
+       -0.01834,
+       ""
+      ],
+      [
+       "FL",
+       0.2112,
+       0.01736,
+       "HvyAlcohol",
+       null,
+       0.1621,
+       -0.06162,
+       ""
+      ],
+      [
+       "GA",
+       0.1429,
+       0.02558,
+       "Stroke",
+       null,
+       0.1496,
+       0.02595,
+       ""
+      ],
+      [
+       "GU",
+       2.422,
+       0.3191,
+       "Sex",
+       1,
+       -0.6217,
+       0.08183,
+       "max_shift_sd z=+3.2"
+      ],
+      [
+       "HI",
+       0.179,
+       0.04548,
+       "AgeGroup",
+       null,
+       0.1826,
+       0.04394,
+       ""
+      ],
+      [
+       "IA",
+       0.2547,
+       0.04682,
+       "MentHlth",
+       null,
+       0.1557,
+       -0.01908,
+       ""
+      ],
+      [
+       "ID",
+       0.8313,
+       0.09994,
+       "Stroke",
+       null,
+       0.2885,
+       0.03892,
+       ""
+      ],
+      [
+       "IL",
+       0.4376,
+       0.05823,
+       "Income",
+       null,
+       0.2586,
+       -0.03149,
+       ""
+      ],
+      [
+       "IN",
+       0.2617,
+       0.04398,
+       "HeartDisease",
+       null,
+       0.1564,
+       -0.01287,
+       ""
+      ],
+      [
+       "KS",
+       0.1167,
+       0.01497,
+       "Smoker",
+       null,
+       0.2421,
+       0.0135,
+       ""
+      ],
+      [
+       "LA",
+       0.3282,
+       0.06077,
+       "MentHlth",
+       null,
+       0.107,
+       -0.02545,
+       ""
+      ],
+      [
+       "MA",
+       0.1645,
+       0.03545,
+       "HighBP",
+       null,
+       0.2119,
+       -0.03305,
+       ""
+      ],
+      [
+       "MD",
+       0.1031,
+       0.02755,
+       "PhysActivity",
+       null,
+       0.1732,
+       -0.02734,
+       ""
+      ],
+      [
+       "ME",
+       0.1772,
+       0.03783,
+       "GenHlth",
+       null,
+       0.1666,
+       -0.01293,
+       ""
+      ],
+      [
+       "MI",
+       0.2061,
+       0.03348,
+       "PhysActivity",
+       null,
+       0.2031,
+       0.0204,
+       ""
+      ],
+      [
+       "MN",
+       0.1943,
+       0.01805,
+       "AgeGroup",
+       null,
+       0.191,
+       -0.06553,
+       ""
+      ],
+      [
+       "MO",
+       0.2226,
+       0.04121,
+       "GenHlth",
+       null,
+       0.1343,
+       0.03731,
+       ""
+      ],
+      [
+       "MS",
+       0.7438,
+       0.06913,
+       "DiffWalk",
+       null,
+       0.1898,
+       0.05151,
+       ""
+      ],
+      [
+       "MT",
+       0.1446,
+       0.03628,
+       "BMI",
+       null,
+       0.1939,
+       -0.03834,
+       ""
+      ],
+      [
+       "NC",
+       0.4553,
+       0.09518,
+       "AgeGroup",
+       2,
+       0.1618,
+       0.001542,
+       ""
+      ],
+      [
+       "ND",
+       0.54,
+       0.1098,
+       "AnyHealthcare",
+       null,
+       0.06804,
+       -0.003004,
+       ""
+      ],
+      [
+       "NE",
+       0.1183,
+       0.02763,
+       "PhysHlth",
+       null,
+       0.1933,
+       -0.03422,
+       ""
+      ],
+      [
+       "NH",
+       0.1975,
+       0.05757,
+       "HeartDisease",
+       null,
+       -0.04687,
+       0.09797,
+       ""
+      ],
+      [
+       "NJ",
+       0.3568,
+       0.09027,
+       "GenHlth",
+       null,
+       0.171,
+       -0.02105,
+       ""
+      ],
+      [
+       "NM",
+       0.67,
+       0.1128,
+       "BMI",
+       null,
+       0.2056,
+       0.04756,
+       ""
+      ],
+      [
+       "NV",
+       0.7424,
+       0.156,
+       "MentHlth",
+       null,
+       0.3085,
+       0.145,
+       ""
+      ],
+      [
+       "NY",
+       0.5314,
+       0.1201,
+       "BMI",
+       1,
+       -0.2965,
+       -0.3741,
+       ""
+      ],
+      [
+       "OH",
+       0.09356,
+       0.01409,
+       "BMI",
+       null,
+       0.2204,
+       0.01682,
+       ""
+      ],
+      [
+       "OK",
+       0.2279,
+       0.05524,
+       "Stroke",
+       null,
+       0.1357,
+       -0.03232,
+       ""
+      ],
+      [
+       "OR",
+       0.2897,
+       0.05549,
+       "HighBP",
+       null,
+       0.07675,
+       0.04872,
+       ""
+      ],
+      [
+       "PR",
+       0.2519,
+       0.04513,
+       "AgeGroup",
+       null,
+       0.1624,
+       -0.1029,
+       ""
+      ],
+      [
+       "RI",
+       0.4728,
+       0.0848,
+       "Education",
+       null,
+       0.1382,
+       -0.0423,
+       ""
+      ],
+      [
+       "SC",
+       0.2994,
+       0.04331,
+       "GenHlth",
+       null,
+       0.1887,
+       -0.03588,
+       ""
+      ],
+      [
+       "SD",
+       0.6314,
+       0.1254,
+       "Education",
+       null,
+       0.115,
+       -0.03326,
+       ""
+      ],
+      [
+       "TN",
+       0.4156,
+       0.05456,
+       "AnyHealthcare",
+       null,
+       0.132,
+       -0.01575,
+       ""
+      ],
+      [
+       "TX",
+       0.1429,
+       0.02778,
+       "Smoker",
+       null,
+       0.2057,
+       -0.06485,
+       ""
+      ],
+      [
+       "UT",
+       0.1762,
+       0.0481,
+       "HighBP",
+       null,
+       0.2484,
+       -0.02132,
+       ""
+      ],
+      [
+       "VA",
+       0.2338,
+       0.03758,
+       "HighBP",
+       null,
+       0.1722,
+       -0.04231,
+       ""
+      ],
+      [
+       "VI",
+       0.7597,
+       0.2786,
+       "DiffWalk",
+       13,
+       0.01826,
+       -0.06449,
+       ""
+      ],
+      [
+       "VT",
+       2.048,
+       0.3334,
+       "Sex",
+       12,
+       0.01779,
+       0.1006,
+       ""
+      ],
+      [
+       "WA",
+       0.04624,
+       0.006505,
+       "Smoker",
+       null,
+       0.2019,
+       0.01154,
+       ""
+      ],
+      [
+       "WI",
+       0.2791,
+       0.03434,
+       "PhysHlth",
+       null,
+       0.2406,
+       0.01907,
+       ""
+      ],
+      [
+       "WV",
+       0.131,
+       0.02518,
+       "BMI",
+       null,
+       0.2395,
+       -0.1016,
+       ""
+      ],
+      [
+       "WY",
+       0.3883,
+       0.08436,
+       "DiffWalk",
+       null,
+       0.1983,
+       0.16,
+       ""
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "id": "c5",
+   "tool": "feature_summary",
+   "args": {},
+   "ok": true,
+   "result": {
+    "call_id": "c5",
+    "tool": "feature_summary",
+    "epsilon_spent": 3.0,
+    "budget_left": 8.0,
+    "round": 20,
+    "outliers": {
+     "columns": [
+      "client",
+      "feature",
+      "mean",
+      "sd",
+      "p01",
+      "p99",
+      "outlier_stat",
+      "z",
+      "z_noise"
+     ],
+     "rows": [
+      [
+       "IL",
+       "HighBP",
+       0.3217,
+       0.8509,
+       -0.09925,
+       0.8984,
+       "sd",
+       6.248,
+       3.029
+      ],
+      [
+       "NY",
+       "HighBP",
+       0.1357,
+       0.5374,
+       -0.8307,
+       0.9662,
+       "p01",
+       -10.41,
+       -4.483
+      ],
+      [
+       "SD",
+       "HighBP",
+       0.4199,
+       0.364,
+       -0.482,
+       0.962,
+       "p01",
+       -6.024,
+       -3.669
+      ],
+      [
+       "CA",
+       "HighChol",
+       1.219,
+       0.6909,
+       0.02749,
+       0.9616,
+       "mean",
+       9.977,
+       3.107
+      ],
+      [
+       "WV",
+       "HighChol",
+       0.4772,
+       0.9792,
+       -0.08638,
+       0.968,
+       "sd",
+       6.537,
+       3.328
+      ],
+      [
+       "WY",
+       "HighChol",
+       -0.1361,
+       0.4129,
+       0.01148,
+       1.256,
+       "mean",
+       -6.518,
+       -3.411
+      ],
+      [
+       "PR",
+       "BMI",
+       28.89,
+       7.205,
+       11.91,
+       51.35,
+       "p01",
+       -8.063,
+       -3.397
+      ],
+      [
+       "WV",
+       "Smoker",
+       0.5228,
+       0.5805,
+       -0.01147,
+       0.4255,
+       "p99",
+       -10.45,
+       -4.042
+      ],
+      [
+       "VI",
+       "Stroke",
+       0.5794,
+       0.1625,
+       0.02384,
+       1.164,
+       "mean",
+       19.24,
+       4.186
+      ],
+      [
+       "ND",
+       "AnyHealthcare",
+       1.014,
+       0.1833,
+       -0.2073,
+       0.9848,
+       "p01",
+       -9.447,
+       -3.958
+      ],
+      [
+       "WV",
+       "AnyHealthcare",
+       0.9084,
+       0.1937,
+       -0.3749,
+       0.9898,
+       "p01",
+       -17.07,
+       -6.062
+      ],
+      [
+       "DE",
+       "GenHlth",
+       2.201,
+       1.222,
+       -0.6119,
+       4.964,
+       "p01",
+       -20.32,
+       -4.946
+      ],
+      [
+       "AR",
+       "MentHlth",
+       5.03,
+       7.896,
+       -8.672,
+       29.03,
+       "p01",
+       -8.938,
+       -3.829
+      ],
+      [
+       "GU",
+       "MentHlth",
+       4.8,
+       28.47,
+       -5.137,
+       29.58,
+       "sd",
+       16.85,
+       3.284
+      ],
+      [
+       "DC",
+       "PhysHlth",
+       -10.55,
+       7.71,
+       0.4739,
+       31.47,
+       "mean",
+       -13.83,
+       -4.311
+      ],
+      [
+       "OK",
+       "PhysHlth",
+       4.222,
+       10.68,
+       7.045,
+       28.52,
+       "p01",
+       6.232,
+       3.583
+      ],
+      [
+       "VI",
+       "PhysHlth",
+       -19.43,
+       5.595,
+       -8.836,
+       31.72,
+       "mean",
+       -21.98,
+       -4.294
+      ],
+      [
+       "CT",
+       "DiffWalk",
+       0.2107,
+       0.3567,
+       -0.2329,
+       1.06,
+       "p01",
+       -6.668,
+       -3.748
+      ],
+      [
+       "PR",
+       "DiffWalk",
+       0.1788,
+       0.6873,
+       -0.1008,
+       0.9655,
+       "sd",
+       5.79,
+       3.163
+      ],
+      [
+       "AK",
+       "Education",
+       5.245,
+       1.156,
+       3.191,
+       6.185,
+       "p01",
+       3.914,
+       3.137
+      ],
+      [
+       "HI",
+       "Education",
+       5.186,
+       0.9187,
+       3.317,
+       5.975,
+       "p01",
+       4.347,
+       3.943
+      ]
+     ]
+    },
+    "medians": {
+     "columns": [
+      "client",
+      "feature",
+      "mean",
+      "sd",
+      "p01",
+      "p99"
+     ],
+     "rows": [
+      [
+       "(median)",
+       "HighBP",
+       0.4262,
+       0.4923,
+       -0.002842,
+       0.9863
+      ],
+      [
+       "(median)",
+       "HighChol",
+       0.3994,
+       0.4697,
+       0.003426,
+       0.9861
+      ],
+      [
+       "(median)",
+       "BMI",
+       28.9,
+       6.748,
+       18.01,
+       49.28
+      ],
+      [
+       "(median)",
+       "Smoker",
+       0.4137,
+       0.4989,
+       -0.002,
+       1.008
+      ],
+      [
+       "(median)",
+       "Stroke",
+       0.0474,
+       0.2047,
+       0.005262,
+       1.003
+      ],
+      [
+       "(median)",
+       "HeartDisease",
+       0.09495,
+       0.2678,
+       -0.004486,
+       1.006
+      ],
+      [
+       "(median)",
+       "PhysActivity",
+       0.7574,
+       0.4241,
+       0.002455,
+       0.9928
+      ],
+      [
+       "(median)",
+       "HvyAlcohol",
+       0.07131,
+       0.2406,
+       0.001819,
+       1.0
+      ],
+      [
+       "(median)",
+       "AnyHealthcare",
+       0.941,
+       0.2031,
+       0.000448,
+       0.9993
+      ],
+      [
+       "(median)",
+       "GenHlth",
+       2.52,
+       1.027,
+       0.987,
+       4.99
+      ],
+      [
+       "(median)",
+       "MentHlth",
+       4.393,
+       8.534,
+       -0.1023,
+       29.87
+      ],
+      [
+       "(median)",
+       "PhysHlth",
+       4.504,
+       8.78,
+       -0.2174,
+       29.77
+      ],
+      [
+       "(median)",
+       "DiffWalk",
+       0.1478,
+       0.3538,
+       -0.002989,
+       0.9976
+      ],
+      [
+       "(median)",
+       "Sex",
+       0.4939,
+       0.5092,
+       0.008533,
+       0.995
+      ],
+      [
+       "(median)",
+       "AgeGroup",
+       7.522,
+       3.597,
+       1.098,
+       12.97
+      ],
+      [
+       "(median)",
+       "Education",
+       5.092,
+       0.975,
+       2.052,
+       6.006
+      ],
+      [
+       "(median)",
+       "Income",
+       4.554,
+       1.558,
+       0.9885,
+       6.974
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "id": "c6",
+   "tool": "subgroup_outcomes",
+   "args": {
+    "attribute": "Sex"
+   },
+   "ok": true,
+   "result": {
+    "call_id": "c6",
+    "tool": "subgroup_outcomes",
+    "epsilon_spent": 2.0,
+    "budget_left": 6.0,
+    "attribute": "Sex",
+    "threshold": 0.2,
+    "outliers": {
+     "columns": [
+      "client",
+      "group",
+      "n",
+      "outcome_rate",
+      "mean_pred",
+      "oe_ratio",
+      "fnr",
+      "outlier_stat",
+      "z",
+      "z_noise"
+     ],
+     "rows": [
+      [
+       "CA",
+       "0.0",
+       294,
+       0.4981,
+       0.1997,
+       2.494,
+       0.4226,
+       "oe_ratio",
+       10.51,
+       8.73
+      ],
+      [
+       "NY",
+       "0.0",
+       447,
+       0.4589,
+       0.1511,
+       3.037,
+       0.4032,
+       "oe_ratio",
+       14.3,
+       12.35
+      ],
+      [
+       "VT",
+       "0.0",
+       219,
+       0.4202,
+       0.1582,
+       2.657,
+       0.4159,
+       "oe_ratio",
+       11.65,
+       7.688
+      ],
+      [
+       "CA",
+       "1.0",
+       375,
+       0.5659,
+       0.2258,
+       2.506,
+       0.4046,
+       "oe_ratio",
+       15.97,
+       13.13
+      ],
+      [
+       "GU",
+       "1.0",
+       248,
+       0.2232,
+       0.1407,
+       1.587,
+       0.4101,
+       "oe_ratio",
+       6.434,
+       3.288
+      ],
+      [
+       "NY",
+       "1.0",
+       539,
+       0.5666,
+       0.2164,
+       2.618,
+       0.4144,
+       "oe_ratio",
+       17.13,
+       15.3
+      ],
+      [
+       "VT",
+       "1.0",
+       205,
+       0.5088,
+       0.2002,
+       2.542,
+       0.3861,
+       "oe_ratio",
+       16.34,
+       9.364
+      ]
+     ]
+    },
+    "medians": {
+     "columns": [
+      "client",
+      "group",
+      "n",
+      "outcome_rate",
+      "mean_pred",
+      "oe_ratio",
+      "fnr"
+     ],
+     "rows": [
+      [
+       "(median)",
+       "0.0",
+       null,
+       0.137,
+       null,
+       0.9851,
+       0.3787
+      ],
+      [
+       "(median)",
+       "1.0",
+       null,
+       0.1504,
+       null,
+       0.9665,
+       0.3575
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "id": "c7",
+   "tool": "subgroup_outcomes",
+   "args": {
+    "attribute": "AgeGroup"
+   },
+   "ok": true,
+   "result": {
+    "call_id": "c7",
+    "tool": "subgroup_outcomes",
+    "epsilon_spent": 2.0,
+    "budget_left": 4.0,
+    "attribute": "AgeGroup",
+    "threshold": 0.2,
+    "outliers": {
+     "columns": [
+      "client",
+      "group",
+      "n",
+      "outcome_rate",
+      "mean_pred",
+      "oe_ratio",
+      "fnr",
+      "outlier_stat",
+      "z",
+      "z_noise"
+     ],
+     "rows": [
+      [
+       "CT",
+       "12.0",
+       184,
+       0.9054,
+       0.011,
+       82.3,
+       0.1617,
+       "oe_ratio",
+       86.75,
+       4.459
+      ],
+      [
+       "WI",
+       "5.0",
+       266,
+       0.5992,
+       0.3249,
+       1.845,
+       0.3176,
+       "outcome_rate",
+       5.391,
+       3.135
+      ],
+      [
+       "GA",
+       "9.0",
+       189,
+       0.4164,
+       0.0001432,
+       2908.0,
+       0.4491,
+       "oe_ratio",
+       2647.0,
+       14.94
+      ]
+     ]
+    },
+    "medians": {
+     "columns": [
+      "client",
+      "group",
+      "n",
+      "outcome_rate",
+      "mean_pred",
+      "oe_ratio",
+      "fnr"
+     ],
+     "rows": [
+      [
+       "(median)",
+       "1.0",
+       null,
+       0.0,
+       null,
+       0.06971,
+       1.0
+      ],
+      [
+       "(median)",
+       "10.0",
+       null,
+       0.2193,
+       null,
+       1.029,
+       0.4533
+      ],
+      [
+       "(median)",
+       "11.0",
+       null,
+       0.2051,
+       null,
+       0.7635,
+       0.1876
+      ],
+      [
+       "(median)",
+       "12.0",
+       null,
+       0.2766,
+       null,
+       1.188,
+       0.4257
+      ],
+      [
+       "(median)",
+       "13.0",
+       null,
+       0.1873,
+       null,
+       0.6597,
+       0.1677
+      ],
+      [
+       "(median)",
+       "2.0",
+       null,
+       0.0,
+       null,
+       0.5705,
+       1.0
+      ],
+      [
+       "(median)",
+       "3.0",
+       null,
+       0.0,
+       null,
+       0.0,
+       1.0
+      ],
+      [
+       "(median)",
+       "4.0",
+       null,
+       0.03441,
+       null,
+       0.393,
+       0.0
+      ],
+      [
+       "(median)",
+       "5.0",
+       null,
+       0.06663,
+       null,
+       0.3457,
+       0.6974
+      ],
+      [
+       "(median)",
+       "6.0",
+       null,
+       0.08218,
+       null,
+       0.7027,
+       0.2954
+      ],
+      [
+       "(median)",
+       "7.0",
+       null,
+       0.1598,
+       null,
+       0.9041,
+       0.1753
+      ],
+      [
+       "(median)",
+       "8.0",
+       null,
+       0.1951,
+       null,
+       0.9906,
+       0.2924
+      ],
+      [
+       "(median)",
+       "9.0",
+       null,
+       0.2259,
+       null,
+       1.123,
+       0.25
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "id": "c8",
+   "tool": "subgroup_outcomes",
+   "args": {
+    "attribute": "Income"
+   },
+   "ok": true,
+   "result": {
+    "call_id": "c8",
+    "tool": "subgroup_outcomes",
+    "epsilon_spent": 2.0,
+    "budget_left": 2.0,
+    "attribute": "Income",
+    "threshold": 0.2,
+    "outliers": {
+     "columns": [
+      "client",
+      "group",
+      "n",
+      "outcome_rate",
+      "mean_pred",
+      "oe_ratio",
+      "fnr",
+      "outlier_stat",
+      "z",
+      "z_noise"
+     ],
+     "rows": [
+      [
+       "CA",
+       "2.0",
+       128,
+       1,
+       0.2859,
+       3.497,
+       0.3271,
+       "outcome_rate",
+       7.284,
+       4.124
+      ],
+      [
+       "NY",
+       "3.0",
+       177,
+       0.6265,
+       0.2119,
+       2.957,
+       0.5317,
+       "outcome_rate",
+       4.908,
+       3.068
+      ],
+      [
+       "NY",
+       "4.0",
+       114,
+       0.8083,
+       0.1745,
+       4.633,
+       0,
+       "outcome_rate",
+       10.84,
+       3.578
+      ],
+      [
+       "CA",
+       "5.0",
+       165,
+       0.5791,
+       0.2521,
+       2.297,
+       0.6053,
+       "outcome_rate",
+       11.38,
+       3.561
+      ],
+      [
+       "NY",
+       "5.0",
+       235,
+       0.4977,
+       0.2125,
+       2.342,
+       0.5376,
+       "outcome_rate",
+       9.321,
+       3.96
+      ],
+      [
+       "NY",
+       "6.0",
+       210,
+       0.4412,
+       0.1535,
+       2.875,
+       0.448,
+       "outcome_rate",
+       6.819,
+       3.331
+      ]
+     ]
+    },
+    "medians": {
+     "columns": [
+      "client",
+      "group",
+      "n",
+      "outcome_rate",
+      "mean_pred",
+      "oe_ratio",
+      "fnr"
+     ],
+     "rows": [
+      [
+       "(median)",
+       "1.0",
+       null,
+       0.23,
+       null,
+       0.7541,
+       0.06204
+      ],
+      [
+       "(median)",
+       "2.0",
+       null,
+       0.226,
+       null,
+       0.9303,
+       0.2494
+      ],
+      [
+       "(median)",
+       "3.0",
+       null,
+       0.1868,
+       null,
+       1.038,
+       0.133
+      ],
+      [
+       "(median)",
+       "4.0",
+       null,
+       0.1501,
+       null,
+       1.001,
+       0.297
+      ],
+      [
+       "(median)",
+       "5.0",
+       null,
+       0.1292,
+       null,
+       0.9206,
+       0.3974
+      ],
+      [
+       "(median)",
+       "6.0",
+       null,
+       0.08131,
+       null,
+       0.9267,
+       0.6127
+      ],
+      [
+       "(median)",
+       "7.0",
+       null,
+       0.07435,
+       null,
+       0.6051,
+       0.6999
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "id": "c9",
+   "tool": "drift_by_round",
+   "args": {
+    "clients": [
+     "VT",
+     "VI"
+    ]
+   },
+   "ok": true,
+   "result": {
+    "call_id": "c9",
+    "tool": "drift_by_round",
+    "epsilon_spent": 1.0,
+    "budget_left": 1.0,
+    "pooled": {
+     "columns": [
+      "round",
+      "prevalence",
+      "citl"
+     ],
+     "rows": [
+      [
+       1,
+       0.3183,
+       -0.08981
+      ],
+      [
+       2,
+       0.3885,
+       -0.08751
+      ],
+      [
+       3,
+       0.2733,
+       -0.5058
+      ],
+      [
+       4,
+       0.1751,
+       0.02249
+      ],
+      [
+       5,
+       0.3129,
+       -0.332
+      ],
+      [
+       6,
+       0.3413,
+       -0.301
+      ],
+      [
+       7,
+       0.2157,
+       -0.1634
+      ],
+      [
+       8,
+       0.2828,
+       0.04431
+      ],
+      [
+       9,
+       0.2351,
+       -0.4385
+      ],
+      [
+       10,
+       0.009811,
+       -0.2687
+      ],
+      [
+       11,
+       0.2766,
+       -0.1512
+      ],
+      [
+       12,
+       0.6382,
+       -0.5413
+      ],
+      [
+       13,
+       0.4103,
+       0.06318
+      ],
+      [
+       14,
+       0.25,
+       -0.1672
+      ],
+      [
+       15,
+       0.0966,
+       -0.4196
+      ],
+      [
+       16,
+       0.2289,
+       -1.032
+      ],
+      [
+       17,
+       0.377,
+       -0.3159
+      ],
+      [
+       18,
+       0.05857,
+       0.2714
+      ],
+      [
+       19,
+       0.3804,
+       0.04258
+      ],
+      [
+       20,
+       0.2488,
+       0.1638
+      ]
+     ]
+    },
+    "per_round": {
+     "columns": [
+      "client",
+      "round",
+      "shift_sd",
+      "shift_feature",
+      "citl",
+      "prevalence"
+     ],
+     "rows": [
+      [
+       "VT",
+       1,
+       0,
+       "Sex",
+       -0.327,
+       0.465
+      ],
+      [
+       "VT",
+       2,
+       0,
+       "Smoker",
+       0.8113,
+       0.5957
+      ],
+      [
+       "VT",
+       3,
+       0,
+       "HighBP",
+       -1.144,
+       1
+      ],
+      [
+       "VT",
+       4,
+       0,
+       "AnyHealthcare",
+       -0.3022,
+       0.2836
+      ],
+      [
+       "VT",
+       5,
+       1.734,
+       "Income",
+       -0.3286,
+       1
+      ],
+      [
+       "VT",
+       6,
+       0,
+       "HighBP",
+       -0.8533,
+       1
+      ],
+      [
+       "VT",
+       7,
+       2.85,
+       "MentHlth",
+       -0.1931,
+       0.709
+      ],
+      [
+       "VT",
+       8,
+       0,
+       "MentHlth",
+       -0.03454,
+       0.5537
+      ],
+      [
+       "VT",
+       9,
+       0,
+       "AnyHealthcare",
+       0.1744,
+       0.7153
+      ],
+      [
+       "VT",
+       10,
+       1.798,
+       "AgeGroup",
+       0.1906,
+       0
+      ],
+      [
+       "VT",
+       11,
+       0,
+       "Stroke",
+       -1.47,
+       0.5976
+      ],
+      [
+       "VT",
+       12,
+       0,
+       "PhysHlth",
+       0.9469,
+       0.02671
+      ],
+      [
+       "VT",
+       13,
+       2.939,
+       "Income",
+       -1.661,
+       0
+      ],
+      [
+       "VT",
+       14,
+       0.3514,
+       "PhysActivity",
+       -0.1671,
+       0.4992
+      ],
+      [
+       "VT",
+       15,
+       0.5139,
+       "PhysActivity",
+       -0.5261,
+       0.4674
+      ],
+      [
+       "VT",
+       16,
+       0,
+       "Sex",
+       -0.2606,
+       0.284
+      ],
+      [
+       "VT",
+       17,
+       3.916,
+       "HvyAlcohol",
+       -0.7833,
+       0.2467
+      ],
+      [
+       "VT",
+       18,
+       1.903,
+       "AgeGroup",
+       -0.7371,
+       0.4102
+      ],
+      [
+       "VT",
+       19,
+       0,
+       "AgeGroup",
+       0.1042,
+       0
+      ],
+      [
+       "VT",
+       20,
+       0.2403,
+       "PhysActivity",
+       0.5152,
+       0.5295
+      ],
+      [
+       "VI",
+       1,
+       0,
+       "Income",
+       -1.075,
+       0.2774
+      ],
+      [
+       "VI",
+       2,
+       0,
+       "Income",
+       0.2308,
+       0.03618
+      ],
+      [
+       "VI",
+       3,
+       0,
+       "MentHlth",
+       -0.1034,
+       0.1431
+      ],
+      [
+       "VI",
+       4,
+       0.2506,
+       "BMI",
+       0.1985,
+       0.3059
+      ],
+      [
+       "VI",
+       5,
+       0,
+       "AnyHealthcare",
+       -0.654,
+       0.3897
+      ],
+      [
+       "VI",
+       6,
+       0,
+       "Income",
+       0.1357,
+       0
+      ],
+      [
+       "VI",
+       7,
+       1.363,
+       "AgeGroup",
+       -0.03297,
+       0.12
+      ],
+      [
+       "VI",
+       8,
+       0,
+       "Smoker",
+       0.08354,
+       0
+      ],
+      [
+       "VI",
+       9,
+       1.813,
+       "PhysActivity",
+       -0.1745,
+       0.2486
+      ],
+      [
+       "VI",
+       10,
+       0,
+       "HeartDisease",
+       1.052,
+       0.1304
+      ],
+      [
+       "VI",
+       11,
+       0.792,
+       "Sex",
+       -0.2929,
+       0.3165
+      ],
+      [
+       "VI",
+       12,
+       0,
+       "AgeGroup",
+       0.0557,
+       0.2608
+      ],
+      [
+       "VI",
+       13,
+       0.2799,
+       "HeartDisease",
+       0.1167,
+       0.3879
+      ],
+      [
+       "VI",
+       14,
+       0,
+       "AgeGroup",
+       -0.1064,
+       0
+      ],
+      [
+       "VI",
+       15,
+       1.307,
+       "HvyAlcohol",
+       0.7641,
+       0.301
+      ],
+      [
+       "VI",
+       16,
+       0.07779,
+       "GenHlth",
+       -0.1337,
+       0.2849
+      ],
+      [
+       "VI",
+       17,
+       0,
+       "HighBP",
+       0.5172,
+       0.4329
+      ],
+      [
+       "VI",
+       18,
+       0,
+       "Education",
+       -0.1733,
+       0
+      ],
+      [
+       "VI",
+       19,
+       0,
+       "Stroke",
+       -0.5201,
+       0
+      ],
+      [
+       "VI",
+       20,
+       1.9,
+       "BMI",
+       -0.002305,
+       0.000418
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "id": "c10",
+   "tool": "subgroup_outcomes",
+   "args": {
+    "attribute": "AgeGroup",
+    "clients": [
+     "CT",
+     "GA"
+    ]
+   },
+   "ok": true,
+   "result": {
+    "call_id": "c10",
+    "tool": "subgroup_outcomes",
+    "epsilon_spent": 1.0,
+    "budget_left": 0.0,
+    "attribute": "AgeGroup",
+    "threshold": 0.2,
+    "rows": {
+     "columns": [
+      "client",
+      "group",
+      "n",
+      "outcome_rate",
+      "mean_pred",
+      "oe_ratio",
+      "fnr"
+     ],
+     "rows": [
+      [
+       "CT",
+       "1.0",
+       123,
+       0,
+       0.05444,
+       0.0,
+       1
+      ],
+      [
+       "CT",
+       "10.0",
+       348,
+       0.5731,
+       0.6818,
+       0.8406,
+       1
+      ],
+      [
+       "CT",
+       "11.0",
+       246,
+       0.1043,
+       0,
+       null,
+       0
+      ],
+      [
+       "CT",
+       "12.0",
+       205,
+       0.3284,
+       0.2185,
+       1.503,
+       0.291
+      ],
+      [
+       "CT",
+       "13.0",
+       210,
+       0,
+       0.5786,
+       0.0,
+       0
+      ],
+      [
+       "CT",
+       "2.0",
+       10,
+       0,
+       0,
+       null,
+       0
+      ],
+      [
+       "CT",
+       "3.0",
+       108,
+       0,
+       0.4486,
+       0.0,
+       1
+      ],
+      [
+       "CT",
+       "4.0",
+       261,
+       0,
+       0.01912,
+       0.0,
+       0
+      ],
+      [
+       "CT",
+       "5.0",
+       243,
+       0,
+       0,
+       null,
+       0
+      ],
+      [
+       "CT",
+       "6.0",
+       153,
+       0.4823,
+       0.9634,
+       0.5006,
+       0
+      ],
+      [
+       "CT",
+       "7.0",
+       310,
+       0.1402,
+       0.3203,
+       0.4376,
+       0
+      ],
+      [
+       "CT",
+       "8.0",
+       210,
+       0,
+       0,
+       null,
+       0
+      ],
+      [
+       "CT",
+       "9.0",
+       0,
+       0.1057,
+       0.03318,
+       3.187,
+       0.7086
+      ],
+      [
+       "GA",
+       "1.0",
+       173,
+       0.1811,
+       0.06646,
+       2.725,
+       1
+      ],
+      [
+       "GA",
+       "10.0",
+       250,
+       0.4377,
+       0,
+       null,
+       0
+      ],
+      [
+       "GA",
+       "11.0",
+       213,
+       0.0575,
+       0.6362,
+       0.09038,
+       0.3081
+      ],
+      [
+       "GA",
+       "12.0",
+       218,
+       0,
+       0,
+       null,
+       0
+      ],
+      [
+       "GA",
+       "13.0",
+       138,
+       0.4006,
+       0.3803,
+       1.053,
+       0
+      ],
+      [
+       "GA",
+       "2.0",
+       207,
+       0,
+       0,
+       null,
+       1
+      ],
+      [
+       "GA",
+       "3.0",
+       155,
+       0.07036,
+       0,
+       null,
+       0
+      ],
+      [
+       "GA",
+       "4.0",
+       194,
+       0.03953,
+       0,
+       null,
+       1
+      ],
+      [
+       "GA",
+       "5.0",
+       129,
+       0,
+       0.0937,
+       0.0,
+       1
+      ],
+      [
+       "GA",
+       "6.0",
+       330,
+       0.8069,
+       0.4669,
+       1.728,
+       1
+      ],
+      [
+       "GA",
+       "7.0",
+       211,
+       0.8025,
+       0,
+       null,
+       0.04246
+      ],
+      [
+       "GA",
+       "8.0",
+       169,
+       0.07278,
+       1,
+       0.07278,
+       0
+      ],
+      [
+       "GA",
+       "9.0",
+       168,
+       0,
+       0.2369,
+       0.0,
+       0.3544
+      ]
+     ]
+    }
+   }
+  }
+ ],
+ "fact_check": {
+  "claims": 39,
+  "supported": 39,
+  "unsupported": [],
+  "support_rate": 1.0
+ },
+ "score": {
+  "fault": "prevalence_shift",
+  "severity": "high",
+  "flagged": [
+   "CA",
+   "NY",
+   "VT"
+  ],
+  "true_clients": [
+   "CA",
+   "NY",
+   "VT"
+  ],
+  "tp": 3,
+  "fp": 0,
+  "fn": 0,
+  "precision": 1.0,
+  "recall": 1.0,
+  "false_alarm": null,
+  "type_accuracy": 1.0,
+  "onset_abs_error": 0.0,
+  "scenario_type_correct": true
+ }
+}

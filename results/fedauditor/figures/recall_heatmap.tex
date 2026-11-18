@@ -1,0 +1,23 @@
+% needs \usepackage[table]{xcolor} and \usepackage{booktabs}
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\caption{Recall of the planted clients by fault type and severity (L/M/H), BRFSS, logistic regression, 5 seeds per cell. Left: rule baseline; right: Haiku 5.5 with prompt v5.}
+\label{tab:recall}
+\begin{tabular}{l|ccc|ccc}
+\toprule
+ & \multicolumn{3}{c}{Rules} & \multicolumn{3}{c}{Haiku v5} \\
+Fault & L & M & H & L & M & H \\
+\midrule
+Label noise & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} \\
+Drift & \cellcolor[RGB]{22,74,141}\textcolor{white}{0.87} & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} & \cellcolor[RGB]{45,118,206}\textcolor{white}{0.60} & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} \\
+Poisoning & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} & \cellcolor[RGB]{17,64,124}\textcolor{white}{0.93} & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} \\
+Free-rider & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} & \cellcolor[RGB]{22,74,141}\textcolor{white}{0.87} & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} \\
+Prevalence shift & \cellcolor[RGB]{27,84,157}\textcolor{white}{0.80} & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} & \cellcolor[RGB]{22,74,141}\textcolor{white}{0.87} & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} \\
+Subgroup bias & \cellcolor[RGB]{167,203,245}0.13 & \cellcolor[RGB]{45,118,206}\textcolor{white}{0.60} & \cellcolor[RGB]{17,64,124}\textcolor{white}{0.93} & \cellcolor[RGB]{167,203,245}0.13 & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} \\
+Missing-data artefact & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} \\
+Expl. instability & \cellcolor[RGB]{205,226,251}0.00 & \cellcolor[RGB]{22,74,141}\textcolor{white}{0.87} & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} & \cellcolor[RGB]{205,226,251}0.00 & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} & \cellcolor[RGB]{13,54,107}\textcolor{white}{1.00} \\
+\bottomrule
+\end{tabular}
+\end{table}

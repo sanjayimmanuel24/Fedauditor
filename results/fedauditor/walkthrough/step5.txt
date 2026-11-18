@@ -1,0 +1,14 @@
+=== Step 5: Full audit, fact-check and score ===
+Auditor          : rule baseline (same tools and budget as the LLM agent)
+Tool calls       : c1 federation_overview, c2 client_performance, c3 client_updates, c4
+                   drift_by_round, c5 feature_summary, c6 subgroup_outcomes, c7 subgroup_outcomes,
+                   c8 subgroup_outcomes
+Budget           : epsilon 17 of 20
+Finding          : MD -> poisoning, onset round 1, confidence 0.7
+   claim: mean_cos = -0.6469 (client=MD) cites c3
+Finding          : MI -> poisoning, onset round 1, confidence 0.7
+   claim: mean_cos = -0.6995 (client=MI) cites c3
+Finding          : MT -> poisoning, onset round 1, confidence 0.7
+   claim: mean_cos = -0.4972 (client=MT) cites c3
+Fact-check       : 3/3 claims found in the tool log
+Score vs truth   : precision 1.0, recall 1.0, type correct 1.0, onset error 0.0

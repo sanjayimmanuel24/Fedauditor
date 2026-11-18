@@ -1,0 +1,9 @@
+fault,Rule baseline:low,Rule baseline:medium,Rule baseline:high,"Haiku 5.5, prompt v5:low","Haiku 5.5, prompt v5:medium","Haiku 5.5, prompt v5:high"
+label_noise,1.0000,1.0000,1.0000,1.0000,1.0000,1.0000
+drift,0.8667,1.0000,1.0000,0.6000,1.0000,1.0000
+poisoning,1.0000,1.0000,1.0000,0.9333,1.0000,1.0000
+free_rider,1.0000,1.0000,1.0000,0.8667,1.0000,1.0000
+prevalence_shift,0.8000,1.0000,1.0000,0.8667,1.0000,1.0000
+subgroup_bias,0.1333,0.6000,0.9333,0.1333,1.0000,1.0000
+missing_artefact,1.0000,1.0000,1.0000,1.0000,1.0000,1.0000
+explanation_instability,0.0000,0.8667,1.0000,0.0000,1.0000,1.0000

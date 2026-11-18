@@ -1,0 +1,9 @@
+=== Step 1: Data: BRFSS 2023, one client per US state ===
+Dataset          : CDC BRFSS 2023
+Clients (states) : 52
+Records          : 290,737 (train/cal/test split inside every client)
+Diabetes rate    : 13.6%
+Smallest client  : GU (1,182 records); largest: WA (18,636)
+Features (17) : HighBP, HighChol, BMI, Smoker, Stroke, HeartDisease, PhysActivity, HvyAlcohol,
+                   AnyHealthcare, GenHlth, MentHlth, PhysHlth, DiffWalk, Sex, AgeGroup, Education,
+                   Income
