@@ -1,11 +1,13 @@
-% FedAuditor project walkthrough for the guide. Build in this folder:
-%   pdflatex FedAuditor_Walkthrough ; pdflatex FedAuditor_Walkthrough
-% Console outputs come from `python -m fedauditor.walkthrough` (results/fedauditor/walkthrough/),
-% tables from `python -m fedauditor.make_figures` (results/fedauditor/figures/).
+% FedAuditor project walkthrough for the guide, in the app's "deep ink" design.
+% Build in this folder:  pdflatex FedAuditor_Walkthrough ; pdflatex FedAuditor_Walkthrough
+% Console outputs: `python -m fedauditor.walkthrough` (results/fedauditor/walkthrough/)
+% Tables: `python -m fedauditor.make_figures` (results/fedauditor/figures/)
+% Screenshots + ink art: docs/design/ (make_ink_art.py; screens/ captured from the running app)
 \documentclass[11pt,a4paper]{article}
-\usepackage[margin=2.2cm]{geometry}
+\usepackage[margin=2.2cm,top=2.4cm,bottom=2.4cm]{geometry}
 \usepackage[T1]{fontenc}
-\usepackage{lmodern}
+\usepackage[scaled=0.95]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
 \usepackage{amsmath}
 \usepackage{booktabs}
 \usepackage[table]{xcolor}
@@ -15,46 +17,117 @@
 \usepackage{float}
 \usepackage{placeins}
 \usepackage{enumitem}
-\usepackage{tcolorbox}
+\usepackage[most]{tcolorbox}
+\usepackage{tikz}
+\usepackage{titlesec}
+\usepackage{caption}
+\usepackage{fancyhdr}
 \usepackage[hidelinks]{hyperref}
-\setlist{itemsep=2pt,topsep=4pt}
-\setlength{\parskip}{4pt}
+
+% ---- Deep-ink palette (same tokens as static/css/style.css) ----
+\definecolor{inkbase}{HTML}{04050C}
+\definecolor{fog}{HTML}{EEF0F6}
+\definecolor{muted}{HTML}{B9BECF}
+\definecolor{inkcyan}{HTML}{67E8F9}
+\definecolor{inkviolet}{HTML}{A78BFA}
+\definecolor{inkmagenta}{HTML}{F0ABFC}
+\definecolor{glass}{HTML}{0E1220}
+\definecolor{glasstitle}{HTML}{161B2C}
+\definecolor{glassline}{HTML}{2A3045}
+\definecolor{mint}{HTML}{6EE7B7}
+\definecolor{good}{HTML}{4ADE80}
+
+\pagecolor{inkbase}
+\color{fog}
+\arrayrulecolor{glassline}
+
+\setlist{itemsep=3pt,topsep=4pt,label={\color{inkcyan}\textbullet}}
+\setlength{\parskip}{5pt}
 \setlength{\parindent}{0pt}
+% Let tables share pages with text instead of getting float-only pages
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.8}
+\renewcommand{\textfraction}{0.07}
+\renewcommand{\floatpagefraction}{0.85}
+\setcounter{topnumber}{4}
+\setcounter{totalnumber}{6}
+\renewcommand{\baselinestretch}{1.08}
+
+% Headings: medium weight, fog-white, cyan section numbers
+\titleformat{\section}{\color{fog}\Large\bfseries}{\color{inkcyan}\thesection}{0.8em}{}
+\titlespacing*{\section}{0pt}{18pt}{8pt}
+\captionsetup{labelfont={color=inkcyan,bf},textfont={color=muted},font=small}
+
+% Page frame: muted running header and page number
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{\color{muted}\footnotesize FedAuditor \textperiodcentered{} Project walkthrough}
+\fancyhead[R]{\color{muted}\footnotesize\thepage}
 
 \newcommand{\res}{../../results/fedauditor}
-\newcommand{\out}[1]{\begin{tcolorbox}[colback=gray!5,colframe=gray!40,boxrule=0.4pt,
-  left=4pt,right=4pt,top=2pt,bottom=2pt,title={\footnotesize Console output: \texttt{#1}},
-  coltitle=black,colbacktitle=gray!15,fonttitle=\footnotesize]
-  \VerbatimInput[fontsize=\scriptsize]{\res/walkthrough/#1}\end{tcolorbox}}
-\newcommand{\shot}[2]{\begin{figure}[H]\centering
-  \includegraphics[width=0.88\textwidth]{img/#1}\caption{#2}\end{figure}}
+\newcommand{\design}{../design}
 
-\title{\textbf{FedAuditor}\\[2pt]\large From FedHealth to a privacy-budgeted, fact-checked LLM
-auditor for federated clinical models\\[4pt]\normalsize Project walkthrough: every step and its output}
-\date{November 2026}
-\author{}
+% Console output: the app's deepest surface, mint text
+\newcommand{\out}[1]{\begin{tcolorbox}[enhanced,colback=glass,colframe=glassline,coltext=fog,boxrule=0.5pt,arc=6pt,
+  left=6pt,right=6pt,top=3pt,bottom=3pt,
+  title={\footnotesize Console output: \texttt{#1}},coltitle=muted,colbacktitle=glasstitle,fonttitle=\footnotesize]
+  \VerbatimInput[fontsize=\scriptsize,formatcom=\color{mint}]{\res/walkthrough/#1}\end{tcolorbox}}
+
+% Screenshot in a glass frame
+\newcommand{\shot}[2]{\begin{figure}[H]\centering
+  \begin{tcolorbox}[enhanced,colback=glass,colframe=glassline,boxrule=0.5pt,arc=8pt,
+    left=3pt,right=3pt,top=3pt,bottom=3pt,width=0.92\textwidth]
+  \includegraphics[width=\linewidth]{\design/screens/#1}\end{tcolorbox}
+  \caption{#2}\end{figure}}
+
+% Glass card for summaries
+\newtcolorbox{glasscard}[1]{enhanced,colback=glass,colframe=glassline,coltext=fog,boxrule=0.5pt,arc=10pt,
+  left=10pt,right=10pt,top=8pt,bottom=8pt,title={#1},fonttitle=\bfseries,
+  coltitle=inkbase,colbacktitle=fog,attach boxed title to top left={xshift=10pt,yshift=-9pt},
+  boxed title style={arc=7pt,boxrule=0pt,colback=fog}}
+
+\hypersetup{colorlinks=true,linkcolor=fog,urlcolor=inkcyan}
 
 \begin{document}
-\maketitle
-\vspace{-1.5em}
 
-\begin{tcolorbox}[colback=blue!3,colframe=blue!40,title=Summary]
-\textbf{Problem.} In federated learning the coordinator never sees patient data, so it cannot tell
+% ======================= Cover =======================
+\thispagestyle{empty}
+\begin{tikzpicture}[remember picture,overlay]
+  \node[inner sep=0pt] at (current page.center)
+    {\includegraphics[height=\paperheight]{\design/ink_cover.png}};
+  \fill[inkbase,opacity=0.18] (current page.south west) rectangle (current page.north east);
+  \node[anchor=north west,text=fog,font=\large\bfseries] at ([xshift=2.2cm,yshift=-2.4cm]current page.north west)
+    {FedHealth \textcolor{muted}{\textperiodcentered{} FedAuditor}};
+  \node[anchor=west,text width=15cm,align=left] at ([xshift=2.2cm,yshift=3.2cm]current page.west) {%
+    \tcbox[enhanced,colback=glass,colframe=glassline,boxrule=0.5pt,arc=9pt,
+      left=8pt,right=8pt,top=3pt,bottom=3pt,on line]{\color{muted}\small Final-year project \textperiodcentered{} Guide review}\\[14pt]
+    {\color{fog}\fontsize{38}{44}\selectfont\bfseries\spaceskip=0.28em plus 0.05em Audit Federated\\ Models Without\\ Seeing Patient Data\par}
+    \vspace{12pt}
+    {\color{muted}\large From FedHealth to a privacy-budgeted, fact-checked LLM auditor\\ for federated clinical models. Every step and its output.\par}};
+  \node[anchor=south west,text=muted,font=\small] at ([xshift=2.2cm,yshift=2.2cm]current page.south west)
+    {November 2026 \quad\textperiodcentered\quad Records stay local; only noisy aggregates leave a site.};
+\end{tikzpicture}
+\newpage
+
+\begin{glasscard}{Summary}
+\textbf{\color{inkcyan}Problem.} In federated learning the coordinator never sees patient data, so it cannot tell
 when one hospital or region has a fault (wrong labels, broken exports, an under-diagnosed subgroup,
 a malicious update). Pooled accuracy does not show these faults.
 
-\textbf{What we built.} An LLM agent that audits a federated model using only noisy, privacy-budgeted
+\textbf{\color{inkcyan}What we built.} An LLM agent that audits a federated model using only noisy, privacy-budgeted
 aggregate tools. It never sees a patient record, and every number in its report is checked against
 the tool log by a fact-checker. To test it we built \textbf{FedFault}, a benchmark with 8 planted
 fault types $\times$ 3 severities $\times$ 5 seeds, on real CDC BRFSS data with 52 US states as clients.
 
-\textbf{Result.} Over 125 test scenarios, Claude Haiku~5.5 finds the faulty clients with precision 0.97
+\textbf{\color{inkcyan}Result.} Over 125 test scenarios, Claude Haiku~5.5 finds the faulty clients with precision 0.97
 and recall 0.89, names the fault in 91\% of scenarios, and 2{,}262 of its 2{,}264 claims are verified;
 the whole evaluation cost US\$1.16. A tuned rule baseline scores 0.99 / 0.88 / 87\%. The agent is
-much better at subgroup bias. A 6-page IEEE conference paper and a dashboard page are ready.
-\end{tcolorbox}
+much better at subgroup bias. A 6-page IEEE conference paper and a redesigned web app are ready.
+\end{glasscard}
 
-\tableofcontents
+\vspace{6pt}
+{\color{fog}\tableofcontents}
 \newpage
 
 % =================================================================================================
@@ -66,7 +139,7 @@ age-cohort clients} on the PIMA dataset (768 records), with a Flask dashboard an
 was that it was ``very basic''. We kept all of it and built on top of it: the measurement modules
 became the agent's tools.
 
-\shot{0_original_dashboard.jpg}{The original FedHealth dashboard: PIMA, 768 records, 3 age-cohort clients.}
+\shot{0_original_dashboard.jpg}{The FedHealth dashboard (PIMA, 768 records, 3 age-cohort clients), shown in the new design.}
 
 \textbf{What changed}, in five phases:
 \begin{center}\small
@@ -192,10 +265,9 @@ versions), scoring every report against the ground truth.
 
 \input{\res/figures/main_table.tex}
 
-\input{\res/figures/recall_heatmap.tex}
-\input{\res/figures/type_confusion.tex}
+\input{\res/figures/recall_heatmap_dark.tex}
+\input{\res/figures/type_confusion_dark.tex}
 \input{\res/figures/behaviour.tex}
-\input{\res/figures/rules_models.tex}
 \FloatBarrier
 
 \textbf{Findings.}
@@ -214,6 +286,8 @@ versions), scoring every report against the ground truth.
   (O/E 7.38 claimed vs 1.81 logged). Cost: under one cent per audit.
 \end{itemize}
 
+
+\input{\res/figures/rules_models.tex}
 
 \textbf{Open-weight models} (Qwen3 8B and 30B, run free on Kaggle/locally with the same tools and prompt)
 failed for model reasons: the 8B model fixed on the smallest state and never screened; the 30B
@@ -236,6 +310,15 @@ link; clicking it opens the tool call it cites and highlights the exact logged r
 (29 references, including the four closest papers FedAgentBench, Agentic-FL, FL-MAESTRO and
 ModelAuditor, none of which audits a federated model), problem setting, FedFault, method, experiments,
 discussion, limitations. All its tables are generated by a script and checked against the saved results.
+
+\textbf{New design.} The whole web app now shares one look, taken from a fluid ``ink in water'' hero:
+a near-black base, fog-white type, translucent glass cards, white pill buttons and a
+cyan\,$\to$\,violet\,$\to$\,magenta accent band. The landing and sign-in pages run a live WebGL ink
+simulation; data pages stay calm so tables and charts remain easy to read. Layouts and features are unchanged.
+
+\shot{hero_landing.jpg}{Landing page: live fluid-ink background, word-by-word heading, glass call-to-action bar.}
+\shot{login.jpg}{Sign-in: the same ink behind a glass card.}
+\shot{predict.jpg}{Diagnostic form with a prediction: glass inputs, white pill toggles, contribution bars.}
 
 % =================================================================================================
 \section{How to reproduce}

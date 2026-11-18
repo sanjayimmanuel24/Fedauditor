@@ -1,0 +1,23 @@
+% needs \usepackage[table]{xcolor} and \usepackage{booktabs}
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\caption{Recall of the planted clients by fault type and severity (L/M/H), BRFSS, logistic regression, 5 seeds per cell. Left: rule baseline; right: Haiku 5.5 with prompt v5.}
+\label{tab:recall}
+\begin{tabular}{l|ccc|ccc}
+\toprule
+ & \multicolumn{3}{c}{Rules} & \multicolumn{3}{c}{Haiku v5} \\
+Fault & L & M & H & L & M & H \\
+\midrule
+Label noise & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} \\
+Drift & \cellcolor[RGB]{161,199,244}\textcolor[HTML]{04050C}{0.87} & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} & \cellcolor[RGB]{67,141,230}\textcolor[HTML]{04050C}{0.60} & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} \\
+Poisoning & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} & \cellcolor[RGB]{183,212,248}\textcolor[HTML]{04050C}{0.93} & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} \\
+Free-rider & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} & \cellcolor[RGB]{161,199,244}\textcolor[HTML]{04050C}{0.87} & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} \\
+Prevalence shift & \cellcolor[RGB]{138,185,241}\textcolor[HTML]{04050C}{0.80} & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} & \cellcolor[RGB]{161,199,244}\textcolor[HTML]{04050C}{0.87} & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} \\
+Subgroup bias & \cellcolor[RGB]{13,52,103}\textcolor[HTML]{EEF0F6}{0.13} & \cellcolor[RGB]{67,141,230}\textcolor[HTML]{04050C}{0.60} & \cellcolor[RGB]{183,212,248}\textcolor[HTML]{04050C}{0.93} & \cellcolor[RGB]{13,52,103}\textcolor[HTML]{EEF0F6}{0.13} & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} \\
+Missing-data artefact & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} \\
+Expl. instability & \cellcolor[RGB]{20,28,48}\textcolor[HTML]{EEF0F6}{0.00} & \cellcolor[RGB]{161,199,244}\textcolor[HTML]{04050C}{0.87} & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} & \cellcolor[RGB]{20,28,48}\textcolor[HTML]{EEF0F6}{0.00} & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{1.00} \\
+\bottomrule
+\end{tabular}
+\end{table}

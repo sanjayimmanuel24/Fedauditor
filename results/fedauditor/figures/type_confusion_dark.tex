@@ -1,0 +1,24 @@
+% needs \usepackage[table]{xcolor} and \usepackage{booktabs}
+\begin{table*}[t]
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\caption{Fault-type confusion for Haiku 5.5 with prompt v4 (left) and v5 (right): planted fault (rows) vs the most-reported type per scenario (ties split). 15 scenarios per fault, 5 clean.}
+\label{tab:confusion}
+\begin{tabular}{l|ccccccccc|ccccccccc}
+\toprule
+ & \multicolumn{9}{c}{Prompt v4} & \multicolumn{9}{c}{Prompt v5} \\
+Fault & LN & DR & PO & FR & PS & SB & MA & EI & – & LN & DR & PO & FR & PS & SB & MA & EI & – \\
+\midrule
+Label noise & \cellcolor[RGB]{13,52,103}\textcolor[HTML]{EEF0F6}{2} & -- & \cellcolor[RGB]{138,185,241}\textcolor[HTML]{04050C}{12} & -- & \cellcolor[RGB]{17,40,76}\textcolor[HTML]{EEF0F6}{1} & -- & -- & -- & -- & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{15} & -- & -- & -- & -- & -- & -- & -- & -- \\
+Drift & -- & \cellcolor[RGB]{172,206,246}\textcolor[HTML]{04050C}{13.5} & \cellcolor[RGB]{18,34,62}\textcolor[HTML]{EEF0F6}{0.5} & -- & \cellcolor[RGB]{17,40,76}\textcolor[HTML]{EEF0F6}{1} & -- & -- & -- & -- & -- & \cellcolor[RGB]{161,199,244}\textcolor[HTML]{04050C}{13} & \cellcolor[RGB]{17,40,76}\textcolor[HTML]{EEF0F6}{1} & -- & \cellcolor[RGB]{17,40,76}\textcolor[HTML]{EEF0F6}{1} & -- & -- & -- & -- \\
+Poisoning & -- & -- & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{15} & -- & -- & -- & -- & -- & -- & -- & -- & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{15} & -- & -- & -- & -- & -- & -- \\
+Free-rider & -- & -- & -- & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{15} & -- & -- & -- & -- & -- & -- & -- & -- & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{15} & -- & -- & -- & -- & -- \\
+Prevalence shift & \cellcolor[RGB]{15,46,89}\textcolor[HTML]{EEF0F6}{1.5} & -- & -- & -- & \cellcolor[RGB]{172,206,246}\textcolor[HTML]{04050C}{13.5} & -- & -- & -- & -- & -- & -- & -- & -- & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{15} & -- & -- & -- & -- \\
+Subgroup bias & -- & -- & -- & -- & -- & \cellcolor[RGB]{116,171,237}\textcolor[HTML]{04050C}{11} & -- & \cellcolor[RGB]{17,40,76}\textcolor[HTML]{EEF0F6}{1} & \cellcolor[RGB]{17,64,124}\textcolor[HTML]{EEF0F6}{3} & -- & -- & \cellcolor[RGB]{17,40,76}\textcolor[HTML]{EEF0F6}{1} & -- & \cellcolor[RGB]{17,40,76}\textcolor[HTML]{EEF0F6}{1} & \cellcolor[RGB]{116,171,237}\textcolor[HTML]{04050C}{11} & -- & -- & \cellcolor[RGB]{13,52,103}\textcolor[HTML]{EEF0F6}{2} \\
+Missing-data artefact & -- & -- & -- & -- & -- & -- & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{15} & -- & -- & -- & -- & -- & -- & -- & -- & \cellcolor[RGB]{205,226,251}\textcolor[HTML]{04050C}{15} & -- & -- \\
+Expl. instability & -- & -- & -- & -- & \cellcolor[RGB]{17,40,76}\textcolor[HTML]{EEF0F6}{1} & -- & -- & \cellcolor[RGB]{92,156,234}\textcolor[HTML]{04050C}{10} & \cellcolor[RGB]{23,76,143}\textcolor[HTML]{EEF0F6}{4} & -- & -- & -- & -- & \cellcolor[RGB]{17,40,76}\textcolor[HTML]{EEF0F6}{1} & -- & -- & \cellcolor[RGB]{92,156,234}\textcolor[HTML]{04050C}{10} & \cellcolor[RGB]{23,76,143}\textcolor[HTML]{EEF0F6}{4} \\
+Clean (no fault) & -- & -- & -- & -- & \cellcolor[RGB]{17,40,76}\textcolor[HTML]{EEF0F6}{1} & -- & -- & \cellcolor[RGB]{17,40,76}\textcolor[HTML]{EEF0F6}{1} & \cellcolor[RGB]{17,64,124}\textcolor[HTML]{EEF0F6}{3} & -- & -- & -- & -- & \cellcolor[RGB]{17,40,76}\textcolor[HTML]{EEF0F6}{1} & -- & -- & \cellcolor[RGB]{17,40,76}\textcolor[HTML]{EEF0F6}{1} & \cellcolor[RGB]{17,64,124}\textcolor[HTML]{EEF0F6}{3} \\
+\bottomrule
+\end{tabular}
+\end{table*}

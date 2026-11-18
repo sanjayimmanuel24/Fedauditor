@@ -198,7 +198,8 @@ def svg_grid(panels, row_keys, col_keys, col_labels, title, note, cell_fmt, vmax
 
 
 def tex_grid(panels, row_keys, col_keys, col_labels, caption, label, cell_fmt, vmax=1.0, wide=False,
-             titles=None):
+             titles=None, theme=None):
+    T = theme or LIGHT_THEME
     env = "table*" if wide else "table"
     defs = [r"% needs \usepackage[table]{xcolor} and \usepackage{booktabs}"]
     cols = "l" + ("|" + "c" * len(col_keys)) * len(panels)
@@ -214,9 +215,13 @@ def tex_grid(panels, row_keys, col_keys, col_labels, caption, label, cell_fmt, v
                 if v is None:
                     cells.append("--")
                 else:
-                    r, g, b = _hex(color(v / vmax))
+                    r, g, b = _hex(color(v / vmax, T["ramp"]))
                     txt = cell_fmt(v)
-                    txt = rf"\textcolor{{white}}{{{txt}}}" if v / vmax >= 0.5 else txt
+                    if theme is None:     # light: unchanged output (white text on dark cells)
+                        txt = rf"\textcolor{{white}}{{{txt}}}" if v / vmax >= 0.5 else txt
+                    else:
+                        ink_hex = T["ink_on_high"] if v / vmax >= T["high_from"] else T["ink_on_low"]
+                        txt = rf"\textcolor[HTML]{{{ink_hex.lstrip('#').upper()}}}{{{txt}}}"
                     cells.append(rf"\cellcolor[RGB]{{{r},{g},{b}}}{txt}")
         body.append(" & ".join(cells) + r" \\")
     return "\n".join(defs + [rf"\begin{{{env}}}[t]", r"\centering", r"\small", r"\setlength{\tabcolsep}{3pt}",
@@ -237,11 +242,12 @@ def recall_heatmap(res: dict):
             panels, FAULTS, sev, sev, "Recall of planted clients by fault and severity (BRFSS, LR)",
             "Recall = planted clients flagged / planted clients (3 per scenario, 5 seeds per cell).", two,
             theme=theme))
-    _write("recall_heatmap.tex", tex_grid(
-        panels, FAULTS, sev, ["L", "M", "H"],
-        "Recall of the planted clients by fault type and severity (L/M/H), BRFSS, logistic regression, "
-        "5 seeds per cell. Left: rule baseline; right: Haiku 5.5 with prompt v5.",
-        "tab:recall", two, titles=["Rules", "Haiku v5"]))
+    for suffix, theme in (("", None), ("_dark", DARK_THEME)):
+        _write(f"recall_heatmap{suffix}.tex", tex_grid(
+            panels, FAULTS, sev, ["L", "M", "H"],
+            "Recall of the planted clients by fault type and severity (L/M/H), BRFSS, logistic regression, "
+            "5 seeds per cell. Left: rule baseline; right: Haiku 5.5 with prompt v5.",
+            "tab:recall", two, titles=["Rules", "Haiku v5"], theme=theme))
     _csv("recall_heatmap.csv", ["fault"] + [f"{p}:{s}" for p, _ in panels for s in sev],
          [[f] + [fmt(v[(f, s)], 4) for _, v in panels for s in sev] for f in FAULTS])
     return panels
@@ -285,11 +291,12 @@ def type_confusion(grids, common, res):
             "LN label noise, DR drift, PO poisoning, FR free-rider, PS prevalence shift,\n"
             "SB subgroup bias, MA missing-data artefact, EI expl. instability, – nothing flagged. 15 scenarios per fault.",
             cnt, vmax=vmax, cw=30, theme=theme))
-    _write("type_confusion.tex", tex_grid(
-        panels, true_keys, pred_keys, short,
-        "Fault-type confusion for Haiku 5.5 with prompt v4 (left) and v5 (right): planted fault (rows) "
-        "vs the most-reported type per scenario (ties split). 15 scenarios per fault, 5 clean.",
-        "tab:confusion", cnt, vmax=vmax, wide=True, titles=["Prompt v4", "Prompt v5"]))
+    for suffix, theme in (("", None), ("_dark", DARK_THEME)):
+        _write(f"type_confusion{suffix}.tex", tex_grid(
+            panels, true_keys, pred_keys, short,
+            "Fault-type confusion for Haiku 5.5 with prompt v4 (left) and v5 (right): planted fault (rows) "
+            "vs the most-reported type per scenario (ties split). 15 scenarios per fault, 5 clean.",
+            "tab:confusion", cnt, vmax=vmax, wide=True, titles=["Prompt v4", "Prompt v5"], theme=theme))
     _csv("type_confusion.csv", ["prompt", "true"] + pred_keys,
          [[name, t] + [fmt(v.get((t, p)) or 0.0, 2) for p in pred_keys] for name, v in panels for t in true_keys])
     return panels

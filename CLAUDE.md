@@ -143,7 +143,11 @@
   panels excluded). Live WebGL fluid (`static/js/fluid.js`, MIT Dobryakov engine) only on landing
   (`landing.html`, full hero) and login/signup (`_fluid_backdrop.html`); canvas must be position:absolute.
   Chart series colours validated for CVD (dashboard COLORS). `make_figures` also writes `*_dark.svg`
-  (used by /fedauditor). Walkthrough PDF and deck still show the old light screenshots.
+  (used by /fedauditor).
+- 2026-11-18: **Walkthrough PDF (14 pp) + deck restyled** in the deep-ink design (not committed yet). Shared
+  assets in `Final-Year/docs/design/`: `make_ink_art.py` (numpy+Pillow) -> ink_cover/ink_haze.png;
+  `screens/*.jpg` captured at 2x with headless Edge over CDP (the pane's screenshots crop/lag). PDF: helvet,
+  dark page, glass tcolorboxes, `*_dark.tex` heatmaps (make_figures). Deck: `build_deck.js <out> docs/design`.
 
 ## How to run (from `Final-Year/`)
 - Start the app: `.\venv\Scripts\python.exe app.py` → http://127.0.0.1:5000, demo login
