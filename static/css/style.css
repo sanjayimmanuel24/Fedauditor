@@ -1,154 +1,283 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+/* =========================================================================
+   FedHealth / FedAuditor — "deep ink" theme
+   Mood: a near-black, immersive base; bright fog-white type; translucent
+   glass surfaces; colour comes from the cyan -> blue -> violet -> magenta ink
+   band of the fluid background; actions are solid white pills.
+   Layout is untouched: this file only re-skins the existing Tailwind markup.
+   ========================================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap');
 
 :root {
-    --font-heading: 'Outfit', sans-serif;
-    --font-body: 'Inter', sans-serif;
+    color-scheme: dark;
 
-    --page: #f4f8fb;
-    --surface: #ffffff;
-    --surface-muted: #eef4f8;
-    --ink: #0f2b3d;
-    --muted: #57708a;
-    --border: #d6e3ec;
-    --primary: #0f766e;
-    --primary-dark: #115e59;
-    --accent: #0369a1;
-    --risk: #be123c;
-    --success: #047857;
-    --warning: #b45309;
+    /* Base + type */
+    --hero-base: #04050c;          /* page base (also the fluid back colour) */
+    --heading: #eef0f6;            /* bright fog-white headings / values */
+    --body-muted: #b9becf;         /* body copy, labels, nav links */
+    --on-media: #ffffff;
+
+    /* Actions */
+    --action-inverse: #ffffff;     /* white pill */
+    --action-inverse-fg: #2f2f33;
+    --action-inverse-hover: rgba(255, 255, 255, 0.85);
+
+    /* Glass */
+    --glass-fill: rgba(255, 255, 255, 0.06);
+    --glass-fill-strong: rgba(255, 255, 255, 0.09);
+    --glass-border: rgba(255, 255, 255, 0.14);
+    --glass-border-hover: rgba(255, 255, 255, 0.24);
+    --hairline: rgba(255, 255, 255, 0.09);
+
+    /* Scrims (legibility over the fluid) */
+    --scrim: rgba(4, 5, 12, 0.46);
+    --scrim-strong: rgba(4, 5, 12, 0.68);
+    --scrim-soft: rgba(4, 5, 12, 0.12);
+
+    /* Ink band (accents) and status */
+    --ink-cyan: #67e8f9;
+    --ink-blue: #7aa2ff;
+    --ink-violet: #a78bfa;
+    --ink-magenta: #f0abfc;
+    --good: #4ade80;
+    --risk: #fb7185;
+    --warn: #fbbf24;
+
+    /* Motion */
+    --duration-fast: 150ms;
+    --duration-reveal: 700ms;
+    --ease-entrance: cubic-bezier(0.2, 0, 0, 1);
+
+    --font-heading: 'Onest', sans-serif;
+    --font-body: 'Onest', sans-serif;
 }
+
+html { background: var(--hero-base); }
 
 body {
     font-family: var(--font-body);
-    background-color: var(--page);
-    color: var(--ink);
+    background-color: var(--hero-base);
+    color: var(--heading);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
 }
 
+/* App pages: a still "ink haze" behind the glass so the blur has depth.
+   (The live fluid runs only on the landing and sign-in pages.) */
+body.theme-app {
+    background-image:
+        radial-gradient(60% 45% at 12% -5%, rgba(103, 232, 249, 0.10), transparent 70%),
+        radial-gradient(45% 40% at 92% 8%, rgba(167, 139, 250, 0.11), transparent 70%),
+        radial-gradient(55% 45% at 70% 105%, rgba(240, 171, 252, 0.06), transparent 70%);
+    background-attachment: fixed;
+}
+
+/* ---------- Typography ---------- */
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
+    letter-spacing: -0.01em;
 }
+h1 { letter-spacing: -0.02em; line-height: 1.1; }
+/* Medium-weight headings, as in the hero type system */
+html body h1.font-extrabold, html body h2.font-extrabold { font-weight: 500; }
+html body .font-extrabold { font-weight: 600; }
+.kpi, .tabular { font-variant-numeric: tabular-nums; }
 
-/* Clinical cards */
+/* ---------- Glass surfaces ---------- */
 .glass-panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    box-shadow: 0 1px 2px rgba(15, 43, 61, 0.04), 0 12px 28px -18px rgba(15, 43, 61, 0.22);
+    background: var(--glass-fill);
+    border: 1px solid var(--glass-border) !important;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 24px 48px -32px rgba(0, 0, 0, 0.7);
 }
-
+.glass-panel-hover { transition: border-color var(--duration-fast) var(--ease-entrance), transform 250ms var(--ease-entrance); }
 .glass-panel-hover:hover {
-    border-color: #b9d2df;
-    box-shadow: 0 2px 4px rgba(15, 43, 61, 0.05), 0 18px 36px -20px rgba(15, 118, 110, 0.28);
+    border-color: var(--glass-border-hover) !important;
     transform: translateY(-2px);
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Gradient text */
+/* Header: glass bar over the base */
+.site-header {
+    background: rgba(4, 5, 12, 0.62);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--hairline);
+}
+.nav-pill {
+    border: 1px solid var(--glass-border);
+    background: var(--glass-fill);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border-radius: 9999px;
+    height: 2.5rem;
+    padding: 0 1.25rem;
+}
+.nav-pill a { color: var(--body-muted); white-space: nowrap; transition: color var(--duration-fast) var(--ease-entrance); }
+.nav-pill a:hover, .nav-pill a.is-active { color: var(--heading); }
+.brand-mark {
+    background: linear-gradient(135deg, var(--ink-cyan), var(--ink-blue) 50%, var(--ink-violet));
+    color: #04050c;
+}
+
+/* ---------- Pills / buttons ---------- */
+.pill-white, html body .btn-primary {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--action-inverse);
+    color: var(--action-inverse-fg);
+    border-radius: 9999px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: background var(--duration-fast) var(--ease-entrance), transform var(--duration-fast) var(--ease-entrance);
+}
+.pill-white:hover, html body .btn-primary:hover { background: var(--action-inverse-hover); }
+.pill-white:active, html body .btn-primary:active { transform: translateY(1px); }
+.pill-white:focus-visible, html body .btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.7); }
+html body .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+html body .btn-primary.text-white, html body .btn-primary .text-white { color: var(--action-inverse-fg); }
+
+.pill-glass {
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 9999px;
+    border: 1px solid var(--glass-border);
+    background: var(--glass-fill);
+    color: var(--heading);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    transition: background var(--duration-fast) var(--ease-entrance), border-color var(--duration-fast) var(--ease-entrance);
+}
+.pill-glass:hover { background: var(--glass-fill-strong); border-color: var(--glass-border-hover); }
+
+/* ---------- Re-skin of light Tailwind utilities used in the templates ---------- */
+html body .bg-white { background-color: var(--glass-fill); }
+html body .bg-white\/90 { background-color: rgba(4, 5, 12, 0.62); }
+html body .hover\:bg-muted:hover { background-color: var(--glass-fill-strong); }
+html body .bg-muted\/60 { background-color: rgba(255, 255, 255, 0.035); }
+
+html body .bg-emerald-50 { background-color: rgba(74, 222, 128, 0.10); }
+html body .border-emerald-200 { border-color: rgba(74, 222, 128, 0.32); }
+html body .bg-rose-50, html body .hover\:bg-rose-50:hover { background-color: rgba(251, 113, 133, 0.10); }
+html body .border-rose-200, html body .hover\:border-rose-200:hover { border-color: rgba(251, 113, 133, 0.34); }
+html body .bg-amber-50 { background-color: rgba(251, 191, 36, 0.10); }
+html body .border-amber-200 { border-color: rgba(251, 191, 36, 0.32); }
+html body .hover\:text-teal-800:hover { color: var(--heading); }
+html body .text-emerald-200\/60 { color: rgba(167, 243, 208, 0.65); }
+
+/* Form fields: dark glass with a bright focus ring */
+html body input:not([type=radio]):not([type=checkbox]):not([type=range]),
+html body select, html body textarea {
+    color: var(--heading);
+}
+html body input::placeholder, html body textarea::placeholder { color: rgba(185, 190, 207, 0.55); }
+html body select option { background: #0d1020; color: var(--heading); }
+input[type=range] { accent-color: var(--ink-cyan); }
+
+/* Gradient text in the ink band */
 .text-glow-gradient {
-    background: linear-gradient(135deg, #0f766e 0%, #0369a1 60%, #0f2b3d 100%);
+    background: linear-gradient(120deg, var(--ink-cyan) 0%, var(--ink-blue) 40%, var(--ink-violet) 70%, var(--ink-magenta) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-}
-
-/* Buttons */
-.btn-primary {
-    background: var(--primary);
-    box-shadow: 0 4px 12px -4px rgba(15, 118, 110, 0.45);
-    transition: all 0.2s ease;
-}
-
-.btn-primary:hover {
-    background: var(--primary-dark);
-    box-shadow: 0 8px 18px -6px rgba(15, 118, 110, 0.5);
-    transform: translateY(-1px);
-}
-
-.btn-primary:active {
-    transform: translateY(1px);
-}
-
-.btn-primary:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-    transform: none;
-}
-
-/* Custom scrollbars */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--surface-muted);
-}
-
-::-webkit-scrollbar-thumb {
-    background: #c2d5e2;
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #9db8ca;
-}
-
-/* Pulse animation for node simulation active status */
-.pulse-green {
-    animation: pulse-green-anim 2s infinite;
-}
-
-@keyframes pulse-green-anim {
-    0% {
-        box-shadow: 0 0 0 0 rgba(15, 118, 110, 0.55);
-    }
-    70% {
-        box-shadow: 0 0 0 8px rgba(15, 118, 110, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(15, 118, 110, 0);
-    }
 }
 
 /* Gradient border box */
 .gradient-border-box {
     position: relative;
     border-radius: 0.75rem;
-    background: var(--surface);
+    background: var(--glass-fill);
     padding: 1px;
 }
 .gradient-border-box::before {
     content: "";
     position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
+    inset: 0;
     border-radius: 0.75rem;
     padding: 1.5px;
-    background: linear-gradient(135deg, #0f766e, #0369a1, #d6e3ec);
-    -webkit-mask:
-       linear-gradient(#fff 0 0) content-box,
-       linear-gradient(#fff 0 0);
+    background: linear-gradient(135deg, var(--ink-cyan), var(--ink-violet), rgba(255, 255, 255, 0.12));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
             mask-composite: exclude;
     pointer-events: none;
 }
 
-/* The one intentionally dark element: the central server console */
+/* The server console: deepest surface */
 .console-panel {
-    background: #0b1220;
-    color: #34d399;
-    border: 1px solid #1e293b;
+    background: rgba(0, 0, 0, 0.45);
+    color: #6ee7b7;
+    border: 1px solid var(--hairline);
 }
 
-/* Small status pills used on dashboard and patient pages */
+/* Small status pills */
 .badge {
     display: inline-flex;
     align-items: center;
     gap: 0.25rem;
     font-size: 0.6rem;
-    font-weight: 700;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     padding: 0.15rem 0.45rem;
-    border-radius: 0.35rem;
+    border-radius: 9999px;
 }
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.03); }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.16); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.28); }
+* { scrollbar-color: rgba(255, 255, 255, 0.18) transparent; }
+
+/* Pulse for the live-node dot */
+.pulse-green { animation: pulse-green-anim 2s infinite; }
+@keyframes pulse-green-anim {
+    0% { box-shadow: 0 0 0 0 rgba(103, 232, 249, 0.55); }
+    70% { box-shadow: 0 0 0 8px rgba(103, 232, 249, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(103, 232, 249, 0); }
+}
+
+/* ---------- Motion: soft staggered reveals ---------- */
+/* Blocks rise in once on load. fill-mode "backwards" holds the start state during
+   the delay and leaves no transform behind afterwards (so sticky/fixed children
+   and scroll-into-view are unaffected). */
+@keyframes fx-rise {
+    from { opacity: 0; transform: translateY(1.25rem); }
+    to   { opacity: 1; transform: none; }
+}
+@keyframes fx-drop {
+    from { opacity: 0; transform: translateY(-0.75rem); }
+    to   { opacity: 1; transform: none; }
+}
+@keyframes fx-word {
+    from { opacity: 0; transform: translateY(var(--fx-from, 26px)); }
+    to   { opacity: 1; transform: none; }
+}
+.fx-rise { animation: fx-rise var(--duration-reveal) var(--ease-entrance) backwards; }
+.fx-drop { animation: fx-drop var(--duration-reveal) var(--ease-entrance) backwards; }
+.fx-word {
+    display: inline-block;
+    animation: fx-word var(--fx-dur, 720ms) cubic-bezier(0.33, 1, 0.68, 1) backwards; /* easeOutCubic */
+}
+@media (prefers-reduced-motion: reduce) {
+    .fx-rise, .fx-drop, .fx-word { animation: none !important; }
+    .glass-panel-hover:hover { transform: none; }
+}
+
+/* ---------- Fluid backdrop (landing + sign-in) ---------- */
+/* Absolute (not fixed): a fixed WebGL canvas can be composited above page
+   content in some Chromium builds; the canvas covers its positioned parent. */
+.fluid-canvas {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    z-index: 0; pointer-events: none; display: block;
+}
+.fluid-scrim {
+    position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background: radial-gradient(115% 95% at 50% 46%,
+        var(--scrim-strong) 0%, var(--scrim-strong) 24%, var(--scrim) 52%, var(--scrim-soft) 100%);
+}
+.fluid-scrim.is-strong {
+    background: radial-gradient(90% 80% at 50% 50%,
+        rgba(4, 5, 12, 0.78) 0%, rgba(4, 5, 12, 0.66) 40%, var(--scrim) 75%, var(--scrim-soft) 100%);
+}
+.above-fluid { position: relative; z-index: 2; }
+/* Content sits above the fixed fluid canvas on sign-in pages */
+body.has-fluid { position: relative; }
+body.has-fluid > main, body.has-fluid > footer { position: relative; z-index: 2; }
+body.has-fluid > footer { border-color: transparent; background: transparent; }

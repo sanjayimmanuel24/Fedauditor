@@ -1,49 +1,214 @@
 {% extends "base.html" %}
 
-{% block title %}FedHealth - Auditable Federated Diagnostics{% endblock %}
+{% block title %}FedHealth - Audit Federated Models Without Seeing Patient Data{% endblock %}
+{% block html_class %}fs-landing{% endblock %}
+{% block body_class %}fs-landing-body{% endblock %}
+
+{% block head %}
+<style>
+    /* Adaptive rem grid: the hero is rem-based and scales with the viewport. */
+    html.fs-landing { font-size: 16px; }
+    @media (max-width: 1920px) { html.fs-landing { font-size: 0.833333vw; } }
+    @media (max-width: 1440px) { html.fs-landing { font-size: 1.111111vw; } }
+    @media (max-width: 1024px) { html.fs-landing { font-size: 1.5625vw; } }
+    @media (max-width: 640px)  { html.fs-landing { font-size: 4.444444vw; } }
+
+    .fs-landing-body { overflow-x: hidden; }
+    .fs-hero {
+        position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        min-height: 100lvh; width: 100%; overflow: hidden; background: var(--hero-base);
+        text-align: center; padding: 0 1.25rem;
+    }
+    .fs-hero .fluid-canvas, .fs-hero .fluid-scrim { position: absolute; }
+
+    .fs-nav {
+        position: absolute; inset-inline: 0; top: 0; z-index: 20;
+        display: flex; align-items: center; justify-content: space-between; padding: 1.25rem;
+    }
+    .fs-brand {
+        display: flex; align-items: center; gap: 0.6rem; font-weight: 500; font-size: 1.15rem;
+        color: var(--on-media); letter-spacing: -0.01em;
+    }
+    .fs-brand svg { width: 1.35rem; height: 1.35rem; }
+    .fs-links {
+        display: none; position: absolute; left: 50%; transform: translateX(-50%);
+        height: 3rem; align-items: center; gap: 2.25rem; border-radius: 9999px;
+        border: 1px solid var(--glass-border); background: var(--glass-fill); padding: 0 1.75rem;
+        -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+    }
+    .fs-links a {
+        font-size: 0.95rem; color: var(--body-muted); white-space: nowrap;
+        transition: color var(--duration-fast) var(--ease-entrance);
+    }
+    .fs-links a:hover { color: var(--heading); }
+    .fs-nav-right { display: flex; align-items: center; gap: 1.25rem; }
+    .fs-nav-right .fs-text-link { display: none; font-size: 0.95rem; color: var(--body-muted); transition: color var(--duration-fast) var(--ease-entrance); }
+    .fs-nav-right .fs-text-link:hover { color: var(--heading); }
+
+    .fs-pill {
+        display: inline-flex; align-items: center; justify-content: center; height: 2.5rem;
+        border-radius: 9999px; background: var(--action-inverse); padding: 0 1.125rem;
+        font-size: 0.85rem; font-weight: 500; color: var(--action-inverse-fg); white-space: nowrap;
+        box-shadow: 0 1px 2px rgba(0,0,0,.05); transition: background var(--duration-fast) var(--ease-entrance);
+    }
+    .fs-pill:hover { background: rgba(255,255,255,0.85); }
+    .fs-pill:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(255,255,255,.7); }
+
+    .fs-center {
+        position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center;
+        width: 100%; max-width: 22rem;
+    }
+    .fs-badge {
+        display: inline-flex; align-items: center; gap: 0.45rem; border-radius: 9999px;
+        border: 1px solid var(--glass-border); background: var(--glass-fill); padding: 0.4rem 0.875rem;
+        font-size: 0.72rem; color: var(--body-muted); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+    }
+    .fs-badge .dot { width: 0.4rem; height: 0.4rem; border-radius: 9999px; background: var(--ink-cyan); box-shadow: 0 0 0.6rem var(--ink-cyan); }
+    .fs-h1 {
+        margin-top: 1.25rem; max-width: 20rem; font-size: 2rem; font-weight: 500; line-height: 1.1;
+        letter-spacing: -0.02em; color: var(--heading); text-align: center;
+    }
+    .fs-sub {
+        margin-top: 1rem; max-width: 20rem; font-size: 1rem; line-height: 1.5; color: var(--body-muted);
+    }
+    .fs-cta-wrap { margin-top: 1.75rem; display: flex; justify-content: center; width: 100%; }
+    .fs-bar {
+        width: 37rem; max-width: 100%; display: flex; align-items: center; gap: 0.75rem;
+        height: 3.5rem; border-radius: 9999px; border: 1px solid var(--glass-border); background: var(--glass-fill);
+        -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); box-shadow: 0 1px 2px rgba(0,0,0,.05);
+        padding-left: 1.25rem; padding-right: 0.35rem;
+    }
+    .fs-bar-text {
+        flex: 1; min-width: 0; text-align: left; color: var(--body-muted); font-size: 0.85rem;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .fs-bar-text i { color: var(--ink-cyan); margin-right: 0.5rem; }
+    .fs-long { display: none; }
+    .fs-footer {
+        position: absolute; inset-inline: 0; bottom: 0; z-index: 20; display: flex; justify-content: center;
+        padding: 1.25rem; font-size: 0.72rem; color: var(--body-muted);
+    }
+
+    @media (min-width: 640px) {
+        .fs-hero { padding: 0 2.5rem; }
+        .fs-nav { padding: 1.75rem 2.5rem; }
+        .fs-brand { font-size: 1.375rem; }
+        .fs-brand svg { width: 1.5rem; height: 1.5rem; }
+        .fs-links { display: flex; }
+        .fs-nav-right .fs-text-link { display: inline; }
+        .fs-pill { height: 2.75rem; padding: 0 1.375rem; font-size: 0.95rem; }
+        .fs-center { max-width: 40rem; }
+        .fs-badge { font-size: 0.8rem; }
+        .fs-h1 { margin-top: 1.75rem; max-width: 34rem; font-size: 3.5rem; }
+        .fs-sub { margin-top: 1.25rem; max-width: 34rem; font-size: 1.1rem; }
+        .fs-cta-wrap { margin-top: 2.5rem; }
+        .fs-bar { height: 4rem; padding-left: 1.5rem; padding-right: 0.4rem; }
+        .fs-bar-text { font-size: 1.05rem; }
+        .fs-long { display: inline; }
+        .fs-short { display: none; }
+        .fs-footer { padding: 1.5rem 2.5rem; font-size: 0.8rem; }
+    }
+    @media (min-width: 1024px) {
+        .fs-center { max-width: 52rem; }
+        .fs-h1 { max-width: 46rem; font-size: 5rem; }
+        .fs-sub { max-width: none; font-size: 1.2rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .fs-hero { background: radial-gradient(70% 60% at 50% 40%, rgba(103,232,249,.12), transparent 70%),
+                                radial-gradient(60% 50% at 70% 70%, rgba(167,139,250,.12), transparent 70%), var(--hero-base); }
+    }
+</style>
+{% endblock %}
+
+{% block site_header %}{% endblock %}
+{% block site_footer %}{% endblock %}
 
 {% block content %}
-<section class="relative overflow-hidden">
-    <div class="absolute -top-48 left-1/2 -translate-x-1/2 h-[34rem] w-[34rem] rounded-full bg-teal-500/10 blur-3xl"></div>
-    <div class="absolute top-24 -right-24 h-80 w-80 rounded-full bg-sky-500/10 blur-3xl"></div>
-    <div class="absolute -bottom-32 -left-24 h-80 w-80 rounded-full bg-teal-400/10 blur-3xl"></div>
+<section class="fs-hero">
+    <canvas class="fluid-canvas" id="fluid" aria-hidden="true"></canvas>
+    <div class="fluid-scrim" aria-hidden="true"></div>
 
-    <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 text-center space-y-7">
-        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-white text-brand border border-line shadow-sm">
-            <i class="fa-solid fa-server mr-1.5"></i> Federated learning &middot; calibration &middot; fairness &middot; explanation
-        </span>
-
-        <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-ink leading-[1.08]">
-            Beyond Accuracy in <br class="hidden sm:block" />
-            <span class="text-glow-gradient">Federated Clinical Screening</span>
-        </h1>
-
-        <p class="text-base sm:text-lg text-subtle max-w-2xl mx-auto leading-relaxed">
-            A federated model can hit a respectable accuracy while its probabilities are badly wrong and
-            its errors fall hardest on one patient cohort. This system measures both, repairs them using
-            only aggregate statistics, and shows how much an explanation depends on the cohort it is
-            measured against.
-        </p>
-
-        <div class="flex flex-col sm:flex-row justify-center items-center gap-4 pt-2">
+    <header class="fs-nav" data-fx="drop" data-delay="150">
+        <a href="{{ url_for('landing') }}" class="fs-brand">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M2.5 9c2.5 0 2.5 4.2 5 4.2S10 9 12 9s2.5 4.2 5 4.2S19.5 9 21.5 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M2.5 15c2.5 0 2.5 4.2 5 4.2S10 15 12 15s2.5 4.2 5 4.2S19.5 15 21.5 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity="0.5"/>
+            </svg>
+            FedHealth
+        </a>
+        <nav class="fs-links" aria-label="Main">
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('fedauditor_page') }}">FedAuditor</a>
+            <a href="{{ url_for('predict_page') }}">Diagnostic Form</a>
+        </nav>
+        <div class="fs-nav-right">
             {% if session.get('user') %}
-                <a href="{{ url_for('dashboard') }}" class="btn-primary text-white font-semibold px-8 py-3.5 rounded-xl text-sm flex items-center">
-                    Open Audit Dashboard <i class="fa-solid fa-arrow-right ml-2"></i>
-                </a>
+                <a href="{{ url_for('logout') }}" class="fs-text-link">Logout</a>
+                <a href="{{ url_for('dashboard') }}" class="fs-pill">Open Dashboard</a>
             {% else %}
-                <a href="{{ url_for('signup') }}" class="btn-primary text-white font-semibold px-8 py-3.5 rounded-xl text-sm flex items-center">
-                    Get Started <i class="fa-solid fa-user-plus ml-2"></i>
-                </a>
-                <a href="{{ url_for('login') }}" class="bg-white hover:bg-muted text-ink font-semibold px-8 py-3.5 rounded-xl text-sm border border-line transition-all duration-200">
-                    Clinician Login
-                </a>
+                <a href="{{ url_for('login') }}" class="fs-text-link">Login</a>
+                <a href="{{ url_for('signup') }}" class="fs-pill">Get Started</a>
             {% endif %}
         </div>
+    </header>
 
-        <p class="text-xs text-subtle/90 pt-4">
-            Screening output is a decision aid, not a diagnosis. Patient records stay with their cohort;
-            only model weights and aggregate sufficient statistics are exchanged.
-        </p>
+    <div class="fs-center">
+        <p class="fs-badge" data-fx="rise" data-delay="320"><span class="dot" aria-hidden="true"></span>FedFault benchmark &middot; 52 state clients</p>
+        <h1 class="fs-h1" data-words="85,720,26" data-delay="480">Audit Federated Models Without Seeing Patient Data</h1>
+        <p class="fs-sub" data-words="22,600,14" data-delay="1150">An AI auditor finds faulty sites from noisy, privacy-budgeted statistics, and every number it reports is checked against the log.</p>
+        <div class="fs-cta-wrap" data-fx="rise" data-delay="1450">
+            <div class="fs-bar">
+                <span class="fs-bar-text"><i class="fa-solid fa-lock"></i><span class="fs-long">Patient records never leave their site.</span><span class="fs-short">Records stay local.</span></span>
+                {% if session.get('user') %}
+                    <a href="{{ url_for('fedauditor_page') }}" class="fs-pill">Open FedAuditor</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="fs-pill">Clinician Login</a>
+                {% endif %}
+            </div>
+        </div>
     </div>
+
+    <footer class="fs-footer" data-fx="rise" data-delay="1650">&copy; 2026 FedHealth &mdash; a decision aid, not a diagnosis.</footer>
 </section>
+{% endblock %}
+
+{% block reveal %}
+<script src="{{ url_for('static', filename='js/fluid.js') }}"></script>
+<script>
+(function () {
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // Word-by-word reveals: data-words="stagger,duration,fromPx"
+    document.querySelectorAll('[data-words]').forEach(function (el) {
+        var p = el.dataset.words.split(',').map(Number), base = Number(el.dataset.delay || 0);
+        var words = el.textContent.trim().split(/\s+/);
+        el.textContent = '';
+        words.forEach(function (w, i) {
+            var s = document.createElement('span');
+            s.className = 'fx-word';
+            s.textContent = w;
+            s.style.setProperty('--fx-from', p[2] + 'px');
+            s.style.setProperty('--fx-dur', p[1] + 'ms');
+            s.style.animationDelay = (base + i * p[0]) + 'ms';
+            el.appendChild(s);
+            if (i < words.length - 1) el.appendChild(document.createTextNode(' '));
+        });
+    });
+    // Block reveals
+    document.querySelectorAll('[data-fx]').forEach(function (el) {
+        el.classList.add(el.dataset.fx === 'drop' ? 'fx-drop' : 'fx-rise');
+        el.style.animationDelay = (el.dataset.delay || 0) + 'ms';
+    });
+    if (!reduce) {
+        var canvas = document.getElementById('fluid');
+        if (canvas) window.fluidSimulation(canvas);
+    }
+})();
+</script>
+<script type="importmap">{ "imports": { "lenis": "https://unpkg.com/lenis@1.3.19/dist/lenis.mjs" } }</script>
+<script type="module">
+    import Lenis from "lenis";
+    const lenis = new Lenis({ smoothWheel: true });
+    function raf(t) { lenis.raf(t); requestAnimationFrame(raf); }
+    requestAnimationFrame(raf);
+</script>
 {% endblock %}

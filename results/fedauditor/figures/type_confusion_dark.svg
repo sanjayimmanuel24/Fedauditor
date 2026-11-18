@@ -1,0 +1,396 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 752 356" width="752" height="356" font-family="Onest, Helvetica, Arial, sans-serif" font-size="11">
+<text x="8" y="18" font-size="13" font-weight="bold" fill="#eef0f6">Planted fault (rows) vs fault type the agent reported (columns), scenarios</text>
+<text x="160" y="81.0" text-anchor="end" fill="#b9becf">Label noise</text>
+<text x="160" y="107.0" text-anchor="end" fill="#b9becf">Drift</text>
+<text x="160" y="133.0" text-anchor="end" fill="#b9becf">Poisoning</text>
+<text x="160" y="159.0" text-anchor="end" fill="#b9becf">Free-rider</text>
+<text x="160" y="185.0" text-anchor="end" fill="#b9becf">Prevalence shift</text>
+<text x="160" y="211.0" text-anchor="end" fill="#b9becf">Subgroup bias</text>
+<text x="160" y="237.0" text-anchor="end" fill="#b9becf">Missing-data artefact</text>
+<text x="160" y="263.0" text-anchor="end" fill="#b9becf">Expl. instability</text>
+<text x="160" y="289.0" text-anchor="end" fill="#b9becf">Clean (no fault)</text>
+<text x="303.0" y="38" text-anchor="middle" font-weight="bold" fill="#eef0f6">Haiku 5.5, prompt v4</text>
+<text x="183.0" y="56" text-anchor="middle" fill="#8a93ab">LN</text>
+<text x="213.0" y="56" text-anchor="middle" fill="#8a93ab">DR</text>
+<text x="243.0" y="56" text-anchor="middle" fill="#8a93ab">PO</text>
+<text x="273.0" y="56" text-anchor="middle" fill="#8a93ab">FR</text>
+<text x="303.0" y="56" text-anchor="middle" fill="#8a93ab">PS</text>
+<text x="333.0" y="56" text-anchor="middle" fill="#8a93ab">SB</text>
+<text x="363.0" y="56" text-anchor="middle" fill="#8a93ab">MA</text>
+<text x="393.0" y="56" text-anchor="middle" fill="#8a93ab">EI</text>
+<text x="423.0" y="56" text-anchor="middle" fill="#8a93ab">–</text>
+<g><title>Haiku 5.5, prompt v4: Label noise / LN = 2</title><rect x="169" y="65" width="28" height="24" rx="2" fill="#0d3467"/>
+<text x="183.0" y="81.0" text-anchor="middle" fill="#eef0f6">2</text>
+</g>
+<g><title>Haiku 5.5, prompt v4: Label noise / DR = </title><rect x="199" y="65" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Label noise / PO = 12</title><rect x="229" y="65" width="28" height="24" rx="2" fill="#8ab9f1"/>
+<text x="243.0" y="81.0" text-anchor="middle" fill="#04050c">12</text>
+</g>
+<g><title>Haiku 5.5, prompt v4: Label noise / FR = </title><rect x="259" y="65" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Label noise / PS = 1</title><rect x="289" y="65" width="28" height="24" rx="2" fill="#11284c"/>
+<text x="303.0" y="81.0" text-anchor="middle" fill="#eef0f6">1</text>
+</g>
+<g><title>Haiku 5.5, prompt v4: Label noise / SB = </title><rect x="319" y="65" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Label noise / MA = </title><rect x="349" y="65" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Label noise / EI = </title><rect x="379" y="65" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Label noise / – = </title><rect x="409" y="65" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Drift / LN = </title><rect x="169" y="91" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Drift / DR = 13.5</title><rect x="199" y="91" width="28" height="24" rx="2" fill="#accef6"/>
+<text x="213.0" y="107.0" text-anchor="middle" fill="#04050c">13.5</text>
+</g>
+<g><title>Haiku 5.5, prompt v4: Drift / PO = 0.5</title><rect x="229" y="91" width="28" height="24" rx="2" fill="#12223e"/>
+<text x="243.0" y="107.0" text-anchor="middle" fill="#eef0f6">0.5</text>
+</g>
+<g><title>Haiku 5.5, prompt v4: Drift / FR = </title><rect x="259" y="91" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Drift / PS = 1</title><rect x="289" y="91" width="28" height="24" rx="2" fill="#11284c"/>
+<text x="303.0" y="107.0" text-anchor="middle" fill="#eef0f6">1</text>
+</g>
+<g><title>Haiku 5.5, prompt v4: Drift / SB = </title><rect x="319" y="91" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Drift / MA = </title><rect x="349" y="91" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Drift / EI = </title><rect x="379" y="91" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Drift / – = </title><rect x="409" y="91" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Poisoning / LN = </title><rect x="169" y="117" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Poisoning / DR = </title><rect x="199" y="117" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Poisoning / PO = 15</title><rect x="229" y="117" width="28" height="24" rx="2" fill="#cde2fb"/>
+<text x="243.0" y="133.0" text-anchor="middle" fill="#04050c">15</text>
+</g>
+<g><title>Haiku 5.5, prompt v4: Poisoning / FR = </title><rect x="259" y="117" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Poisoning / PS = </title><rect x="289" y="117" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Poisoning / SB = </title><rect x="319" y="117" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Poisoning / MA = </title><rect x="349" y="117" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Poisoning / EI = </title><rect x="379" y="117" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Poisoning / – = </title><rect x="409" y="117" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Free-rider / LN = </title><rect x="169" y="143" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Free-rider / DR = </title><rect x="199" y="143" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Free-rider / PO = </title><rect x="229" y="143" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Free-rider / FR = 15</title><rect x="259" y="143" width="28" height="24" rx="2" fill="#cde2fb"/>
+<text x="273.0" y="159.0" text-anchor="middle" fill="#04050c">15</text>
+</g>
+<g><title>Haiku 5.5, prompt v4: Free-rider / PS = </title><rect x="289" y="143" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Free-rider / SB = </title><rect x="319" y="143" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Free-rider / MA = </title><rect x="349" y="143" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Free-rider / EI = </title><rect x="379" y="143" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Free-rider / – = </title><rect x="409" y="143" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Prevalence shift / LN = 1.5</title><rect x="169" y="169" width="28" height="24" rx="2" fill="#0f2e59"/>
+<text x="183.0" y="185.0" text-anchor="middle" fill="#eef0f6">1.5</text>
+</g>
+<g><title>Haiku 5.5, prompt v4: Prevalence shift / DR = </title><rect x="199" y="169" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Prevalence shift / PO = </title><rect x="229" y="169" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Prevalence shift / FR = </title><rect x="259" y="169" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Prevalence shift / PS = 13.5</title><rect x="289" y="169" width="28" height="24" rx="2" fill="#accef6"/>
+<text x="303.0" y="185.0" text-anchor="middle" fill="#04050c">13.5</text>
+</g>
+<g><title>Haiku 5.5, prompt v4: Prevalence shift / SB = </title><rect x="319" y="169" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Prevalence shift / MA = </title><rect x="349" y="169" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Prevalence shift / EI = </title><rect x="379" y="169" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Prevalence shift / – = </title><rect x="409" y="169" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Subgroup bias / LN = </title><rect x="169" y="195" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Subgroup bias / DR = </title><rect x="199" y="195" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Subgroup bias / PO = </title><rect x="229" y="195" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Subgroup bias / FR = </title><rect x="259" y="195" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Subgroup bias / PS = </title><rect x="289" y="195" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Subgroup bias / SB = 11</title><rect x="319" y="195" width="28" height="24" rx="2" fill="#74abed"/>
+<text x="333.0" y="211.0" text-anchor="middle" fill="#04050c">11</text>
+</g>
+<g><title>Haiku 5.5, prompt v4: Subgroup bias / MA = </title><rect x="349" y="195" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Subgroup bias / EI = 1</title><rect x="379" y="195" width="28" height="24" rx="2" fill="#11284c"/>
+<text x="393.0" y="211.0" text-anchor="middle" fill="#eef0f6">1</text>
+</g>
+<g><title>Haiku 5.5, prompt v4: Subgroup bias / – = 3</title><rect x="409" y="195" width="28" height="24" rx="2" fill="#11407c"/>
+<text x="423.0" y="211.0" text-anchor="middle" fill="#eef0f6">3</text>
+</g>
+<g><title>Haiku 5.5, prompt v4: Missing-data artefact / LN = </title><rect x="169" y="221" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Missing-data artefact / DR = </title><rect x="199" y="221" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Missing-data artefact / PO = </title><rect x="229" y="221" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Missing-data artefact / FR = </title><rect x="259" y="221" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Missing-data artefact / PS = </title><rect x="289" y="221" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Missing-data artefact / SB = </title><rect x="319" y="221" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Missing-data artefact / MA = 15</title><rect x="349" y="221" width="28" height="24" rx="2" fill="#cde2fb"/>
+<text x="363.0" y="237.0" text-anchor="middle" fill="#04050c">15</text>
+</g>
+<g><title>Haiku 5.5, prompt v4: Missing-data artefact / EI = </title><rect x="379" y="221" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Missing-data artefact / – = </title><rect x="409" y="221" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Expl. instability / LN = </title><rect x="169" y="247" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Expl. instability / DR = </title><rect x="199" y="247" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Expl. instability / PO = </title><rect x="229" y="247" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Expl. instability / FR = </title><rect x="259" y="247" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Expl. instability / PS = 1</title><rect x="289" y="247" width="28" height="24" rx="2" fill="#11284c"/>
+<text x="303.0" y="263.0" text-anchor="middle" fill="#eef0f6">1</text>
+</g>
+<g><title>Haiku 5.5, prompt v4: Expl. instability / SB = </title><rect x="319" y="247" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Expl. instability / MA = </title><rect x="349" y="247" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Expl. instability / EI = 10</title><rect x="379" y="247" width="28" height="24" rx="2" fill="#5c9cea"/>
+<text x="393.0" y="263.0" text-anchor="middle" fill="#04050c">10</text>
+</g>
+<g><title>Haiku 5.5, prompt v4: Expl. instability / – = 4</title><rect x="409" y="247" width="28" height="24" rx="2" fill="#174c8f"/>
+<text x="423.0" y="263.0" text-anchor="middle" fill="#eef0f6">4</text>
+</g>
+<g><title>Haiku 5.5, prompt v4: Clean (no fault) / LN = </title><rect x="169" y="273" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Clean (no fault) / DR = </title><rect x="199" y="273" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Clean (no fault) / PO = </title><rect x="229" y="273" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Clean (no fault) / FR = </title><rect x="259" y="273" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Clean (no fault) / PS = 1</title><rect x="289" y="273" width="28" height="24" rx="2" fill="#11284c"/>
+<text x="303.0" y="289.0" text-anchor="middle" fill="#eef0f6">1</text>
+</g>
+<g><title>Haiku 5.5, prompt v4: Clean (no fault) / SB = </title><rect x="319" y="273" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Clean (no fault) / MA = </title><rect x="349" y="273" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v4: Clean (no fault) / EI = 1</title><rect x="379" y="273" width="28" height="24" rx="2" fill="#11284c"/>
+<text x="393.0" y="289.0" text-anchor="middle" fill="#eef0f6">1</text>
+</g>
+<g><title>Haiku 5.5, prompt v4: Clean (no fault) / – = 3</title><rect x="409" y="273" width="28" height="24" rx="2" fill="#11407c"/>
+<text x="423.0" y="289.0" text-anchor="middle" fill="#eef0f6">3</text>
+</g>
+<text x="601.0" y="38" text-anchor="middle" font-weight="bold" fill="#eef0f6">Haiku 5.5, prompt v5</text>
+<text x="481.0" y="56" text-anchor="middle" fill="#8a93ab">LN</text>
+<text x="511.0" y="56" text-anchor="middle" fill="#8a93ab">DR</text>
+<text x="541.0" y="56" text-anchor="middle" fill="#8a93ab">PO</text>
+<text x="571.0" y="56" text-anchor="middle" fill="#8a93ab">FR</text>
+<text x="601.0" y="56" text-anchor="middle" fill="#8a93ab">PS</text>
+<text x="631.0" y="56" text-anchor="middle" fill="#8a93ab">SB</text>
+<text x="661.0" y="56" text-anchor="middle" fill="#8a93ab">MA</text>
+<text x="691.0" y="56" text-anchor="middle" fill="#8a93ab">EI</text>
+<text x="721.0" y="56" text-anchor="middle" fill="#8a93ab">–</text>
+<g><title>Haiku 5.5, prompt v5: Label noise / LN = 15</title><rect x="467" y="65" width="28" height="24" rx="2" fill="#cde2fb"/>
+<text x="481.0" y="81.0" text-anchor="middle" fill="#04050c">15</text>
+</g>
+<g><title>Haiku 5.5, prompt v5: Label noise / DR = </title><rect x="497" y="65" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Label noise / PO = </title><rect x="527" y="65" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Label noise / FR = </title><rect x="557" y="65" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Label noise / PS = </title><rect x="587" y="65" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Label noise / SB = </title><rect x="617" y="65" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Label noise / MA = </title><rect x="647" y="65" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Label noise / EI = </title><rect x="677" y="65" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Label noise / – = </title><rect x="707" y="65" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Drift / LN = </title><rect x="467" y="91" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Drift / DR = 13</title><rect x="497" y="91" width="28" height="24" rx="2" fill="#a1c7f4"/>
+<text x="511.0" y="107.0" text-anchor="middle" fill="#04050c">13</text>
+</g>
+<g><title>Haiku 5.5, prompt v5: Drift / PO = 1</title><rect x="527" y="91" width="28" height="24" rx="2" fill="#11284c"/>
+<text x="541.0" y="107.0" text-anchor="middle" fill="#eef0f6">1</text>
+</g>
+<g><title>Haiku 5.5, prompt v5: Drift / FR = </title><rect x="557" y="91" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Drift / PS = 1</title><rect x="587" y="91" width="28" height="24" rx="2" fill="#11284c"/>
+<text x="601.0" y="107.0" text-anchor="middle" fill="#eef0f6">1</text>
+</g>
+<g><title>Haiku 5.5, prompt v5: Drift / SB = </title><rect x="617" y="91" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Drift / MA = </title><rect x="647" y="91" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Drift / EI = </title><rect x="677" y="91" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Drift / – = </title><rect x="707" y="91" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Poisoning / LN = </title><rect x="467" y="117" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Poisoning / DR = </title><rect x="497" y="117" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Poisoning / PO = 15</title><rect x="527" y="117" width="28" height="24" rx="2" fill="#cde2fb"/>
+<text x="541.0" y="133.0" text-anchor="middle" fill="#04050c">15</text>
+</g>
+<g><title>Haiku 5.5, prompt v5: Poisoning / FR = </title><rect x="557" y="117" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Poisoning / PS = </title><rect x="587" y="117" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Poisoning / SB = </title><rect x="617" y="117" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Poisoning / MA = </title><rect x="647" y="117" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Poisoning / EI = </title><rect x="677" y="117" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Poisoning / – = </title><rect x="707" y="117" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Free-rider / LN = </title><rect x="467" y="143" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Free-rider / DR = </title><rect x="497" y="143" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Free-rider / PO = </title><rect x="527" y="143" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Free-rider / FR = 15</title><rect x="557" y="143" width="28" height="24" rx="2" fill="#cde2fb"/>
+<text x="571.0" y="159.0" text-anchor="middle" fill="#04050c">15</text>
+</g>
+<g><title>Haiku 5.5, prompt v5: Free-rider / PS = </title><rect x="587" y="143" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Free-rider / SB = </title><rect x="617" y="143" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Free-rider / MA = </title><rect x="647" y="143" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Free-rider / EI = </title><rect x="677" y="143" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Free-rider / – = </title><rect x="707" y="143" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Prevalence shift / LN = </title><rect x="467" y="169" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Prevalence shift / DR = </title><rect x="497" y="169" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Prevalence shift / PO = </title><rect x="527" y="169" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Prevalence shift / FR = </title><rect x="557" y="169" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Prevalence shift / PS = 15</title><rect x="587" y="169" width="28" height="24" rx="2" fill="#cde2fb"/>
+<text x="601.0" y="185.0" text-anchor="middle" fill="#04050c">15</text>
+</g>
+<g><title>Haiku 5.5, prompt v5: Prevalence shift / SB = </title><rect x="617" y="169" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Prevalence shift / MA = </title><rect x="647" y="169" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Prevalence shift / EI = </title><rect x="677" y="169" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Prevalence shift / – = </title><rect x="707" y="169" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Subgroup bias / LN = </title><rect x="467" y="195" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Subgroup bias / DR = </title><rect x="497" y="195" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Subgroup bias / PO = 1</title><rect x="527" y="195" width="28" height="24" rx="2" fill="#11284c"/>
+<text x="541.0" y="211.0" text-anchor="middle" fill="#eef0f6">1</text>
+</g>
+<g><title>Haiku 5.5, prompt v5: Subgroup bias / FR = </title><rect x="557" y="195" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Subgroup bias / PS = 1</title><rect x="587" y="195" width="28" height="24" rx="2" fill="#11284c"/>
+<text x="601.0" y="211.0" text-anchor="middle" fill="#eef0f6">1</text>
+</g>
+<g><title>Haiku 5.5, prompt v5: Subgroup bias / SB = 11</title><rect x="617" y="195" width="28" height="24" rx="2" fill="#74abed"/>
+<text x="631.0" y="211.0" text-anchor="middle" fill="#04050c">11</text>
+</g>
+<g><title>Haiku 5.5, prompt v5: Subgroup bias / MA = </title><rect x="647" y="195" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Subgroup bias / EI = </title><rect x="677" y="195" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Subgroup bias / – = 2</title><rect x="707" y="195" width="28" height="24" rx="2" fill="#0d3467"/>
+<text x="721.0" y="211.0" text-anchor="middle" fill="#eef0f6">2</text>
+</g>
+<g><title>Haiku 5.5, prompt v5: Missing-data artefact / LN = </title><rect x="467" y="221" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Missing-data artefact / DR = </title><rect x="497" y="221" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Missing-data artefact / PO = </title><rect x="527" y="221" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Missing-data artefact / FR = </title><rect x="557" y="221" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Missing-data artefact / PS = </title><rect x="587" y="221" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Missing-data artefact / SB = </title><rect x="617" y="221" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Missing-data artefact / MA = 15</title><rect x="647" y="221" width="28" height="24" rx="2" fill="#cde2fb"/>
+<text x="661.0" y="237.0" text-anchor="middle" fill="#04050c">15</text>
+</g>
+<g><title>Haiku 5.5, prompt v5: Missing-data artefact / EI = </title><rect x="677" y="221" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Missing-data artefact / – = </title><rect x="707" y="221" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Expl. instability / LN = </title><rect x="467" y="247" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Expl. instability / DR = </title><rect x="497" y="247" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Expl. instability / PO = </title><rect x="527" y="247" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Expl. instability / FR = </title><rect x="557" y="247" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Expl. instability / PS = 1</title><rect x="587" y="247" width="28" height="24" rx="2" fill="#11284c"/>
+<text x="601.0" y="263.0" text-anchor="middle" fill="#eef0f6">1</text>
+</g>
+<g><title>Haiku 5.5, prompt v5: Expl. instability / SB = </title><rect x="617" y="247" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Expl. instability / MA = </title><rect x="647" y="247" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Expl. instability / EI = 10</title><rect x="677" y="247" width="28" height="24" rx="2" fill="#5c9cea"/>
+<text x="691.0" y="263.0" text-anchor="middle" fill="#04050c">10</text>
+</g>
+<g><title>Haiku 5.5, prompt v5: Expl. instability / – = 4</title><rect x="707" y="247" width="28" height="24" rx="2" fill="#174c8f"/>
+<text x="721.0" y="263.0" text-anchor="middle" fill="#eef0f6">4</text>
+</g>
+<g><title>Haiku 5.5, prompt v5: Clean (no fault) / LN = </title><rect x="467" y="273" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Clean (no fault) / DR = </title><rect x="497" y="273" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Clean (no fault) / PO = </title><rect x="527" y="273" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Clean (no fault) / FR = </title><rect x="557" y="273" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Clean (no fault) / PS = 1</title><rect x="587" y="273" width="28" height="24" rx="2" fill="#11284c"/>
+<text x="601.0" y="289.0" text-anchor="middle" fill="#eef0f6">1</text>
+</g>
+<g><title>Haiku 5.5, prompt v5: Clean (no fault) / SB = </title><rect x="617" y="273" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Clean (no fault) / MA = </title><rect x="647" y="273" width="28" height="24" rx="2" fill="#121626"/>
+</g>
+<g><title>Haiku 5.5, prompt v5: Clean (no fault) / EI = 1</title><rect x="677" y="273" width="28" height="24" rx="2" fill="#11284c"/>
+<text x="691.0" y="289.0" text-anchor="middle" fill="#eef0f6">1</text>
+</g>
+<g><title>Haiku 5.5, prompt v5: Clean (no fault) / – = 3</title><rect x="707" y="273" width="28" height="24" rx="2" fill="#11407c"/>
+<text x="721.0" y="289.0" text-anchor="middle" fill="#eef0f6">3</text>
+</g>
+<text x="8" y="330" fill="#8a93ab">LN label noise, DR drift, PO poisoning, FR free-rider, PS prevalence shift,</text>
+<text x="8" y="344" fill="#8a93ab">SB subgroup bias, MA missing-data artefact, EI expl. instability, – nothing flagged. 15 scenarios per fault.</text>
+</svg>

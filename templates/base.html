@@ -1,31 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="{% block html_class %}{% endblock %}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#04050c">
     <title>{% block title %}Federated Health{% endblock %}</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
+        // Dark "deep ink" tokens. Class names are unchanged, so every template keeps its layout.
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        page: '#f4f8fb',
-                        surface: '#ffffff',
-                        muted: '#eef4f8',
-                        ink: '#0f2b3d',
-                        subtle: '#57708a',
-                        line: '#d6e3ec',
-                        brand: '#0f766e',
-                        accent: '#0369a1',
-                        risk: '#be123c',
-                        good: '#047857',
-                        warn: '#b45309',
+                        page: '#04050c',
+                        surface: '#0b0e1a',
+                        muted: '#0f1323',
+                        ink: '#eef0f6',
+                        subtle: '#b9becf',
+                        line: '#22283a',
+                        brand: '#67e8f9',
+                        accent: '#a78bfa',
+                        risk: '#fb7185',
+                        good: '#4ade80',
+                        warn: '#fbbf24',
                     },
                     fontFamily: {
-                        heading: ['Outfit', 'sans-serif'],
-                        body: ['Inter', 'sans-serif'],
+                        heading: ['Onest', 'sans-serif'],
+                        body: ['Onest', 'sans-serif'],
                     }
                 }
             }
@@ -35,39 +37,55 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Chart chrome for the dark theme (series colours are set per chart).
+        if (window.Chart) {
+            Chart.defaults.color = '#b9becf';
+            Chart.defaults.borderColor = 'rgba(255,255,255,0.08)';
+            Chart.defaults.font.family = "'Onest', sans-serif";
+            Object.assign(Chart.defaults.plugins.tooltip, {
+                backgroundColor: 'rgba(13,16,32,0.96)', borderColor: 'rgba(255,255,255,0.14)', borderWidth: 1,
+                titleColor: '#eef0f6', bodyColor: '#b9becf', padding: 10, cornerRadius: 10
+            });
+        }
+    </script>
     <!-- Custom Style Sheet -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     {% block head %}{% endblock %}
 </head>
-<body class="bg-page text-ink font-body min-h-screen flex flex-col justify-between">
+<body class="bg-page text-ink font-body min-h-screen flex flex-col justify-between {% block body_class %}theme-app{% endblock %}">
+    {% block backdrop %}{% endblock %}
+
+    {% block site_header %}
     <!-- Header / Navbar -->
-    <header class="border-b border-line bg-white/90 backdrop-blur-md sticky top-0 z-50">
+    <header class="site-header sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <!-- Logo -->
                 <a href="{{ url_for('landing') }}" class="flex items-center space-x-3">
-                    <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-brand to-accent flex items-center justify-center shadow-sm">
-                        <i class="fa-solid fa-shield-halved text-white text-xl"></i>
+                    <div class="brand-mark h-10 w-10 rounded-full flex items-center justify-center">
+                        <i class="fa-solid fa-shield-halved text-lg"></i>
                     </div>
                     <div>
-                        <span class="text-xl font-extrabold tracking-tight text-ink font-heading">FedHealth</span>
-                        <span class="hidden sm:inline text-[11px] block text-subtle">Privacy-Preserving Diagnostic System</span>
+                        <span class="text-xl font-medium tracking-tight text-ink font-heading">FedHealth</span>
+                        <span class="hidden xl:inline text-[11px] block text-subtle">Privacy-Preserving Diagnostic System</span>
                     </div>
                 </a>
 
                 <!-- Navigation Links -->
-                <nav class="hidden md:flex space-x-6 text-sm font-medium items-center">
-                    <a href="{{ url_for('landing') }}" class="text-subtle hover:text-brand transition-colors duration-200">
+                {% set ep = request.endpoint %}
+                <nav class="hidden md:flex nav-pill items-center gap-5 text-sm font-medium">
+                    <a href="{{ url_for('landing') }}" class="{{ 'is-active' if ep == 'landing' }}">
                         <i class="fa-solid fa-house mr-1"></i> Home
                     </a>
                     {% if session.get('user') %}
-                        <a href="{{ url_for('dashboard') }}" class="text-subtle hover:text-brand transition-colors duration-200">
+                        <a href="{{ url_for('dashboard') }}" class="{{ 'is-active' if ep == 'dashboard' }}">
                             <i class="fa-solid fa-chart-line mr-1"></i> Dashboard
                         </a>
-                        <a href="{{ url_for('predict_page') }}" class="text-subtle hover:text-brand transition-colors duration-200">
+                        <a href="{{ url_for('predict_page') }}" class="{{ 'is-active' if ep == 'predict_page' }}">
                             <i class="fa-solid fa-stethoscope mr-1"></i> Diagnostic Form
                         </a>
-                        <a href="{{ url_for('fedauditor_page') }}" class="text-subtle hover:text-brand transition-colors duration-200">
+                        <a href="{{ url_for('fedauditor_page') }}" class="{{ 'is-active' if ep == 'fedauditor_page' }}">
                             <i class="fa-solid fa-magnifying-glass-chart mr-1"></i> FedAuditor
                         </a>
                     {% endif %}
@@ -76,33 +94,90 @@
                 <!-- Auth Actions -->
                 <div class="flex items-center space-x-3">
                     {% if session.get('user') %}
-                        <div class="hidden sm:flex items-center space-x-2 bg-muted px-3 py-1.5 rounded-lg border border-line">
+                        <div class="hidden lg:flex items-center space-x-2 pill-glass px-3 py-1.5 whitespace-nowrap">
                             <i class="fa-solid fa-user-doctor text-brand"></i>
-                            <span class="text-xs text-ink font-semibold">Dr. {{ session['user']['name'] }}</span>
+                            <span class="text-xs text-ink font-medium">Dr. {{ session['user']['name'] }}</span>
                         </div>
-                        <a href="{{ url_for('logout') }}" class="text-xs bg-white hover:bg-rose-50 text-subtle hover:text-risk border border-line hover:border-rose-200 px-3 py-1.5 rounded-lg transition-all duration-200">
+                        <a href="{{ url_for('logout') }}" class="pill-glass text-xs text-subtle hover:text-risk px-3 py-1.5 whitespace-nowrap">
                             <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
                         </a>
                     {% else %}
-                        <a href="{{ url_for('login') }}" class="text-sm font-semibold text-subtle hover:text-brand transition-colors duration-200">Login</a>
-                        <a href="{{ url_for('signup') }}" class="text-sm font-semibold bg-brand hover:bg-teal-800 text-white px-4 py-2 rounded-xl transition-all duration-200 shadow-sm">Sign Up</a>
+                        <a href="{{ url_for('login') }}" class="text-sm font-medium text-subtle hover:text-ink transition-colors duration-150">Login</a>
+                        <a href="{{ url_for('signup') }}" class="pill-white text-sm font-medium px-5 h-10">Sign Up</a>
                     {% endif %}
                 </div>
             </div>
         </div>
     </header>
+    {% endblock %}
 
     <!-- Main Content -->
     <main class="flex-grow">
         {% block content %}{% endblock %}
     </main>
 
+    {% block site_footer %}
     <!-- Footer -->
-    <footer class="border-t border-line bg-white py-8 text-center text-xs text-subtle">
+    <footer class="site-footer border-t border-line py-8 text-center text-xs text-subtle">
         <div class="max-w-7xl mx-auto px-4">
             <p class="mb-2">Federated Learning for Early Detection of Diabetes &middot; Calibration, Subgroup Fairness and Federated Explanations</p>
             <p>&copy; 2026 FedHealth Diagnostic System. Records stay local; only model weights and aggregate sufficient statistics are exchanged.</p>
         </div>
     </footer>
+    {% endblock %}
+
+    {% block reveal %}
+    <script>
+    // Staggered entrance: header drops in, the page title reveals word by word,
+    // then each top-level block (and each card of a card grid) rises in turn.
+    (function () {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        var header = document.querySelector('.site-header');
+        if (header) { header.classList.add('fx-drop'); header.style.animationDelay = '150ms'; }
+        var main = document.querySelector('main');
+        var page = main && main.firstElementChild;
+        if (!page) return;
+        var h1 = page.querySelector('h1');
+        if (h1 && h1.children.length === 0) {
+            var words = h1.textContent.trim().split(/\s+/);
+            h1.textContent = '';
+            words.forEach(function (w, i) {
+                var s = document.createElement('span');
+                s.className = 'fx-word';
+                s.textContent = w;
+                s.style.animationDelay = (320 + i * 85) + 'ms';
+                h1.appendChild(s);
+                if (i < words.length - 1) h1.appendChild(document.createTextNode(' '));
+            });
+        }
+        var items = [];
+        Array.prototype.forEach.call(page.children, function (b) {
+            if (b.tagName === 'SCRIPT' || b.tagName === 'STYLE') return;
+            var kids = Array.prototype.slice.call(b.children || []);
+            if (b.classList.contains('grid') && kids.length > 1 &&
+                kids.every(function (c) { return c.classList.contains('glass-panel'); })) {
+                items.push.apply(items, kids);
+            } else {
+                items.push(b);
+            }
+        });
+        // Only blocks visible at load animate (hidden tab panels would otherwise replay the
+        // delayed entrance every time they are shown); the class is dropped once it has played.
+        items = items.filter(function (el) { return el.getClientRects().length > 0; });
+        items.forEach(function (el, i) {
+            el.classList.add('fx-rise');
+            el.style.animationDelay = (320 + Math.min(i, 12) * 90) + 'ms';
+            el.addEventListener('animationend', function done(e) {
+                if (e.target !== el) return;
+                el.classList.remove('fx-rise');
+                el.style.animationDelay = '';
+                el.removeEventListener('animationend', done);
+            });
+        });
+        var footer = document.querySelector('.site-footer');
+        if (footer) { footer.classList.add('fx-rise'); footer.style.animationDelay = (420 + Math.min(items.length, 12) * 90) + 'ms'; }
+    })();
+    </script>
+    {% endblock %}
 </body>
 </html>

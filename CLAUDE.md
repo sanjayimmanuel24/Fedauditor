@@ -133,6 +133,17 @@
 - 2026-11-18: **Guide-review deck** `Final-Year/docs/presentation/FedAuditor_Guide_Review.pptx` (12 slides,
   user's agenda; generator `build_deck.js`, pptxgenjs, needs NODE_PATH to a node_modules with pptxgenjs).
   Title slide has placeholder names (student/guide/institution) for the user to fill.
+- 2026-11-18: **Published** to the user's own PUBLIC repo https://github.com/sanjayimmanuel24/Fedauditor
+  (remote `mine`; `origin` = friend's repo, never pushed). Commit author uses the GitHub noreply email.
+  Excluded: .env, venv, users.db, data/brfss (re-download with prepare_brfss), LaTeX aux files.
+  `Final-Year/CLAUDE.md` is a copy of this file for the other laptop; keep them in sync when committing.
+- 2026-11-18: **Dark "deep ink" redesign** (from the user's Flowstate hero prompt, option a; not committed yet).
+  Theme lives in `static/css/style.css` + Tailwind tokens in `templates/base.html` (same class names, so
+  layouts unchanged): base #04050c, Onest, glass cards, white pill actions, staggered reveals (hidden tab
+  panels excluded). Live WebGL fluid (`static/js/fluid.js`, MIT Dobryakov engine) only on landing
+  (`landing.html`, full hero) and login/signup (`_fluid_backdrop.html`); canvas must be position:absolute.
+  Chart series colours validated for CVD (dashboard COLORS). `make_figures` also writes `*_dark.svg`
+  (used by /fedauditor). Walkthrough PDF and deck still show the old light screenshots.
 
 ## How to run (from `Final-Year/`)
 - Start the app: `.\venv\Scripts\python.exe app.py` → http://127.0.0.1:5000, demo login

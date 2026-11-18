@@ -383,7 +383,7 @@ def fedauditor_page():
             abort(404)
         view = None
     figs = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results", "fedauditor", "figures")
-    figures = [f for f in ("recall_heatmap.svg", "type_confusion.svg") if os.path.exists(os.path.join(figs, f))]
+    figures = [f for f in ("recall_heatmap_dark.svg", "type_confusion_dark.svg") if os.path.exists(os.path.join(figs, f))]
     return render_template("fedauditor.html", audits=audits, view=view, figures=figures)
 
 
@@ -391,7 +391,7 @@ def fedauditor_page():
 def fedauditor_figure(name: str):
     if _require_login():
         return redirect(url_for("login"))
-    if name not in ("recall_heatmap.svg", "type_confusion.svg"):
+    if name not in ("recall_heatmap_dark.svg", "type_confusion_dark.svg", "recall_heatmap.svg", "type_confusion.svg"):
         abort(404)
     figs = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results", "fedauditor", "figures")
     return send_from_directory(figs, name, mimetype="image/svg+xml")

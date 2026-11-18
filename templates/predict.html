@@ -94,13 +94,13 @@
                         <div class="flex gap-2">
                             <label class="flex-1 cursor-pointer">
                                 <input type="radio" name="background" value="global" class="peer sr-only" checked>
-                                <span class="block text-center px-3 py-2 rounded-xl text-xs border border-line text-subtle peer-checked:bg-brand peer-checked:border-brand peer-checked:text-white transition-colors">
+                                <span class="block text-center px-3 py-2 rounded-xl text-xs border border-line text-subtle peer-checked:bg-white peer-checked:border-white peer-checked:text-[#2f2f33] transition-colors">
                                     Global cohort
                                 </span>
                             </label>
                             <label class="flex-1 cursor-pointer">
                                 <input type="radio" name="background" value="local" class="peer sr-only">
-                                <span class="block text-center px-3 py-2 rounded-xl text-xs border border-line text-subtle peer-checked:bg-accent peer-checked:border-accent peer-checked:text-white transition-colors">
+                                <span class="block text-center px-3 py-2 rounded-xl text-xs border border-line text-subtle peer-checked:bg-white peer-checked:border-white peer-checked:text-[#2f2f33] transition-colors">
                                     Local cohort
                                 </span>
                             </label>
@@ -138,8 +138,8 @@
 
                     <div class="relative h-32 w-32 mx-auto flex items-center justify-center">
                         <svg class="w-full h-full transform -rotate-90">
-                            <circle cx="64" cy="64" r="50" stroke="#d6e3ec" stroke-width="10" fill="transparent" />
-                            <circle id="confidence-circle" cx="64" cy="64" r="50" stroke="#047857" stroke-width="10"
+                            <circle cx="64" cy="64" r="50" stroke="rgba(255,255,255,0.10)" stroke-width="10" fill="transparent" />
+                            <circle id="confidence-circle" cx="64" cy="64" r="50" stroke="#4ade80" stroke-width="10"
                                     stroke-dasharray="314" stroke-dashoffset="314" fill="transparent" stroke-linecap="round" />
                         </svg>
                         <div class="absolute text-center">
@@ -270,7 +270,7 @@ document.getElementById('predict-form').addEventListener('submit', async functio
     outcome.className = 'text-2xl font-black mt-1 ' + (isDiabetic ? 'text-risk' : 'text-good');
 
     const circle = document.getElementById('confidence-circle');
-    circle.setAttribute('stroke', isDiabetic ? '#be123c' : '#047857');
+    circle.setAttribute('stroke', isDiabetic ? '#fb7185' : '#4ade80');
 
     const probability = result.probability_diabetic * 100;
     document.getElementById('confidence-val').textContent = probability.toFixed(1) + '%';

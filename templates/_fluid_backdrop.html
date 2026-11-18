@@ -1,0 +1,8 @@
+{# Live fluid-ink backdrop for the sign-in pages (skipped for reduced motion). #}
+<canvas class="fluid-canvas" id="fluid" aria-hidden="true"></canvas>
+<div class="fluid-scrim is-strong" aria-hidden="true"></div>
+<script src="{{ url_for('static', filename='js/fluid.js') }}"></script>
+<script>
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+        window.fluidSimulation(document.getElementById('fluid'));
+</script>

@@ -48,17 +48,25 @@ FAULT_NAMES = {
 # Sequential blue ramp, steps 100 -> 700 (light -> dark).
 RAMP = ["#cde2fb", "#9ec5f4", "#6da7ec", "#3987e5", "#256abf", "#184f95", "#0d366b"]
 EMPTY = "#f0efec"
+# Dark variant for the dashboard: same blue hue, mirrored so that low values sit
+# close to the dark surface and high values are bright.
+DARK_RAMP = ["#141c30", "#0d366b", "#184f95", "#256abf", "#3987e5", "#6da7ec", "#9ec5f4", "#cde2fb"]
+LIGHT_THEME = dict(bg="#ffffff", title="#1b1b1b", label="#3d3d3a", muted="#6b6b66", empty=EMPTY, ramp=RAMP,
+                   ink_on_high="#ffffff", ink_on_low="#1b1b1b", high_from=0.5)
+DARK_THEME = dict(bg=None, title="#eef0f6", label="#b9becf", muted="#8a93ab", empty="#121626", ramp=DARK_RAMP,
+                  ink_on_high="#04050c", ink_on_low="#eef0f6", high_from=0.55)
 
 
 def _hex(c):
     return tuple(int(c[i:i + 2], 16) for i in (1, 3, 5))
 
 
-def color(v: float) -> str:
+def color(v: float, ramp=None) -> str:
     """Interpolate the ramp for v in [0, 1]."""
-    v = min(max(v, 0.0), 1.0) * (len(RAMP) - 1)
-    i = min(int(v), len(RAMP) - 2)
-    a, b, t = _hex(RAMP[i]), _hex(RAMP[i + 1]), v - i
+    ramp = ramp or RAMP
+    v = min(max(v, 0.0), 1.0) * (len(ramp) - 1)
+    i = min(int(v), len(ramp) - 2)
+    a, b, t = _hex(ramp[i]), _hex(ramp[i + 1]), v - i
     return "#%02x%02x%02x" % tuple(round(x + (y - x) * t) for x, y in zip(a, b))
 
 
@@ -147,41 +155,44 @@ def main_table(res: dict, n: int):
 
 # ------------------------------------------------------------------ heatmaps (SVG + LaTeX)
 
-def svg_grid(panels, row_keys, col_keys, col_labels, title, note, cell_fmt, vmax=1.0, cw=64, ch=26):
+def svg_grid(panels, row_keys, col_keys, col_labels, title, note, cell_fmt, vmax=1.0, cw=64, ch=26,
+             theme=None):
     """panels: [(panel title, {(row, col): value or None})]. Returns SVG text."""
+    T = theme or LIGHT_THEME
     left, top, gap = 168, 64, 28
     pw = cw * len(col_keys)
     width = left + len(panels) * pw + (len(panels) - 1) * gap + 16
     notes = note.split("\n")
     height = top + ch * len(row_keys) + 30 + 14 * len(notes)
     s = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}" width="{width}" '
-         f'height="{height}" font-family="Helvetica, Arial, sans-serif" font-size="11">',
-         f'<rect width="{width}" height="{height}" fill="#ffffff"/>',
-         f'<text x="8" y="18" font-size="13" font-weight="bold" fill="#1b1b1b">{title}</text>']
+         f'height="{height}" font-family="Onest, Helvetica, Arial, sans-serif" font-size="11">']
+    if T["bg"]:
+        s.append(f'<rect width="{width}" height="{height}" fill="{T["bg"]}"/>')
+    s.append(f'<text x="8" y="18" font-size="13" font-weight="bold" fill="{T["title"]}">{title}</text>')
     for i, rk in enumerate(row_keys):
         y = top + i * ch + ch / 2 + 4
-        s.append(f'<text x="{left - 8}" y="{y}" text-anchor="end" fill="#3d3d3a">{FAULT_NAMES.get(rk, rk)}</text>')
+        s.append(f'<text x="{left - 8}" y="{y}" text-anchor="end" fill="{T['label']}">{FAULT_NAMES.get(rk, rk)}</text>')
     for p, (ptitle, vals) in enumerate(panels):
         x0 = left + p * (pw + gap)
         s.append(f'<text x="{x0 + pw / 2}" y="{top - 26}" text-anchor="middle" font-weight="bold" '
-                 f'fill="#1b1b1b">{ptitle}</text>')
+                 f'fill="{T["title"]}">{ptitle}</text>')
         for j, lab in enumerate(col_labels):
             s.append(f'<text x="{x0 + j * cw + cw / 2}" y="{top - 8}" text-anchor="middle" '
-                     f'fill="#6b6b66">{lab}</text>')
+                     f'fill="{T["muted"]}">{lab}</text>')
         for i, rk in enumerate(row_keys):
             for j, ck in enumerate(col_keys):
                 v = vals.get((rk, ck))
                 x, y = x0 + j * cw, top + i * ch
-                fill = EMPTY if v is None else color(v / vmax)
+                fill = T["empty"] if v is None else color(v / vmax, T["ramp"])
                 tip = f"{ptitle}: {FAULT_NAMES.get(rk, rk)} / {col_labels[j]} = {cell_fmt(v)}"
                 s.append(f'<g><title>{tip}</title><rect x="{x + 1}" y="{y + 1}" width="{cw - 2}" '
                          f'height="{ch - 2}" rx="2" fill="{fill}"/>')
                 if v is not None:
                     s.append(f'<text x="{x + cw / 2}" y="{y + ch / 2 + 4}" text-anchor="middle" '
-                             f'fill="{ink(v / vmax)}">{cell_fmt(v)}</text>')
+                             f'fill="{T["ink_on_high"] if v / vmax >= T["high_from"] else T["ink_on_low"]}">{cell_fmt(v)}</text>')
                 s.append("</g>")
     for k, line in enumerate(notes):
-        s.append(f'<text x="8" y="{height - 12 - 14 * (len(notes) - 1 - k)}" fill="#6b6b66">{line}</text>')
+        s.append(f'<text x="8" y="{height - 12 - 14 * (len(notes) - 1 - k)}" fill="{T['muted']}">{line}</text>')
     s.append("</svg>")
     return "\n".join(s) + "\n"
 
@@ -221,9 +232,11 @@ def recall_heatmap(res: dict):
         cells = res["rows"][key]["by_cell"]
         panels.append((name, {(f, s): cells.get(f"{f}/{s}") for f in FAULTS for s in sev}))
     two = lambda v: fmt(v)
-    _write("recall_heatmap.svg", svg_grid(
-        panels, FAULTS, sev, sev, "Recall of planted clients by fault and severity (BRFSS, LR)",
-        "Recall = planted clients flagged / planted clients (3 per scenario, 5 seeds per cell).", two))
+    for suffix, theme in (("", LIGHT_THEME), ("_dark", DARK_THEME)):
+        _write(f"recall_heatmap{suffix}.svg", svg_grid(
+            panels, FAULTS, sev, sev, "Recall of planted clients by fault and severity (BRFSS, LR)",
+            "Recall = planted clients flagged / planted clients (3 per scenario, 5 seeds per cell).", two,
+            theme=theme))
     _write("recall_heatmap.tex", tex_grid(
         panels, FAULTS, sev, ["L", "M", "H"],
         "Recall of the planted clients by fault type and severity (L/M/H), BRFSS, logistic regression, "
@@ -265,12 +278,13 @@ def type_confusion(grids, common, res):
     cnt = lambda v: "" if v is None else (f"{v:g}" if float(v).is_integer() else f"{v:.1f}")
     short = ["LN", "DR", "PO", "FR", "PS", "SB", "MA", "EI", "–"]
     vmax = 15.0
-    _write("type_confusion.svg", svg_grid(
-        panels, true_keys, pred_keys, short,
-        "Planted fault (rows) vs fault type the agent reported (columns), scenarios",
-        "LN label noise, DR drift, PO poisoning, FR free-rider, PS prevalence shift,\n"
-        "SB subgroup bias, MA missing-data artefact, EI expl. instability, – nothing flagged. 15 scenarios per fault.",
-        cnt, vmax=vmax, cw=30))
+    for suffix, theme in (("", LIGHT_THEME), ("_dark", DARK_THEME)):
+        _write(f"type_confusion{suffix}.svg", svg_grid(
+            panels, true_keys, pred_keys, short,
+            "Planted fault (rows) vs fault type the agent reported (columns), scenarios",
+            "LN label noise, DR drift, PO poisoning, FR free-rider, PS prevalence shift,\n"
+            "SB subgroup bias, MA missing-data artefact, EI expl. instability, – nothing flagged. 15 scenarios per fault.",
+            cnt, vmax=vmax, cw=30, theme=theme))
     _write("type_confusion.tex", tex_grid(
         panels, true_keys, pred_keys, short,
         "Fault-type confusion for Haiku 5.5 with prompt v4 (left) and v5 (right): planted fault (rows) "
